@@ -1,14 +1,31 @@
 // src/pages/ALouer.jsx
-import { useState, useMemo } from "react";
-import { Link } from "react-router-dom";
+import { useState, useMemo, useEffect } from "react";
+import { Link, useParams, useNavigate } from "react-router-dom";
 import { chalets } from "../data/chalets";
 import ChaletCard from "../components/ChaletCard";
 
 export default function ALouer() {
+  const { regionSlug } = useParams();
+  const navigate = useNavigate();
+
+  const getCategoryFromSlug = (slug) => {
+    if (!slug) return "all";
+    if (slug === "saguenay-lac-saint-jean") return "saguenay";
+    if (slug === "chaudiere-appalaches") return "appalaches";
+    return slug;
+  };
+
+  const getSlugFromCategory = (cat) => {
+    if (cat === "all") return "";
+    if (cat === "saguenay") return "saguenay-lac-saint-jean";
+    if (cat === "appalaches") return "chaudiere-appalaches";
+    return cat;
+  };
+
   // --- États pour les filtres ---
   const [searchQuery, setSearchQuery] = useState("");
   const [locationQuery, setLocationQuery] = useState("");
-  const [category, setCategory] = useState("all");
+  const [category, setCategory] = useState(() => getCategoryFromSlug(regionSlug));
   
   const [minPrice, setMinPrice] = useState("");
   const [maxPrice, setMaxPrice] = useState("");
@@ -39,11 +56,23 @@ export default function ALouer() {
     setFeatures((prev) => ({ ...prev, [name]: !prev[name] }));
   };
 
+  useEffect(() => {
+    setCategory(getCategoryFromSlug(regionSlug));
+    
+    // Mettre à jour le titre du document pour le SEO
+    let title = "Chalets à louer au Québec | Chaletpedia";
+    if (regionSlug === "laurentides") title = "Chalets à Louer dans les Laurentides | Nature, Spa et Lac";
+    else if (regionSlug === "gaspesie") title = "Chalets à louer en Gaspésie | Chaletpedia";
+    else if (regionSlug === "saguenay-lac-saint-jean") title = "Chalets à louer au Saguenay-Lac-Saint-Jean | Chaletpedia";
+    else if (regionSlug === "chaudiere-appalaches") title = "Chalets à louer dans la Chaudière-Appalaches | Chaletpedia";
+    document.title = title;
+  }, [regionSlug]);
+
   // Réinitialiser tous les filtres
   const handleResetFilters = () => {
     setSearchQuery("");
     setLocationQuery("");
-    setCategory("all");
+    navigate("/chalets/chalet-a-louer/");
     setMinPrice("");
     setMaxPrice("");
     setInvites("");
@@ -201,7 +230,20 @@ export default function ALouer() {
       <nav className="breadcrumb" style={{ background: "#fff", padding: "18px 36px 0" }}>
         <Link to="/">Accueil</Link>
         <span className="separator"> / </span>
-        <span style={{ color: "#1A1A1A" }}>Chalets à louer</span>
+        {category === "all" ? (
+          <span style={{ color: "#1A1A1A" }}>Chalets à louer</span>
+        ) : (
+          <>
+            <Link to="/chalets/chalet-a-louer/">Chalets à louer</Link>
+            <span className="separator"> / </span>
+            <span style={{ color: "#1A1A1A" }}>
+              {category === "laurentides" && "Laurentides"}
+              {category === "gaspesie" && "Gaspésie"}
+              {category === "saguenay" && "Saguenay-Lac-Saint-Jean"}
+              {category === "appalaches" && "Chaudière-Appalaches"}
+            </span>
+          </>
+        )}
       </nav>
 
       {/* EN-TÊTE HÉROS */}
@@ -212,9 +254,23 @@ export default function ALouer() {
               <div className="hp-row" style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
                 <div>
                   <div className="hp-listing-category__item-count">{filteredChalets.length} annonce{filteredChalets.length !== 1 ? "s" : ""}</div>
-                  <h1 className="hp-listing-category__name">Chalets à louer</h1>
+                  <h1 className="hp-listing-category__name">
+                    {category === "all" && "Chalets à louer"}
+                    {category === "laurentides" && "Chalets à louer dans les Laurentides"}
+                    {category === "gaspesie" && "Chalets à louer en Gaspésie"}
+                    {category === "saguenay" && "Chalets à louer au Saguenay-Lac-Saint-Jean"}
+                    {category === "appalaches" && "Chalets à louer dans la Chaudière-Appalaches"}
+                  </h1>
                   <p className="hp-listing-category__description">
-                    Découvrez les plus beaux chalets à louer au Québec parmi une grande sélection.
+                    {category === "all" && "Découvrez les plus beaux chalets à louer au Québec parmi une grande sélection."}
+                    {category === "laurentides" && (
+                      <>
+                        La région des Laurentides est l'une des plus prisées pour la location de chalets au Québec. Située entre montagnes, lacs et forêts, elle offre une multitude d'activités en toute saison. Parcourez nos annonces de <strong>chalets avec spa</strong>, <strong>chalets au bord de l'eau</strong> ou encore de <strong>chalet A-Frame</strong> en pleine nature.
+                      </>
+                    )}
+                    {category === "gaspesie" && "Découvrez les plus beaux chalets à louer en Gaspésie parmi une grande sélection."}
+                    {category === "saguenay" && "Découvrez les plus beaux chalets à louer au Saguenay-Lac-Saint-Jean parmi une grande sélection."}
+                    {category === "appalaches" && "Découvrez les plus beaux chalets à louer dans la Chaudière-Appalaches parmi une grande sélection."}
                   </p>
                 </div>
               </div>
@@ -280,7 +336,16 @@ export default function ALouer() {
                         name="category"
                         value={cat.val}
                         checked={category === cat.val}
-                        onChange={(e) => setCategory(e.target.value)}
+                        onChange={(e) => {
+                          const newCat = e.target.value;
+                          setCategory(newCat);
+                          const slug = getSlugFromCategory(newCat);
+                          if (slug) {
+                            navigate(`/chalets/chalets-a-louer-${slug}/`);
+                          } else {
+                            navigate(`/chalets/chalet-a-louer/`);
+                          }
+                        }}
                       />
                       <span>{cat.label}</span>
                     </label>

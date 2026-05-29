@@ -28,9 +28,9 @@ export default function Header() {
           <div className="submenu">
             <div className="submenu-label">Par Région</div>
             <Link to="/chalets/chalet-a-louer/">Toutes les régions</Link>
-            <a href="/chalets/chalets-a-louer-laurentides/">Laurentides</a>
-            <a href="/chalets/chalets-a-louer-gaspesie/">Gaspésie</a>
-            <a href="/chalets/chalets-a-louer-saguenay-lac-saint-jean/">Saguenay-Lac-Saint-Jean</a>
+            <Link to="/chalets/chalets-a-louer-laurentides/">Laurentides</Link>
+            <Link to="/chalets/chalets-a-louer-gaspesie/">Gaspésie</Link>
+            <Link to="/chalets/chalets-a-louer-saguenay-lac-saint-jean/">Saguenay-Lac-Saint-Jean</Link>
             <div className="submenu-label" style={{ marginTop: 8 }}>Par Expérience</div>
             <a href="#animaux">🐕 Animaux permis</a>
             <a href="#eau">💦 Bord de l'eau</a>
