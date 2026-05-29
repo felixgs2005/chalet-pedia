@@ -140,14 +140,18 @@ export default function ChaletPage() {
                 <div className="info-stat-num">{chalet.invites}</div>
                 <div className="info-stat-label">Invités</div>
               </div>
-              <div className="info-stat">
-                <div className="info-stat-num">{chalet.chambres}</div>
-                <div className="info-stat-label">Chambre{chalet.chambres > 1 ? "s" : ""}</div>
-              </div>
-              <div className="info-stat">
-                <div className="info-stat-num">{chalet.sdb}</div>
-                <div className="info-stat-label">Salle{chalet.sdb > 1 ? "s" : ""} de bain</div>
-              </div>
+              {chalet.chambres != null && (
+                <div className="info-stat">
+                  <div className="info-stat-num">{chalet.chambres}</div>
+                  <div className="info-stat-label">Chambre{chalet.chambres > 1 ? "s" : ""}</div>
+                </div>
+              )}
+              {chalet.sdb != null && (
+                <div className="info-stat">
+                  <div className="info-stat-num">{chalet.sdb}</div>
+                  <div className="info-stat-label">Salle{chalet.sdb > 1 ? "s" : ""} de bain</div>
+                </div>
+              )}
               <div className="info-stat">
                 <div className="info-stat-num">{chalet.prixNuit ? `${chalet.prixNuit}$` : "—"}</div>
                 <div className="info-stat-label">/ nuit</div>

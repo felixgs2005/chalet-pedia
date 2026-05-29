@@ -21,7 +21,9 @@ export default function ChaletCard({ chalet }) {
         <div className="chalet-location">📍 {chalet.localisation}</div>
         <div className="chalet-meta">
           <span>👥 {chalet.invites} invités</span>
-          <span>🛏 {chalet.chambres} chambre{chalet.chambres > 1 ? "s" : ""}</span>
+          {chalet.chambres != null && (
+            <span>🛏 {chalet.chambres} chambre{chalet.chambres > 1 ? "s" : ""}</span>
+          )}
         </div>
         <div className="chalet-footer">
           <div className="chalet-price">
