@@ -27,7 +27,7 @@ export default function Header() {
           </span>
           <div className="submenu">
             <div className="submenu-label">Par Région</div>
-            <a href="/chalets/chalet-a-louer/">Toutes les régions</a>
+            <Link to="/chalets/chalet-a-louer/">Toutes les régions</Link>
             <a href="/chalets/chalets-a-louer-laurentides/">Laurentides</a>
             <a href="/chalets/chalets-a-louer-gaspesie/">Gaspésie</a>
             <a href="/chalets/chalets-a-louer-saguenay-lac-saint-jean/">Saguenay-Lac-Saint-Jean</a>
