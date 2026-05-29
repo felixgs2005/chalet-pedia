@@ -1,0 +1,40 @@
+// src/App.jsx
+import { BrowserRouter, Routes, Route, ScrollRestoration } from "react-router-dom";
+import Header from "./components/Header";
+import Footer from "./components/Footer";
+import HomePage from "./pages/HomePage";
+import ChaletPage from "./pages/ChaletPage";
+import "./styles/global.css";
+
+function Layout({ children }) {
+  return (
+    <>
+      <Header />
+      <main>{children}</main>
+      <Footer />
+    </>
+  );
+}
+
+export default function App() {
+  return (
+    <BrowserRouter>
+      <Layout>
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/chalet/:slug" element={<ChaletPage />} />
+          {/* Ajoutez d'autres routes ici au besoin */}
+          <Route
+            path="*"
+            element={
+              <div style={{ padding: "80px 32px", textAlign: "center" }}>
+                <div className="kicker">404</div>
+                <h1 className="section-title" style={{ fontSize: 48, marginTop: 12 }}>Page introuvable</h1>
+              </div>
+            }
+          />
+        </Routes>
+      </Layout>
+    </BrowserRouter>
+  );
+}

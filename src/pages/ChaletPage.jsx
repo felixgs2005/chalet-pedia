@@ -1,0 +1,275 @@
+// src/pages/ChaletPage.jsx
+// ============================================================
+// PAGE DYNAMIQUE CHALET
+// Cette page est créée UNE SEULE FOIS et s'adapte automatiquement
+// selon le slug dans l'URL (/chalet/:slug).
+// Pour ajouter un nouveau chalet, modifiez uniquement src/data/chalets.js
+// ============================================================
+
+import { useState } from "react";
+import { useParams, Link } from "react-router-dom";
+import { getChaletBySlug, chalets } from "../data/chalets";
+import ChaletCard from "../components/ChaletCard";
+
+export default function ChaletPage() {
+  const { slug } = useParams();
+  const chalet = getChaletBySlug(slug);
+  const [activeImg, setActiveImg] = useState(0);
+  const [galleryOpen, setGalleryOpen] = useState(false);
+
+  const similaires = chalet
+    ? chalets.filter((c) => c.id !== chalet.id && c.region === chalet.region).slice(0, 3)
+    : [];
+
+  if (!chalet) {
+    return (
+      <div style={{ padding: "80px 32px", textAlign: "center" }}>
+        <div className="kicker">ERREUR 404</div>
+        <h1 className="section-title" style={{ fontSize: 48, marginTop: 12, marginBottom: 20 }}>
+          Chalet introuvable
+        </h1>
+        <p style={{ color: "#4A4A48", marginBottom: 32 }}>
+          Ce chalet n'existe pas ou a été retiré.
+        </p>
+        <Link to="/" className="btn-annoncer">← Retour à l'accueil</Link>
+      </div>
+    );
+  }
+
+  return (
+    <div>
+      {/* FIL D'ARIANE */}
+      <nav className="breadcrumb">
+        <Link to="/">Accueil</Link>
+        <span className="separator"> / </span>
+        <Link to="/chalets/chalet-a-louer/">Chalets à louer</Link>
+        <span className="separator"> / </span>
+        <span>{chalet.region}</span>
+        <span className="separator"> / </span>
+        <span style={{ color: "#1A1A1A" }}>{chalet.nom}</span>
+      </nav>
+
+      {/* EN-TÊTE */}
+      <div className="chalet-header">
+        <div className="chalet-header-left">
+          <div className="badge-region">{chalet.regionLabel}</div>
+          <h1 className="chalet-title">{chalet.nom}</h1>
+          {chalet.sousTitre && (
+            <p style={{ fontSize: 16, color: "#4A4A48", marginBottom: 8 }}>{chalet.sousTitre}</p>
+          )}
+          <div className="chalet-location-big">📍 {chalet.localisation}</div>
+          {chalet.note && (
+            <div style={{ marginTop: 8, fontSize: 13, color: "#4A4A48", display: "flex", alignItems: "center", gap: 6 }}>
+              ⭐ {chalet.note.toFixed(1)} ({chalet.nbAvis} avis)
+            </div>
+          )}
+        </div>
+        <div className="chalet-actions">
+          <button className="action-btn">♡ Sauvegarder</button>
+          <button className="action-btn">↗ Partager</button>
+        </div>
+      </div>
+
+      {/* GALERIE */}
+      <div className="gallery" onClick={() => setGalleryOpen(true)} style={{ cursor: "pointer" }}>
+        {chalet.images.slice(0, 4).map((img, i) => (
+          <div
+            key={i}
+            className={`gallery-img${i === 0 ? " main" : ""}`}
+            style={{ backgroundImage: `url('${img}')` }}
+          >
+            {i === 3 && chalet.images.length > 4 && (
+              <div className="gallery-more">📷 +{chalet.images.length - 4} photos</div>
+            )}
+          </div>
+        ))}
+      </div>
+
+      {/* MODALE GALERIE */}
+      {galleryOpen && (
+        <div
+          onClick={() => setGalleryOpen(false)}
+          style={{
+            position: "fixed", inset: 0, background: "rgba(0,0,0,0.92)", zIndex: 999,
+            display: "flex", alignItems: "center", justifyContent: "center", flexDirection: "column",
+          }}
+        >
+          <button
+            style={{ position: "absolute", top: 20, right: 24, background: "none", border: "none", color: "#fff", fontSize: 28, cursor: "pointer" }}
+            onClick={() => setGalleryOpen(false)}
+          >✕</button>
+          <img
+            src={chalet.images[activeImg]}
+            alt={chalet.nom}
+            style={{ maxHeight: "80vh", maxWidth: "90vw", objectFit: "contain", borderRadius: 8 }}
+            onClick={(e) => e.stopPropagation()}
+          />
+          <div style={{ display: "flex", gap: 10, marginTop: 18 }} onClick={(e) => e.stopPropagation()}>
+            {chalet.images.map((img, i) => (
+              <img
+                key={i}
+                src={img}
+                alt=""
+                onClick={() => setActiveImg(i)}
+                style={{
+                  width: 64, height: 48, objectFit: "cover", borderRadius: 6, cursor: "pointer",
+                  border: i === activeImg ? "2px solid #7FA890" : "2px solid transparent",
+                  opacity: i === activeImg ? 1 : 0.6,
+                }}
+              />
+            ))}
+          </div>
+          <p style={{ color: "rgba(255,255,255,0.6)", marginTop: 12, fontSize: 13 }}>
+            {activeImg + 1} / {chalet.images.length}
+          </p>
+        </div>
+      )}
+
+      {/* CORPS */}
+      <div className="body-grid">
+        {/* COLONNE GAUCHE */}
+        <div>
+          <div className="info-block">
+            <div className="info-label">À propos de ce chalet</div>
+            <h2 className="info-title">{chalet.nom}</h2>
+            <div style={{ fontFamily: "monospace", fontSize: 11, color: "#9A9A98", marginBottom: 16, padding: "6px 12px", background: "#FAFAF6", borderRadius: 6, display: "inline-block" }}>
+              Annonce <strong style={{ color: "#0F0F0F" }}>#{chalet.citq || "—"}</strong>
+            </div>
+            <div className="info-stats">
+              <div className="info-stat">
+                <div className="info-stat-num">{chalet.invites}</div>
+                <div className="info-stat-label">Invités</div>
+              </div>
+              <div className="info-stat">
+                <div className="info-stat-num">{chalet.chambres}</div>
+                <div className="info-stat-label">Chambre{chalet.chambres > 1 ? "s" : ""}</div>
+              </div>
+              <div className="info-stat">
+                <div className="info-stat-num">{chalet.sdb}</div>
+                <div className="info-stat-label">Salle{chalet.sdb > 1 ? "s" : ""} de bain</div>
+              </div>
+              <div className="info-stat">
+                <div className="info-stat-num">{chalet.prixNuit ? `${chalet.prixNuit}$` : "—"}</div>
+                <div className="info-stat-label">/ nuit</div>
+              </div>
+            </div>
+          </div>
+
+          <div className="info-block">
+            <div className="info-label">Description</div>
+            <p className="info-text">{chalet.description}</p>
+            {chalet.descriptionEn && (
+              <p className="info-text" style={{ color: "#6A6A68", fontSize: 13, fontStyle: "italic" }}>
+                {chalet.descriptionEn}
+              </p>
+            )}
+          </div>
+
+          {chalet.caracteristiques && (
+            <div className="info-block">
+              <div className="info-label">Équipements & caractéristiques</div>
+              <div className="caracteristiques-grid">
+                {chalet.caracteristiques.map((car) => (
+                  <span className="caracteristique" key={car}>✓ {car}</span>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {chalet.citq && (
+            <div className="info-block">
+              <div className="info-label">Conformité & réglementation</div>
+              <div className="citq">
+                <div className="citq-label">Numéro CITQ</div>
+                <div className="citq-num">{chalet.citq}</div>
+                <p className="citq-explain">
+                  Ce chalet est enregistré auprès de la Corporation de l'industrie touristique du Québec (CITQ), conformément à la Loi sur les établissements d'hébergement touristique.
+                </p>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* COLONNE DROITE — RÉSERVATION */}
+        <div>
+          <div className="booking-card">
+            <div className="booking-from">À partir de</div>
+            <div className="booking-price">
+              <span className="booking-price-num">
+                {chalet.prixNuit ? `${chalet.prixNuit}$` : "Prix sur demande"}
+              </span>
+              {chalet.prixNuit && <span className="booking-price-unit">/ nuit</span>}
+            </div>
+            <div className="booking-commission">✓ 0 % de commission — prix direct propriétaire</div>
+
+            <div style={{ background: "#FAFAF6", border: "1px solid rgba(15,15,15,0.08)", borderRadius: 12, padding: 14, marginBottom: 14 }}>
+              <div style={{ fontSize: 10, fontWeight: 800, letterSpacing: "0.22em", color: "#1F4D3A", textTransform: "uppercase", marginBottom: 10 }}>
+                Tarification
+              </div>
+              {[
+                { lang: "FR", bg: "#1F4D3A", label: "Consulter les disponibilités" },
+                { lang: "EN", bg: "#4A4A48", label: "Check availability" },
+              ].map((item) => (
+                <a
+                  key={item.lang}
+                  href="#contact"
+                  style={{ display: "flex", alignItems: "center", gap: 10, padding: "8px 8px", borderRadius: 8, textDecoration: "none", color: "#1A1A1A", fontSize: 13, fontWeight: 500 }}
+                >
+                  <span style={{ background: item.bg, color: "#fff", fontFamily: "'Archivo Black', sans-serif", fontSize: 10, padding: "3px 6px", borderRadius: 4, minWidth: 26, textAlign: "center" }}>
+                    {item.lang}
+                  </span>
+                  <span style={{ flex: 1 }}>{item.label}</span>
+                  <span style={{ fontSize: 12, color: "#1F4D3A", fontWeight: 700 }}>↗</span>
+                </a>
+              ))}
+            </div>
+
+            <button className="booking-cta">Contacter le propriétaire</button>
+            <button className="booking-secondary">Vérifier les disponibilités</button>
+
+            <div className="booking-divider" />
+
+            <div className="booking-owner">
+              <div className="owner-avatar">{chalet.proprietaire.initiales}</div>
+              <div>
+                <div className="owner-name">{chalet.proprietaire.nom}</div>
+                <div className="owner-meta">{chalet.proprietaire.membre}</div>
+              </div>
+            </div>
+            <div style={{ marginTop: 14, fontSize: 12, color: "#9A9A98", textAlign: "center", lineHeight: 1.5 }}>
+              Aucune commission · Paiement direct au propriétaire
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* CARTE */}
+      <div className="map-placeholder">
+        <div className="info-label" style={{ marginBottom: 14 }}>Localisation</div>
+        <div className="map-box">
+          <div className="map-pin">📍</div>
+          <div className="map-label">{chalet.localisation.split(",")[0]}</div>
+          <div className="map-sub">Québec, Canada · Coordonnées exactes communiquées par le propriétaire</div>
+        </div>
+      </div>
+
+      {/* CHALETS SIMILAIRES */}
+      {similaires.length > 0 && (
+        <section className="section">
+          <div className="section-head">
+            <div>
+              <div className="kicker">DANS LA MÊME RÉGION</div>
+              <h2 className="section-title">Chalets similaires</h2>
+            </div>
+            <Link to="/chalets/chalet-a-louer/" className="section-link">Voir tout →</Link>
+          </div>
+          <div className="chalets-grid">
+            {similaires.map((c) => (
+              <ChaletCard key={c.id} chalet={c} />
+            ))}
+          </div>
+        </section>
+      )}
+    </div>
+  );
+}
