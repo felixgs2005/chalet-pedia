@@ -65,7 +65,9 @@ export default function Header() {
         </div>
 
         <Link to="/blogue/">Blogue</Link>
-        <a href="#connexion">Se connecter</a>
+        <Link to="/auth" className="nav-login" onClick={() => setMenuOpen(false)}>
+          Se connecter
+        </Link>
 
         <Link
           to="/annoncez-votre-chalet/"

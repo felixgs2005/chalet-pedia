@@ -5,6 +5,7 @@ import Footer from "./components/Footer";
 import HomePage from "./pages/HomePage";
 import ChaletPage from "./pages/ChaletPage";
 import ALouer from "./pages/ALouer";
+import AuthPage from "./pages/auth";
 import "./styles/global.css";
 
 function Layout({ children }) {
@@ -22,6 +23,7 @@ export default function App() {
     <BrowserRouter>
       <Layout>
         <Routes>
+          <Route path="/auth" element={<AuthPage />} />
           <Route path="/" element={<HomePage />} />
           <Route path="/chalet/:slug" element={<ChaletPage />} />
           <Route path="/chalets/chalet-a-louer/" element={<ALouer />} />
