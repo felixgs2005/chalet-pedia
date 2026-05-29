@@ -250,11 +250,31 @@ export default function ChaletPage() {
       {/* CARTE */}
       <div className="map-placeholder">
         <div className="info-label" style={{ marginBottom: 14 }}>Localisation</div>
-        <div className="map-box">
-          <div className="map-pin">📍</div>
-          <div className="map-label">{chalet.localisation.split(",")[0]}</div>
-          <div className="map-sub">Québec, Canada · Coordonnées exactes communiquées par le propriétaire</div>
-        </div>
+        {chalet.localisation ? (
+          <>
+            <div className="map-frame">
+              <iframe
+                title={`Carte de la région — ${chalet.nom}`}
+                src={`https://www.google.com/maps?q=${encodeURIComponent(chalet.localisation)}&z=10&hl=fr&output=embed`}
+                width="100%"
+                height="100%"
+                style={{ border: 0, display: "block" }}
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+                allowFullScreen
+              />
+            </div>
+            <div style={{ marginTop: 10, fontSize: 13, color: "#9A9A98" }}>
+              📍 {chalet.localisation} · Coordonnées exactes communiquées par le propriétaire
+            </div>
+          </>
+        ) : (
+          <div className="map-box">
+            <div className="map-pin">📍</div>
+            <div className="map-label">Québec</div>
+            <div className="map-sub">Coordonnées exactes communiquées par le propriétaire</div>
+          </div>
+        )}
       </div>
 
       {/* CHALETS SIMILAIRES */}

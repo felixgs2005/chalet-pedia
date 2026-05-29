@@ -1566,6 +1566,20 @@ a {
   overflow: hidden;
 }
 
+.map-frame {
+  aspect-ratio: 2.5/1;
+  border-radius: 14px;
+  overflow: hidden;
+  border: 1px solid rgba(15, 15, 15, 0.08);
+  box-shadow: 0 8px 24px rgba(15, 15, 15, 0.06);
+}
+
+@media (max-width: 640px) {
+  .map-frame {
+    aspect-ratio: 4/3;
+  }
+}
+
 .map-pin {
   width: 52px;
   height: 52px;
