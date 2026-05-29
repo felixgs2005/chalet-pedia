@@ -4,6 +4,7 @@ import Header from "./components/Header";
 import Footer from "./components/Footer";
 import HomePage from "./pages/HomePage";
 import ChaletPage from "./pages/ChaletPage";
+import ALouer from "./pages/ALouer";
 import "./styles/global.css";
 
 function Layout({ children }) {
@@ -23,6 +24,7 @@ export default function App() {
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/chalet/:slug" element={<ChaletPage />} />
+          <Route path="/chalets/chalet-a-louer/" element={<ALouer />} />
           {/* Ajoutez d'autres routes ici au besoin */}
           <Route
             path="*"
