@@ -297,7 +297,7 @@ export const articles = [
   {
     id: 1,
     categorie: "PHOTOGRAPHIE",
-    titre: "Pourquoi les photos professionnelles sont essentielles pour un chalet",
+    titre: "Pourquoi les photos pro changent tout",
     date: "09 janvier 2026",
     image: "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=600&q=80",
     slug: "photos-professionnelles-chalet",
@@ -313,7 +313,7 @@ export const articles = [
   {
     id: 3,
     categorie: "GUIDE PRATIQUE",
-    titre: "Créer une fiche Google My Business pour son chalet",
+    titre: "Créer une fiche Google My Business",
     date: "05 juin 2025",
     image: "https://images.unsplash.com/photo-1529148482759-b35b25c5f217?w=600&q=80",
     slug: "comment-creer-une-fiche-google-my-business-pour-son-chalet-guide-debutant",

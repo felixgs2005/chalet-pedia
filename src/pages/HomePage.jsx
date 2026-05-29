@@ -64,7 +64,7 @@ export default function HomePage() {
       {/* HERO VIDEO */}
       <div className="hero-video-wrap">
         <video className="hero-video" autoPlay muted loop playsInline>
-          <source src="https://cdn.pixabay.com/video/2022/12/18/143279-783455887_large.mp4" type="video/mp4" />
+          <source src="/video/hero-bg.mp4" type="video/mp4" />
         </video>
         <div className="hero-video-overlay" />
       </div>
@@ -225,7 +225,7 @@ export default function HomePage() {
       <section className="proprietaires">
         <div className="prop-grid">
           <div>
-            <div className="kicker" style={{ color: "#7FA890" }}>N°05 · PROPRIÉTAIRES</div>
+            <div className="kicker" style={{ color: "#fff" }}>N°05 · PROPRIÉTAIRES</div>
             <h2 className="prop-title">Vous avez un chalet ? <span className="accent" style={{ opacity: 0.85 }}>Faites-le travailler.</span></h2>
             <p className="prop-text">
               1 200 propriétaires louent déjà sur Chaletpedia — sans verser un sou de commission. Inscription gratuite, paiements directs, calendrier sous votre contrôle.
@@ -244,7 +244,7 @@ export default function HomePage() {
         <div className="section-head">
           <div>
             <div className="kicker">N°06 · LE JOURNAL</div>
-            <h2 className="section-title">Pour louer mieux, pour louer plus.</h2>
+            <h2 className="section-title">Pour louer mieux,<br/> pour louer plus.</h2>
           </div>
           <Link to="/blogue/" className="section-link">Tous les articles →</Link>
         </div>
@@ -262,7 +262,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* FAVORIS */}
+      {/* FAVORIS 
       <section className="section">
         <div className="section-head">
           <div>
@@ -276,24 +276,24 @@ export default function HomePage() {
             <ChaletCard key={c.id} chalet={c} />
           ))}
         </div>
-      </section>
+      </section>*/}
 
       {/* COMMENT ÇA MARCHE */}
       <section className="process">
         <div className="process-head">
-          <div className="kicker">COMMENT ÇA MARCHE</div>
           <h2 className="section-title">3 étapes, zéro casse-tête.</h2>
         </div>
         <div className="process-grid">
           {[
-            { num: "01", step: "01", title: "EXPLOREZ", text: "1 468 chalets vérifiés. Filtrez par envie, trouvez le bon en quelques clics." },
-            { num: "02", step: "02", title: "DISCUTEZ", text: "Une vraie conversation, pas un robot. La personne qui connaît son chalet vous répond directement." },
-            { num: "03", step: "03", title: "RÉSERVEZ", text: "Aucune commission, aucun frais caché. Économisez 15 à 20 % vs les géants du secteur." },
+            { num: "01", step: "01", title: "EXPLOREZ", bigTitle: "LE CHALET QUI VOUS RESSEMBLE.", text: "1 468 chalets vérifiés. Filtrez par envie, trouvez le bon en quelques clics." },
+            { num: "02", step: "02", title: "DISCUTEZ", bigTitle: "LE PROPRIÉTAIRE, EN PERSONNE.", text: "Une vraie conversation, pas un robot. La personne qui connaît son chalet vous répond directement." },
+            { num: "03", step: "03", title: "RÉSERVEZ", bigTitle: "LE PRIX JUSTE. POINT.", text: "Aucune commission, aucun frais caché. Économisez 15 à 20 % vs les géants du secteur." },
           ].map((item) => (
             <div className="process-step" key={item.num}>
               <div className="process-num">{item.num}</div>
               <div className="process-circle">{item.step}</div>
               <div className="process-title">{item.title}</div>
+              <div className="process-bigTitle">{item.bigTitle}</div>
               <p className="process-text">{item.text}</p>
             </div>
           ))}
