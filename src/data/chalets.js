@@ -101,6 +101,7 @@ export const chalets = [
     badge: "LAURENTIDES",
     dateAjout: "septembre 7, 2024",
     isFavori: false,
+    activites: ["peche", "ski"],
     images: [
       "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&q=80",
       "https://images.unsplash.com/photo-1572120360610-d971b9d7767c?w=800&q=80",
@@ -129,6 +130,7 @@ export const chalets = [
     badge: "LAURENTIDES",
     dateAjout: "septembre 7, 2024",
     isFavori: false,
+    activites: ["peche", "ski"],
     images: [
       "https://images.unsplash.com/photo-1518780664697-55e3ad937233?w=800&q=80",
       "https://images.unsplash.com/photo-1490725263030-1f0521cec8ec?w=800&q=80",
@@ -493,10 +495,11 @@ export const chalets = [
     invites: 20,
     chambres: 2,
     sdb: 1,
-    prixNuit: null,
+    prixNuit: 100,
     badge: "LAURENTIDES",
     dateAjout: "septembre 7, 2024",
     isFavori: false,
+    activites: ["peche", "ski"],
     images: [
       "https://images.unsplash.com/photo-1572120360610-d971b9d7767c?w=800&q=80",
       "https://images.unsplash.com/photo-1510798831971-661eb04b3739?w=800&q=80",
@@ -521,10 +524,11 @@ export const chalets = [
     invites: 20,
     chambres: 1,
     sdb: 1,
-    prixNuit: null,
+    prixNuit: 1,
     badge: "LAURENTIDES",
     dateAjout: "septembre 7, 2024",
     isFavori: false,
+    activites: ["peche", "ski"],
     images: [
       "https://images.unsplash.com/photo-1518780664697-55e3ad937233?w=800&q=80",
       "https://images.unsplash.com/photo-1535827841776-24afc1e255ac?w=800&q=80",
@@ -553,6 +557,7 @@ export const chalets = [
     badge: "LAURENTIDES",
     dateAjout: "septembre 7, 2024",
     isFavori: false,
+    activites: ["peche", "ski"],
     images: [
       "https://images.unsplash.com/photo-1480074568708-e7b720bb3f09?w=800&q=80",
       "https://images.unsplash.com/photo-1567767292278-a4f21aa2d36e?w=800&q=80",
@@ -581,6 +586,7 @@ export const chalets = [
     badge: "LAURENTIDES",
     dateAjout: "septembre 7, 2024",
     isFavori: false,
+    activites: ["peche", "ski"],
     images: [
       "https://images.unsplash.com/photo-1437978812938-5950c2a64b55?w=800&q=80",
       "https://images.unsplash.com/photo-1504701954957-2010ec3bcec1?w=800&q=80",
