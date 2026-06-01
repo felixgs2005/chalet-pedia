@@ -3,13 +3,12 @@
 // DONNÉES DYNAMIQUES DU BLOGUE
 // Source de vérité unique pour la page liste (/blogue/) et les
 // pages d'article dynamiques (/blogue/:slug).
-// Pour ajouter un article, ajoutez un objet à ce tableau.
-// Le contenu (contenuHtml) reprend la mise en forme de la maquette.
+// Pour ajouter un article, ajoutez un objet à articlesRaw (sans id).
+// L'id est assigné automatiquement ; le slug doit rester unique.
 // ============================================================
 
-export const articles = [
+const articlesRaw = [
   {
-    id: 1,
     slug: "photos-professionnelles-chalet",
     filtre: "Photographie",
     tag: "Photographie",
@@ -97,7 +96,6 @@ export const articles = [
     `,
   },
   {
-    id: 2,
     slug: "visibilite-cle-chalet-rentable",
     filtre: "Marketing",
     tag: "SEO · Marketing",
@@ -169,7 +167,6 @@ export const articles = [
     `,
   },
   {
-    id: 3,
     slug: "glamping-luxe-gaspesie-yourte",
     filtre: "Découvertes",
     tag: "Découvertes",
@@ -239,7 +236,6 @@ export const articles = [
     `,
   },
   {
-    id: 4,
     slug: "15-pieges-eviter-location-chalet",
     filtre: "Astuces",
     tag: "Astuces",
@@ -304,7 +300,6 @@ export const articles = [
     `,
   },
   {
-    id: 5,
     slug: "noel-au-chalet-guide-decoration",
     filtre: "Décoration",
     tag: "À LA UNE · DÉCORATION",
@@ -365,7 +360,6 @@ export const articles = [
     `,
   },
   {
-    id: 6,
     slug: "fabricants-chalets-quebecois-liste",
     filtre: "Construction",
     tag: "Construction",
@@ -447,7 +441,6 @@ export const articles = [
     `,
   },
   {
-    id: 7,
     slug: "instagram-promouvoir-son-chalet",
     filtre: "Marketing",
     tag: "Marketing",
@@ -525,7 +518,6 @@ export const articles = [
     `,
   },
   {
-    id: 10,
     slug: "5-astuces-augmenter-reservations-chalet-locatif",
     filtre: "Astuces",
     tag: "Astuces · Investissement",
@@ -580,7 +572,6 @@ export const articles = [
     `,
   },
   {
-    id: 8,
     slug: "concevoir-chalet-reve-ova-design",
     filtre: "Partenaires",
     tag: "Partenaire · OVA Design",
@@ -631,7 +622,6 @@ export const articles = [
     `,
   },
   {
-    id: 9,
     slug: "domaine-vita-laurentides",
     filtre: "Partenaires",
     tag: "Invité · Domaine VITA",
@@ -709,6 +699,36 @@ export const articles = [
     `,
   },
 ];
+
+/** Assigne un id séquentiel et valide l'unicité des slugs. */
+function prepareArticles(raw) {
+  const seenSlugs = new Set();
+
+  return raw.map((article, index) => {
+    const { id: _manualId, ...rest } = article;
+    const slug = rest.slug?.trim();
+
+    if (!slug) {
+      throw new Error(
+        `[articles.js] Article sans slug à la position ${index + 1} (« ${rest.titre ?? "sans titre"} »).`
+      );
+    }
+    if (seenSlugs.has(slug)) {
+      throw new Error(`[articles.js] Slug en double : « ${slug} ».`);
+    }
+    seenSlugs.add(slug);
+
+    if (_manualId != null && process.env.NODE_ENV !== "production") {
+      console.warn(
+        `[articles.js] L'id manuel (${_manualId}) de « ${slug} » est ignoré — id auto : ${index + 1}.`
+      );
+    }
+
+    return { ...rest, slug, id: index + 1 };
+  });
+}
+
+export const articles = prepareArticles(articlesRaw);
 
 // Filtres dérivés des catégories présentes (l'ordre suit la maquette).
 export const filtresBlogue = [

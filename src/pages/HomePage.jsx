@@ -250,7 +250,7 @@ export default function HomePage() {
         </div>
         <div className="journal-grid">
           {articles.slice(0, 3).map((art) => (
-            <Link className="article" key={art.id} to={`/blogue/${art.slug}`}>
+            <Link className="article" key={art.slug} to={`/blogue/${art.slug}`}>
               <div className="article-img" style={{ backgroundImage: `url('${art.image}')` }} />
               <div className="article-body">
                 <div className="article-cat">{art.categorie}</div>
