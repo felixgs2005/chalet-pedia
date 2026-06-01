@@ -3666,3 +3666,374 @@ a {
     grid-template-columns: 1fr;
   }
 }
+
+/* ============ CHALETS À VENDRE ============ */
+.cp-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  background: #1f4d3a;
+  color: #ffffff;
+  border-radius: 6px;
+  margin-right: 7px;
+  vertical-align: -6px;
+  flex-shrink: 0;
+  box-shadow: 0 2px 6px rgba(31, 77, 58, 0.18);
+  transition: transform 0.15s ease, background 0.15s ease;
+}
+.cp-icon svg {
+  display: block;
+}
+a:hover .cp-icon,
+button:hover .cp-icon {
+  transform: scale(1.08);
+  background: #2a6b50;
+}
+
+.page-hero {
+  padding: 64px 32px 40px;
+  background: #f8f5ee;
+  text-align: center;
+}
+.page-kicker {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.22em;
+  color: #1f4d3a;
+  margin-bottom: 12px;
+  text-transform: uppercase;
+}
+.page-title {
+  font-family: "Archivo Black", sans-serif;
+  font-size: 52px;
+  line-height: 0.98;
+  letter-spacing: -0.025em;
+  color: #0f0f0f;
+  text-transform: uppercase;
+  margin-bottom: 16px;
+}
+.page-sub {
+  font-size: 16px;
+  color: #4a4a48;
+  max-width: 520px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+.listings-section {
+  padding: 48px 32px;
+  max-width: 1280px;
+  margin: 0 auto;
+}
+.listings-count {
+  font-size: 13px;
+  color: #9a9a98;
+  margin-bottom: 22px;
+}
+.listings-count strong {
+  color: #0f0f0f;
+}
+.listings-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 22px;
+}
+.listing-card {
+  border-radius: 14px;
+  overflow: hidden;
+  border: 0.5px solid rgba(0, 0, 0, 0.08);
+  text-decoration: none;
+  color: inherit;
+  transition: transform 0.2s, box-shadow 0.2s;
+  background: #ffffff;
+  display: flex;
+  flex-direction: column;
+}
+.listing-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 14px 36px rgba(15, 15, 15, 0.1);
+}
+.listing-img {
+  aspect-ratio: 4/3;
+  background-position: center;
+  background-size: cover;
+  position: relative;
+}
+.listing-badge {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  background: #0f0f0f;
+  color: #ffffff;
+  padding: 5px 12px;
+  border-radius: 4px;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.22em;
+}
+.listing-body {
+  padding: 20px 22px 22px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+.listing-name {
+  font-family: "Archivo Black", sans-serif;
+  font-size: 16px;
+  line-height: 1.15;
+  letter-spacing: -0.015em;
+  margin-bottom: 6px;
+  text-transform: uppercase;
+  color: #0f0f0f;
+}
+.listing-location {
+  font-size: 12.5px;
+  color: #1f4d3a;
+  font-weight: 600;
+  margin-bottom: 14px;
+}
+.listing-features {
+  display: flex;
+  gap: 12px;
+  font-size: 12px;
+  color: #4a4a48;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+}
+.listing-features span {
+  display: inline-flex;
+  align-items: center;
+}
+.listing-footer {
+  padding-top: 14px;
+  border-top: 0.5px solid #ebe7de;
+  margin-top: auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+.listing-price-label {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: #9a9a98;
+  text-transform: uppercase;
+  display: block;
+  margin-bottom: 2px;
+}
+.listing-price {
+  font-family: "Archivo Black", sans-serif;
+  font-size: 18px;
+  letter-spacing: -0.02em;
+  color: #1f4d3a;
+}
+.listing-cta {
+  font-size: 12px;
+  font-weight: 600;
+  color: #1f4d3a;
+}
+
+/* Fiche à vendre */
+.listing-header {
+  padding: 24px 32px 28px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 32px;
+}
+.badge-vente {
+  display: inline-block;
+  background: #0f0f0f;
+  color: #ffffff;
+  padding: 5px 12px;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.22em;
+  margin-bottom: 14px;
+}
+.listing-title {
+  font-family: "Archivo Black", sans-serif;
+  font-size: 38px;
+  line-height: 1.05;
+  letter-spacing: -0.025em;
+  text-transform: uppercase;
+  color: #0f0f0f;
+  margin-bottom: 10px;
+  max-width: 720px;
+}
+.vente-detail .listing-location {
+  font-size: 15px;
+  color: #4a4a48;
+  font-weight: 400;
+  display: flex;
+  align-items: center;
+}
+.listing-actions {
+  display: flex;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.annonce-id {
+  font-size: 12px;
+  color: #9a9a98;
+  padding: 8px 14px;
+  background: #fafaf6;
+  border-radius: 6px;
+  display: inline-block;
+  margin-bottom: 20px;
+}
+.annonce-id strong {
+  color: #0f0f0f;
+  font-weight: 700;
+}
+
+.feature-block {
+  background: #fafaf6;
+  border: 1px solid #ebe7de;
+  border-radius: 14px;
+  padding: 24px 28px;
+  margin-bottom: 20px;
+}
+.feature-block-title {
+  font-family: "Archivo Black", sans-serif;
+  font-size: 15px;
+  letter-spacing: -0.01em;
+  color: #0f0f0f;
+  text-transform: uppercase;
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.feature-block-icon {
+  width: 32px;
+  height: 32px;
+  background: #1f4d3a;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  color: #ffffff;
+  flex-shrink: 0;
+}
+.feature-block ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.feature-block li {
+  padding: 6px 0 6px 24px;
+  position: relative;
+  font-size: 14.5px;
+  color: #2a2a2a;
+  line-height: 1.6;
+}
+.feature-block li::before {
+  content: "✓";
+  position: absolute;
+  left: 0;
+  top: 6px;
+  color: #1f4d3a;
+  font-weight: 700;
+}
+
+.price-card {
+  background: #ffffff;
+  border: 1px solid rgba(15, 15, 15, 0.1);
+  border-radius: 14px;
+  padding: 28px 24px;
+  position: sticky;
+  top: 24px;
+  box-shadow: 0 12px 32px rgba(15, 15, 15, 0.06);
+}
+.price-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #1f4d3a;
+  margin-bottom: 8px;
+}
+.price-amount {
+  font-family: "Archivo Black", sans-serif;
+  font-size: 38px;
+  letter-spacing: -0.02em;
+  color: #0f0f0f;
+  margin-bottom: 4px;
+  line-height: 1;
+}
+.price-note {
+  font-size: 12px;
+  color: #9a9a98;
+  margin-bottom: 22px;
+}
+.price-features {
+  background: #f8f5ee;
+  border-radius: 10px;
+  padding: 16px 18px;
+  margin-bottom: 20px;
+}
+.price-features-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 7px 0;
+  font-size: 13px;
+  color: #2a2a2a;
+}
+.price-features-row strong {
+  color: #0f0f0f;
+  font-weight: 700;
+}
+.price-cta {
+  background: #1f4d3a;
+  color: #ffffff;
+  padding: 14px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 700;
+  text-align: center;
+  cursor: pointer;
+  border: none;
+  font-family: inherit;
+  width: 100%;
+  box-shadow: 0 6px 18px rgba(31, 77, 58, 0.28);
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+.price-cta:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 24px rgba(31, 77, 58, 0.35);
+}
+.price-secondary {
+  background: transparent;
+  color: #1f4d3a;
+  padding: 12px;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 600;
+  text-align: center;
+  cursor: pointer;
+  border: 1.5px solid #1f4d3a;
+  font-family: inherit;
+  margin-top: 8px;
+  width: 100%;
+}
+.price-secondary:hover {
+  background: #f8f5ee;
+}
+
+@media (max-width: 768px) {
+  .listings-grid {
+    grid-template-columns: 1fr;
+  }
+  .page-title {
+    font-size: 36px;
+  }
+  .listing-title {
+    font-size: 28px;
+  }
+}
