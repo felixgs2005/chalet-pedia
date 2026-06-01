@@ -3,11 +3,21 @@ import { useState, useMemo, useEffect } from "react";
 import { Link, useParams, useNavigate } from "react-router-dom";
 import { chalets } from "../data/chalets";
 import {
-  getRegionKeyFromPageSlug,
   getRegionConfig,
-  getPageSlugFromRegionKey,
   REGION_NAV_ITEMS,
 } from "../data/listingRegions";
+import {
+  getExperienceConfig,
+  EXPERIENCE_NAV_ITEMS,
+} from "../data/listingExperiences";
+import {
+  parseListingPageSlug,
+  getPageSlugFromListing,
+} from "../data/listingPageSlug";
+import {
+  chaletHasFeature,
+  EMPTY_FEATURES_STATE,
+} from "../utils/chaletFeatures";
 import ChaletCard from "../components/ChaletCard";
 
 const ACTIVITY_OPTIONS = [
@@ -15,17 +25,43 @@ const ACTIVITY_OPTIONS = [
   { key: "ski", label: "Ski" },
 ];
 
+const SIDEBAR_FEATURE_OPTIONS = [
+  { key: "animaux", label: "Animaux permis 🐾" },
+  { key: "bordEau", label: "Bord de l'eau 🌊" },
+  { key: "boise", label: "Secteur boisé 🌳" },
+  { key: "plage", label: "Plage ⛱️" },
+  { key: "spa", label: "Spa extérieur ♨️" },
+  { key: "foyer", label: "Foyer intérieur/extérieur 🔥" },
+  { key: "famille", label: "Famille 👨‍👩‍👧‍👦" },
+  { key: "couples", label: "Pour les couples 💞" },
+  { key: "poker", label: "Table de poker 🃏" },
+  { key: "billard", label: "Billard 🎱" },
+];
+
+function featuresFromExperienceKey(experienceKey) {
+  const base = { ...EMPTY_FEATURES_STATE };
+  const exp = getExperienceConfig(experienceKey);
+  if (exp) base[exp.featureKey] = true;
+  return base;
+}
+
 export default function ALouer() {
   const { pageSlug } = useParams();
   const navigate = useNavigate();
-  const parsedRegionKey = getRegionKeyFromPageSlug(pageSlug);
-  const isInvalidSlug = Boolean(pageSlug && parsedRegionKey === null);
-  const regionKey = parsedRegionKey ?? "all";
+
+  const parsed = parseListingPageSlug(pageSlug);
+  const isInvalidSlug = Boolean(pageSlug && !parsed.valid);
+  const regionKey = parsed.valid ? parsed.regionKey : "all";
+  const experienceKey = parsed.valid ? parsed.experienceKey : null;
+
   const regionConfig = getRegionConfig(regionKey);
+  const experienceConfig = getExperienceConfig(experienceKey);
+  const pageConfig = experienceConfig || regionConfig;
 
   const [searchQuery, setSearchQuery] = useState("");
   const [locationQuery, setLocationQuery] = useState("");
-  const [category, setCategory] = useState(regionKey);
+  const [regionCategory, setRegionCategory] = useState(regionKey);
+  const [experienceCategory, setExperienceCategory] = useState(experienceKey || "all");
 
   const [minPrice, setMinPrice] = useState("");
   const [maxPrice, setMaxPrice] = useState("");
@@ -40,21 +76,14 @@ export default function ALouer() {
     ski: false,
   });
 
-  const [features, setFeatures] = useState({
-    animaux: false,
-    bordEau: false,
-    boise: false,
-    poker: false,
-    billard: false,
-    spa: false,
-    foyer: false,
-    handicape: false,
-    couples: false,
-    plage: false,
-    famille: false,
-  });
+  const [features, setFeatures] = useState(() => featuresFromExperienceKey(experienceKey));
 
   const [sortOption, setSortOption] = useState("date");
+
+  const urlFeatureBaseline = useMemo(
+    () => featuresFromExperienceKey(experienceKey),
+    [experienceKey]
+  );
 
   const handleFeatureChange = (name) => {
     setFeatures((prev) => ({ ...prev, [name]: !prev[name] }));
@@ -65,11 +94,18 @@ export default function ALouer() {
   };
 
   useEffect(() => {
-    const key = getRegionKeyFromPageSlug(pageSlug);
-    if (key === null) return;
-    setCategory(key);
-    document.title = getRegionConfig(key).documentTitle;
+    const next = parseListingPageSlug(pageSlug);
+    if (!next.valid) return;
+    setRegionCategory(next.regionKey);
+    setExperienceCategory(next.experienceKey || "all");
+    setFeatures(featuresFromExperienceKey(next.experienceKey));
+    const config = getExperienceConfig(next.experienceKey) || getRegionConfig(next.regionKey);
+    document.title = config.documentTitle;
   }, [pageSlug]);
+
+  const hasExtraFeatureFilters = Object.keys(features).some(
+    (key) => features[key] !== urlFeatureBaseline[key]
+  );
 
   const hasActiveFilters =
     searchQuery ||
@@ -80,7 +116,7 @@ export default function ALouer() {
     chambres ||
     sallesDeBain ||
     rabaisOnly ||
-    Object.values(features).some(Boolean) ||
+    hasExtraFeatureFilters ||
     Object.values(activities).some(Boolean);
 
   const handleResetFilters = () => {
@@ -93,36 +129,36 @@ export default function ALouer() {
     setSallesDeBain("");
     setRabaisOnly(false);
     setActivities({ peche: false, ski: false });
-    setFeatures({
-      animaux: false,
-      bordEau: false,
-      boise: false,
-      poker: false,
-      billard: false,
-      spa: false,
-      foyer: false,
-      handicape: false,
-      couples: false,
-      plage: false,
-      famille: false,
-    });
+    setFeatures({ ...EMPTY_FEATURES_STATE });
     setSortOption("date");
     setShowMap(false);
-
-    navigate(`/chalets/${getPageSlugFromRegionKey(category)}/`);
+    navigate("/chalets/chalet-a-louer/");
   };
 
   const navigateToRegion = (key) => {
-    setCategory(key);
-    navigate(`/chalets/${getPageSlugFromRegionKey(key)}/`);
+    setRegionCategory(key);
+    setExperienceCategory("all");
+    setFeatures({ ...EMPTY_FEATURES_STATE });
+    navigate(`/chalets/${getPageSlugFromListing(key, null)}/`);
+  };
+
+  const navigateToExperience = (key) => {
+    setExperienceCategory(key);
+    setRegionCategory("all");
+    const expKey = key === "all" ? null : key;
+    setFeatures(featuresFromExperienceKey(expKey));
+    navigate(`/chalets/${getPageSlugFromListing("all", expKey)}/`);
   };
 
   const filteredChalets = useMemo(() => {
-    const matchRegion = getRegionConfig(category).match;
+    const matchRegion = getRegionConfig(regionCategory).match;
+    const matchExperience = experienceKey
+      ? getExperienceConfig(experienceKey).match
+      : () => true;
 
     return chalets
       .filter((chalet) => {
-        if (!matchRegion(chalet)) return false;
+        if (!matchRegion(chalet) || !matchExperience(chalet)) return false;
 
         if (searchQuery.trim() !== "") {
           const query = searchQuery.toLowerCase();
@@ -166,23 +202,9 @@ export default function ALouer() {
           }
         }
 
-        const chaletFeatures = chalet.caracteristiques || [];
-        const hasFeature = (keywords) =>
-          chaletFeatures.some((f) =>
-            keywords.some((kw) => f.toLowerCase().includes(kw))
-          );
-
-        if (features.animaux && !hasFeature(["animaux", "pet"])) return false;
-        if (features.bordEau && !hasFeature(["eau", "mer", "lac", "fjord", "plage"])) return false;
-        if (features.boise && !hasFeature(["boisé", "nature", "forêt"])) return false;
-        if (features.poker && !hasFeature(["poker"])) return false;
-        if (features.billard && !hasFeature(["billard"])) return false;
-        if (features.spa && !hasFeature(["spa", "sauna"])) return false;
-        if (features.foyer && !hasFeature(["foyer"])) return false;
-        if (features.handicape && !hasFeature(["handicap", "accessible"])) return false;
-        if (features.couples && !hasFeature(["romantique", "couple"])) return false;
-        if (features.plage && !hasFeature(["plage"])) return false;
-        if (features.famille && !hasFeature(["famille", "groupe"])) return false;
+        for (const { key } of SIDEBAR_FEATURE_OPTIONS) {
+          if (features[key] && !chaletHasFeature(chalet, key)) return false;
+        }
 
         return true;
       })
@@ -212,7 +234,8 @@ export default function ALouer() {
         return parseDate(b.dateAjout) - parseDate(a.dateAjout);
       });
   }, [
-    category,
+    regionCategory,
+    experienceKey,
     searchQuery,
     locationQuery,
     minPrice,
@@ -240,19 +263,22 @@ export default function ALouer() {
     );
   }
 
+  const breadcrumbLeaf =
+    experienceConfig?.breadcrumb || (regionKey !== "all" ? regionConfig.breadcrumb : null);
+
   return (
     <div className="listing-page">
       <nav className="breadcrumb" style={{ background: "#fff", padding: "18px 36px 0" }}>
         <Link to="/">Accueil</Link>
         <span className="separator"> / </span>
-        {regionKey === "all" ? (
-          <span style={{ color: "#1A1A1A" }}>Chalets à louer</span>
-        ) : (
+        {breadcrumbLeaf ? (
           <>
             <Link to="/chalets/chalet-a-louer/">Chalets à louer</Link>
             <span className="separator"> / </span>
-            <span style={{ color: "#1A1A1A" }}>{regionConfig.breadcrumb}</span>
+            <span style={{ color: "#1A1A1A" }}>{breadcrumbLeaf}</span>
           </>
+        ) : (
+          <span style={{ color: "#1A1A1A" }}>Chalets à louer</span>
         )}
       </nav>
 
@@ -265,16 +291,16 @@ export default function ALouer() {
                   <div className="hp-listing-category__item-count">
                     {filteredChalets.length} annonce{filteredChalets.length !== 1 ? "s" : ""}
                   </div>
-                  <h1 className="hp-listing-category__name">{regionConfig.title}</h1>
+                  <h1 className="hp-listing-category__name">{pageConfig.title}</h1>
                   <p className="hp-listing-category__description">
-                    {regionKey === "laurentides" ? (
+                    {regionKey === "laurentides" && !experienceKey ? (
                       <>
                         {regionConfig.description} Parcourez nos annonces de{" "}
                         <strong>chalets avec spa</strong>, <strong>chalets au bord de l&apos;eau</strong> ou encore de{" "}
                         <strong>chalet A-Frame</strong> en pleine nature.
                       </>
                     ) : (
-                      regionConfig.description
+                      pageConfig.description
                     )}
                   </p>
                 </div>
@@ -323,7 +349,7 @@ export default function ALouer() {
 
               <div className="filter-section">
                 <label className="filter-label">Région du Québec</label>
-                {regionConfig.categoryLabel && (
+                {regionConfig.categoryLabel && !experienceKey && (
                   <p className="listing-category-path">
                     Chalets à louer
                     <span className="listing-category-path__sep"> › </span>
@@ -335,10 +361,33 @@ export default function ALouer() {
                     <label key={cat.key} className="radio-container">
                       <input
                         type="radio"
-                        name="category"
-                        value={cat.key}
-                        checked={category === cat.key}
+                        name="region"
+                        checked={regionCategory === cat.key}
                         onChange={() => navigateToRegion(cat.key)}
+                      />
+                      <span>{cat.label}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+
+              <div className="filter-section">
+                <label className="filter-label">Par expérience</label>
+                {experienceConfig?.categoryLabel && (
+                  <p className="listing-category-path">
+                    Chalets à louer
+                    <span className="listing-category-path__sep"> › </span>
+                    {experienceConfig.categoryLabel}
+                  </p>
+                )}
+                <div className="category-radios">
+                  {EXPERIENCE_NAV_ITEMS.map((cat) => (
+                    <label key={cat.key} className="radio-container">
+                      <input
+                        type="radio"
+                        name="experience"
+                        checked={experienceCategory === cat.key}
+                        onChange={() => navigateToExperience(cat.key)}
                       />
                       <span>{cat.label}</span>
                     </label>
@@ -428,18 +477,7 @@ export default function ALouer() {
               <div className="filter-section">
                 <label className="filter-label">Caractéristiques</label>
                 <div className="checkbox-list">
-                  {[
-                    { key: "animaux", label: "Animaux permis 🐾" },
-                    { key: "bordEau", label: "Bord de l'eau 🌊" },
-                    { key: "boise", label: "Secteur boisé 🌳" },
-                    { key: "plage", label: "Plage ⛱️" },
-                    { key: "spa", label: "Spa extérieur ♨️" },
-                    { key: "foyer", label: "Foyer intérieur/extérieur 🔥" },
-                    { key: "famille", label: "Famille 👨‍👩‍👧‍👦" },
-                    { key: "couples", label: "Pour les couples 💞" },
-                    { key: "poker", label: "Table de poker 🃏" },
-                    { key: "billard", label: "Billard 🎱" },
-                  ].map((feat) => (
+                  {SIDEBAR_FEATURE_OPTIONS.map((feat) => (
                     <label key={feat.key} className="checkbox-container">
                       <input
                         type="checkbox"
