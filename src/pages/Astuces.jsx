@@ -31,7 +31,7 @@ export default function Astuces() {
             <div className="articles-grid astuces-grid">
               {articles.map((a) => (
                 <Link
-                  key={a.id}
+                  key={a.slug}
                   to={`/academie/astuces/${a.slug}`}
                   className="article-card astuce-card"
                 >

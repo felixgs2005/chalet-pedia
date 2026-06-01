@@ -94,7 +94,7 @@ export default function ArticlePage() {
           <div className="related-grid">
             {similaires.map((a) => (
               <Link
-                key={a.id}
+                key={a.slug}
                 to={fromAstuces ? `/academie/astuces/${a.slug}` : `/blogue/${a.slug}`}
                 className="related-card"
               >

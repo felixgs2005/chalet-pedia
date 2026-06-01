@@ -525,7 +525,7 @@ export const articles = [
     `,
   },
   {
-    id: 9,
+    id: 10,
     slug: "5-astuces-augmenter-reservations-chalet-locatif",
     filtre: "Astuces",
     tag: "Astuces · Investissement",
