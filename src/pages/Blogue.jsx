@@ -9,19 +9,27 @@
 import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import {
+  articles,
   filtresBlogue,
   getFeaturedArticle,
   getArticlesNonFeatured,
 } from "../data/articles";
+import { isAstuceSlug } from "../data/astuces";
+
+function articleCorrespondAuFiltre(article, filtre) {
+  if (article.filtre === filtre) return true;
+  if (filtre === "Astuces" && isAstuceSlug(article.slug)) return true;
+  return false;
+}
 
 export default function Blogue() {
   const [filtreActif, setFiltreActif] = useState("Tous les articles");
   const featured = getFeaturedArticle();
 
   const articlesAffiches = useMemo(() => {
-    const liste = getArticlesNonFeatured();
-    if (filtreActif === "Tous les articles") return liste;
-    return liste.filter((a) => a.filtre === filtreActif);
+    if (filtreActif === "Tous les articles") return getArticlesNonFeatured();
+    // Inclut les articles « à la une » s'ils correspondent au filtre (ex. Noël dans Astuces).
+    return articles.filter((a) => articleCorrespondAuFiltre(a, filtreActif));
   }, [filtreActif]);
 
   return (
