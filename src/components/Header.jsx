@@ -1,10 +1,13 @@
 // src/components/Header.jsx
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
+import { LISTING_EXPERIENCES } from "../data/listingExperiences";
+import { LISTING_PREFIX } from "../data/listingPageSlug";
+
+const HEADER_EXPERIENCE_KEYS = ["animaux", "bordEau", "spa", "boise"];
 
 export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
-  const navigate = useNavigate();
 
   return (
     <header className="header">
@@ -27,15 +30,34 @@ export default function Header() {
           </span>
           <div className="submenu">
             <div className="submenu-label">Par Région</div>
-            <Link to="/chalets/chalet-a-louer/">Toutes les régions</Link>
-            <Link to="/chalets/chalets-a-louer-laurentides/">Laurentides</Link>
-            <Link to="/chalets/chalets-a-louer-gaspesie/">Gaspésie</Link>
-            <Link to="/chalets/chalets-a-louer-saguenay-lac-saint-jean/">Saguenay-Lac-Saint-Jean</Link>
+            <Link to="/chalets/chalet-a-louer/" onClick={() => setMenuOpen(false)}>
+              Toutes les régions
+            </Link>
+            <Link to="/chalets/chalets-a-louer-laurentides/" onClick={() => setMenuOpen(false)}>
+              Laurentides
+            </Link>
+            <Link to="/chalets/chalets-a-louer-gaspesie/" onClick={() => setMenuOpen(false)}>
+              Gaspésie
+            </Link>
+            <Link
+              to="/chalets/chalets-a-louer-saguenay-lac-saint-jean/"
+              onClick={() => setMenuOpen(false)}
+            >
+              Saguenay-Lac-Saint-Jean
+            </Link>
             <div className="submenu-label" style={{ marginTop: 8 }}>Par Expérience</div>
-            <a href="#animaux">🐕 Animaux permis</a>
-            <a href="#eau">💦 Bord de l'eau</a>
-            <a href="#spa">♨ Avec spa</a>
-            <a href="#foret">🌲 Secteur boisé</a>
+            {HEADER_EXPERIENCE_KEYS.map((key) => {
+              const exp = LISTING_EXPERIENCES[key];
+              return (
+                <Link
+                  key={key}
+                  to={`/chalets/${LISTING_PREFIX}${exp.slug}/`}
+                  onClick={() => setMenuOpen(false)}
+                >
+                  {exp.menuIcon} {exp.menuLabel}
+                </Link>
+              );
+            })}
           </div>
         </div>
 

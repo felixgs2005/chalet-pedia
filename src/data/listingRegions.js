@@ -1,5 +1,7 @@
 // Configuration des pages de listing par région (alignée sur chaletpedia.com)
 
+const REGIONAL_PREFIX = "chalets-a-louer-";
+
 export const LISTING_REGIONS = {
   all: {
     key: "all",
@@ -61,26 +63,24 @@ export const REGION_NAV_ITEMS = [
   { key: "saguenay", label: "Saguenay-Lac-Saint-Jean" },
 ];
 
-const REGIONAL_PREFIX = "chalets-a-louer-";
-
 export function getRegionKeyFromSlug(slug) {
   if (!slug) return "all";
   const entry = Object.values(LISTING_REGIONS).find((r) => r.slug === slug);
   return entry?.key ?? "all";
 }
 
-/** Parse /chalets/chalets-a-louer-laurentides/ → "laurentides". Returns null if invalid slug. */
+/** @deprecated Utiliser parseListingPageSlug depuis listingPageSlug.js */
 export function getRegionKeyFromPageSlug(pageSlug) {
   if (!pageSlug || pageSlug === "chalet-a-louer") return "all";
   if (!pageSlug.startsWith(REGIONAL_PREFIX)) return null;
-  const regionSlug = pageSlug.slice(REGIONAL_PREFIX.length).replace(/\/$/, "");
-  const entry = Object.values(LISTING_REGIONS).find((r) => r.slug === regionSlug);
+  const suffix = pageSlug.slice(REGIONAL_PREFIX.length).replace(/\/$/, "");
+  const entry = Object.values(LISTING_REGIONS).find((r) => r.slug === suffix);
   return entry?.key ?? null;
 }
 
 export function getPageSlugFromRegionKey(key) {
+  if (!key || key === "all") return "chalet-a-louer";
   const config = getRegionConfig(key);
-  if (key === "all") return "chalet-a-louer";
   if (!config.slug) return "chalet-a-louer";
   return `${REGIONAL_PREFIX}${config.slug}`;
 }
