@@ -2,7 +2,8 @@
 import { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import ChaletCard from "../components/ChaletCard";
-import { chalets, articles } from "../data/chalets";
+import { chalets } from "../data/chalets";
+import { articles } from "../data/articles";
 
 // --- FAQ Data ---
 const faqLocataires = [
