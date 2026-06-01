@@ -35,6 +35,7 @@ export const ventes = [
     features: [
       {
         titre: "Une vue à couper le souffle",
+        icon: "fa-water",
         items: [
           "Fenestration abondante pour une immersion visuelle sur le lac",
           "Vaste terrasse couverte sur deux étages",
@@ -44,6 +45,7 @@ export const ventes = [
       },
       {
         titre: "Trois suites somptueuses",
+        icon: "fa-bed",
         items: [
           "3 chambres avec walk-in et salle de bain attenante",
           "Finitions haut de gamme et design épuré",
@@ -52,6 +54,7 @@ export const ventes = [
       },
       {
         titre: "Cuisine digne d'un chef",
+        icon: "fa-utensils",
         items: [
           "Comptoir en quartz de plus de 7 pieds",
           "Refroidisseur à vin encastré",
@@ -61,6 +64,7 @@ export const ventes = [
       },
       {
         titre: "Ambiance & technologie",
+        icon: "fa-cogs",
         items: [
           "Salon avec foyer au propane et vue directe sur le lac",
           "Système de domotique complet : éclairage, chauffage, stores, son",
@@ -69,6 +73,7 @@ export const ventes = [
       },
       {
         titre: "Un investissement dans le calme et le prestige",
+        icon: "fa-hand-holding-usd",
         items: [
           "Emplacement exceptionnel sur les rives du Grand Lac Saint-François",
           "Qualité de construction irréprochable",

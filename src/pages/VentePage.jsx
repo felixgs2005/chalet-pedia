@@ -148,7 +148,9 @@ export default function VentePage() {
             {vente.features.map((f) => (
               <div className="feature-block" key={f.titre}>
                 <div className="feature-block-title">
-                  <span className="feature-block-icon" />
+                  <span className="feature-block-icon">
+                    {f.icon && <i className={`fas ${f.icon}`} aria-hidden="true" />}
+                  </span>
                   {f.titre}
                 </div>
                 <ul>
