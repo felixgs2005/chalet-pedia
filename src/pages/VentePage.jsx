@@ -1,0 +1,186 @@
+// src/pages/VentePage.jsx
+// ============================================================
+// FICHE CHALET À VENDRE — DYNAMIQUE
+// S'adapte au slug de l'URL (/chalets/chalets-a-vendre/:slug)
+// à partir de src/data/ventes.js.
+// ============================================================
+
+import { useState } from "react";
+import { useParams, Link } from "react-router-dom";
+import { getVenteBySlug } from "../data/ventes";
+import { PinIcon, CameraIcon } from "../components/Icons";
+
+export default function VentePage() {
+  const { slug } = useParams();
+  const vente = getVenteBySlug(slug);
+  const [galleryOpen, setGalleryOpen] = useState(false);
+  const [activeImg, setActiveImg] = useState(0);
+
+  if (!vente) {
+    return (
+      <div style={{ padding: "80px 32px", textAlign: "center" }}>
+        <div className="kicker">ERREUR 404</div>
+        <h1 className="section-title" style={{ fontSize: 48, marginTop: 12, marginBottom: 20 }}>
+          Propriété introuvable
+        </h1>
+        <p style={{ color: "#4A4A48", marginBottom: 32 }}>
+          Cette propriété n'existe pas ou a été retirée.
+        </p>
+        <Link to="/chalets/chalets-a-vendre/" className="btn-annoncer">
+          ← Retour aux chalets à vendre
+        </Link>
+      </div>
+    );
+  }
+
+  const stats = [
+    { num: vente.chambres, label: "Chambres" },
+    { num: vente.sdb, label: "Salles de bain" },
+    { num: vente.garages, label: "Garages" },
+    { num: vente.etages, label: "Étages" },
+  ];
+
+  return (
+    <div className="vente-detail">
+      <nav className="breadcrumb">
+        <Link to="/">Accueil</Link>
+        <span className="separator">›</span>
+        <Link to="/chalets/chalets-a-vendre/">Chalets à vendre</Link>
+        <span className="separator">›</span>
+        <span style={{ color: "#1A1A1A" }}>{vente.nom}</span>
+      </nav>
+
+      <div className="listing-header">
+        <div>
+          <div className="badge-vente">{vente.regionBadge} · À VENDRE</div>
+          <h1 className="listing-title">{vente.titre}</h1>
+          <div className="listing-location">
+            <PinIcon /> {vente.localisation}
+          </div>
+        </div>
+        <div className="listing-actions">
+          <button className="action-btn">↗ Partager</button>
+          <button className="action-btn">♡ Favoris</button>
+        </div>
+      </div>
+
+      <div className="gallery" onClick={() => setGalleryOpen(true)} style={{ cursor: "pointer" }}>
+        {vente.images.slice(0, 4).map((img, i) => (
+          <div
+            key={i}
+            className={`gallery-img${i === 0 ? " main" : ""}`}
+            style={{ backgroundImage: `url('${img}')` }}
+          >
+            {i === 3 && vente.images.length >= 4 && (
+              <div className="gallery-more">
+                <CameraIcon /> Voir toutes les photos
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
+
+      {galleryOpen && (
+        <div
+          onClick={() => setGalleryOpen(false)}
+          style={{
+            position: "fixed", inset: 0, background: "rgba(0,0,0,0.92)", zIndex: 999,
+            display: "flex", alignItems: "center", justifyContent: "center", flexDirection: "column",
+          }}
+        >
+          <button
+            style={{ position: "absolute", top: 20, right: 24, background: "none", border: "none", color: "#fff", fontSize: 28, cursor: "pointer" }}
+            onClick={() => setGalleryOpen(false)}
+          >
+            ✕
+          </button>
+          <img
+            src={vente.images[activeImg]}
+            alt={vente.nom}
+            style={{ maxHeight: "80vh", maxWidth: "90vw", objectFit: "contain", borderRadius: 8 }}
+            onClick={(e) => e.stopPropagation()}
+          />
+          <div style={{ display: "flex", gap: 10, marginTop: 18 }} onClick={(e) => e.stopPropagation()}>
+            {vente.images.map((img, i) => (
+              <img
+                key={i}
+                src={img}
+                alt=""
+                onClick={() => setActiveImg(i)}
+                style={{
+                  width: 64, height: 48, objectFit: "cover", borderRadius: 6, cursor: "pointer",
+                  border: i === activeImg ? "2px solid #7FA890" : "2px solid transparent",
+                  opacity: i === activeImg ? 1 : 0.6,
+                }}
+              />
+            ))}
+          </div>
+        </div>
+      )}
+
+      <div className="body-grid">
+        <div>
+          <div className="info-block">
+            <div className="annonce-id">
+              Annonce <strong>#{vente.annonceId}</strong>
+            </div>
+            <div className="info-stats">
+              {stats.map((s) => (
+                <div className="info-stat" key={s.label}>
+                  <div className="info-stat-num">{s.num}</div>
+                  <div className="info-stat-label">{s.label}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="info-block">
+            <div className="info-label">Description</div>
+            <h2 className="info-title">{vente.descriptionTitre}</h2>
+            <p
+              className="info-text"
+              dangerouslySetInnerHTML={{ __html: vente.descriptionHtml }}
+            />
+          </div>
+
+          <div className="info-block">
+            <div className="info-label">Caractéristiques exceptionnelles</div>
+            {vente.features.map((f) => (
+              <div className="feature-block" key={f.titre}>
+                <div className="feature-block-title">
+                  <span className="feature-block-icon" />
+                  {f.titre}
+                </div>
+                <ul>
+                  {f.items.map((item) => (
+                    <li key={item} dangerouslySetInnerHTML={{ __html: item }} />
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div>
+          <div className="price-card">
+            <div className="price-label">Prix demandé</div>
+            <div className="price-amount">{vente.prix}</div>
+            <div className="price-note">Vente directe par le propriétaire</div>
+
+            <div className="price-features">
+              {vente.priceFeatures.map((pf) => (
+                <div className="price-features-row" key={pf.label}>
+                  <span>{pf.label}</span>
+                  <strong>{pf.value}</strong>
+                </div>
+              ))}
+            </div>
+
+            <button className="price-cta">Organiser une visite privée →</button>
+            <button className="price-secondary">Demander la brochure</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
