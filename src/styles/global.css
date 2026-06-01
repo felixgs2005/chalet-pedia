@@ -4047,3 +4047,617 @@ button:hover .cp-icon {
     font-size: 28px;
   }
 }
+/* ============ PAGE SERVICES (ACCUEIL) ============ */
+.services-page {
+  background: #f8f5ee;
+  min-height: 100vh;
+}
+
+/* HERO */
+.services-hero {
+  position: relative;
+  overflow: hidden;
+  padding-bottom: 64px;
+  background: linear-gradient(135deg, #2f6f50 0%, #1e5740 48%, #123f2e 100%);
+}
+
+.services-hero__glow {
+  position: absolute;
+  top: -120px;
+  right: -80px;
+  width: 420px;
+  height: 420px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(151, 199, 168, 0.45) 0%, rgba(151, 199, 168, 0) 70%);
+  pointer-events: none;
+  animation: servicesGlow 9s ease-in-out infinite alternate;
+}
+
+/* Variante hero avec photo en fond */
+.services-hero--photo {
+  background-color: transparent;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  padding-top: 84px;
+  padding-bottom: 96px;
+  animation: servicesKenBurns 18s ease-in-out infinite alternate;
+}
+
+.listing-hero.services-hero--photo,
+.services-hero.services-hero--photo {
+  background-color: transparent;
+}
+
+@keyframes servicesKenBurns {
+  from {
+    background-size: 105%;
+    background-position: center 48%;
+  }
+  to {
+    background-size: 118%;
+    background-position: center 52%;
+  }
+}
+
+/* Voile sombre (neutre) pour lisibilité du texte */
+.services-hero__scrim {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    100deg,
+    rgba(10, 10, 10, 0.72) 0%,
+    rgba(10, 10, 10, 0.5) 38%,
+    rgba(10, 10, 10, 0.12) 72%,
+    rgba(10, 10, 10, 0) 100%
+  );
+}
+
+.services-hero--photo .header-hero__content {
+  position: relative;
+  z-index: 1;
+  text-shadow: 0 2px 16px rgba(10, 10, 10, 0.55);
+}
+
+.services-hero__kicker {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: #cfe3d7;
+  margin-bottom: 14px;
+  padding: 6px 14px;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 100px;
+  backdrop-filter: blur(4px);
+  text-shadow: none;
+}
+
+.services-hero--photo .hp-listing-category__name {
+  font-size: 56px;
+}
+
+.services-hero--photo .hp-listing-category__description {
+  opacity: 0.95;
+}
+
+@keyframes servicesGlow {
+  from {
+    transform: translate(0, 0) scale(1);
+    opacity: 0.8;
+  }
+  to {
+    transform: translate(-30px, 24px) scale(1.15);
+    opacity: 1;
+  }
+}
+
+.services-hero .header-hero__content,
+.services-hero .container {
+  position: relative;
+  z-index: 1;
+}
+
+/* Reveal helper (entrée fondu + montée) */
+.services-reveal {
+  opacity: 0;
+  transform: translateY(16px);
+  animation: servicesRevealIn 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.services-reveal--d1 {
+  animation-delay: 0.1s;
+}
+
+.services-reveal--d2 {
+  animation-delay: 0.2s;
+}
+
+@keyframes servicesRevealIn {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* CONTENU */
+.services-content {
+  padding: 0 36px 90px;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.services-search-wrap {
+  margin: -32px auto 44px;
+  position: relative;
+  z-index: 10;
+}
+
+.services-search-bar {
+  max-width: 900px;
+  grid-template-columns: 1.3fr 1.3fr auto;
+  transition: box-shadow 0.25s ease, transform 0.25s ease;
+}
+
+.services-search-bar--solo {
+  max-width: 720px;
+  grid-template-columns: 1fr auto;
+}
+
+.services-search-bar:focus-within {
+  box-shadow: 0 16px 44px rgba(31, 77, 58, 0.18);
+  transform: translateY(-2px);
+}
+
+.services-results-count {
+  font-size: 13px;
+  font-weight: 600;
+  color: #4a4a48;
+  margin-bottom: 22px;
+  text-align: center;
+}
+
+/* GRILLE DE CARTES */
+.services-categories-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 26px;
+}
+
+.services-category-card {
+  position: relative;
+  background: #ffffff;
+  border-radius: 18px;
+  overflow: hidden;
+  border: 0.5px solid rgba(0, 0, 0, 0.08);
+  text-decoration: none;
+  color: inherit;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 12px 32px rgba(15, 15, 15, 0.05);
+  transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.3s ease;
+  opacity: 0;
+  transform: translateY(28px);
+  animation: servicesCardIn 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  animation-delay: calc(var(--card-index, 0) * 0.09s + 0.15s);
+}
+
+@keyframes servicesCardIn {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.services-category-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 22px 50px rgba(15, 15, 15, 0.14);
+}
+
+.services-category-card__media {
+  position: relative;
+  overflow: hidden;
+}
+
+.services-category-card__img {
+  aspect-ratio: 16 / 10;
+  background-position: center;
+  background-size: cover;
+  transition: transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.services-category-card:hover .services-category-card__img {
+  transform: scale(1.07);
+}
+
+.services-category-card__media::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to top,
+    rgba(15, 15, 15, 0.5) 0%,
+    rgba(15, 15, 15, 0) 55%
+  );
+}
+
+.services-category-card__count {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  z-index: 2;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #1f4d3a;
+  background: rgba(255, 255, 255, 0.92);
+  padding: 6px 12px;
+  border-radius: 100px;
+  backdrop-filter: blur(4px);
+}
+
+.services-category-card__body {
+  padding: 24px 26px 26px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.services-category-card__tag {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: #7fa890;
+  margin-bottom: 10px;
+}
+
+.services-category-card__title {
+  font-family: "Archivo Black", sans-serif;
+  font-size: 24px;
+  line-height: 1.12;
+  letter-spacing: -0.02em;
+  color: #0f0f0f;
+  margin-bottom: 10px;
+}
+
+.services-category-card__desc {
+  font-size: 14px;
+  color: #4a4a48;
+  line-height: 1.65;
+  margin: 0 0 18px;
+  flex: 1;
+}
+
+.services-category-card__link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  color: #1f4d3a;
+  margin-top: auto;
+}
+
+.services-category-card__arrow {
+  display: inline-block;
+  transition: transform 0.25s ease;
+}
+
+.services-category-card:hover .services-category-card__arrow {
+  transform: translateX(6px);
+}
+
+/* ÉTAT VIDE */
+.services-empty {
+  background: #ffffff;
+  border: 1px solid rgba(15, 15, 15, 0.08);
+  border-radius: 18px;
+  padding: 56px 32px;
+  text-align: center;
+  box-shadow: 0 12px 32px rgba(15, 15, 15, 0.05);
+  animation: servicesRevealIn 0.5s ease forwards;
+}
+
+.services-empty h3 {
+  font-family: "Archivo Black", sans-serif;
+  font-size: 20px;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+  color: #0f0f0f;
+}
+
+.services-empty p {
+  font-size: 14px;
+  color: #6a6a68;
+  line-height: 1.6;
+  max-width: 480px;
+  margin: 0 auto 24px;
+}
+
+.services-empty__link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  font-weight: 700;
+  color: #1f4d3a;
+  text-decoration: none;
+}
+
+.services-empty__link:hover {
+  text-decoration: underline;
+}
+
+.services-empty__link--btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  padding: 0;
+}
+
+/* BANDE CTA */
+.services-cta {
+  margin-top: 64px;
+  border-radius: 22px;
+  background: linear-gradient(135deg, #0f0f0f 0%, #1f4d3a 130%);
+  color: #f8f5ee;
+  text-align: center;
+  padding: 56px 32px;
+  opacity: 0;
+  transform: translateY(28px);
+  transition: opacity 0.7s ease, transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.services-cta.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.services-cta__inner {
+  max-width: 620px;
+  margin: 0 auto;
+}
+
+.services-cta__kicker {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: #7fa890;
+  margin-bottom: 14px;
+}
+
+.services-cta__title {
+  font-family: "Archivo Black", sans-serif;
+  font-size: 30px;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+  margin-bottom: 14px;
+}
+
+.services-cta__sub {
+  font-size: 15px;
+  line-height: 1.6;
+  opacity: 0.8;
+  margin-bottom: 28px;
+}
+
+.services-cta__btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #7fa890;
+  color: #0f2a1f;
+  padding: 15px 30px;
+  border-radius: 100px;
+  font-size: 14px;
+  font-weight: 700;
+  text-decoration: none;
+  transition: background 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.services-cta__btn:hover {
+  background: #ffffff;
+  transform: translateY(-2px);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.25);
+}
+
+/* RESPONSIVE */
+@media (max-width: 900px) {
+  .services-categories-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .services-search-bar {
+    grid-template-columns: 1fr;
+    border-radius: 18px;
+    padding: 12px;
+    gap: 10px;
+  }
+
+  .services-content {
+    padding: 0 18px 64px;
+  }
+
+  .services-hero {
+    padding: 48px 18px 52px;
+  }
+
+  .services-hero .hp-listing-category__name {
+    font-size: 32px;
+  }
+
+  .services-hero--photo {
+    padding: 64px 18px 64px;
+  }
+
+  .services-hero--photo .hp-listing-category__name {
+    font-size: 38px;
+  }
+
+  .services-cta__title {
+    font-size: 24px;
+  }
+}
+
+@media (max-width: 768px) {
+  .services-search-wrap {
+    margin-top: -24px;
+  }
+}
+
+/* PAGE CATÉGORIE — SOUS-NAV */
+.services-subnav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+  margin: 28px 0 6px;
+}
+
+.services-subnav__link {
+  background: #ffffff;
+  border: 1px solid #e8e4da;
+  padding: 9px 18px;
+  border-radius: 100px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #1a1a1a;
+  text-decoration: none;
+  transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease,
+    transform 0.15s ease;
+}
+
+.services-subnav__link:hover {
+  background: #f8f5ee;
+  border-color: #1f4d3a;
+  color: #1f4d3a;
+  transform: translateY(-1px);
+}
+
+.services-subnav__link.is-active {
+  background: #1f4d3a;
+  color: #ffffff;
+  border-color: #1f4d3a;
+}
+
+/* PAGE CATÉGORIE — GRILLE D'ANNONCES */
+.service-listings-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 26px;
+}
+
+.service-listing-card {
+  background: #ffffff;
+  border-radius: 18px;
+  overflow: hidden;
+  border: 0.5px solid rgba(0, 0, 0, 0.08);
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 12px 32px rgba(15, 15, 15, 0.05);
+  transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.3s ease;
+  opacity: 0;
+  transform: translateY(28px);
+  animation: servicesCardIn 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  animation-delay: calc(var(--card-index, 0) * 0.09s + 0.15s);
+}
+
+.service-listing-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 22px 50px rgba(15, 15, 15, 0.14);
+}
+
+.service-listing-card__img {
+  position: relative;
+  aspect-ratio: 16 / 10;
+  background-position: center;
+  background-size: cover;
+}
+
+.service-listing-card__img::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to top,
+    rgba(15, 15, 15, 0.45) 0%,
+    rgba(15, 15, 15, 0) 55%
+  );
+}
+
+.service-listing-card__badge {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  z-index: 2;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #ffffff;
+  background: rgba(31, 77, 58, 0.92);
+  padding: 6px 12px;
+  border-radius: 100px;
+  backdrop-filter: blur(4px);
+}
+
+.service-listing-card__body {
+  padding: 22px 24px 24px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.service-listing-card__title {
+  font-family: "Archivo Black", sans-serif;
+  font-size: 18px;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  color: #0f0f0f;
+  margin-bottom: 12px;
+}
+
+.service-listing-card__loc {
+  font-size: 13px;
+  color: #4a4a48;
+  margin-bottom: 14px;
+}
+
+.service-listing-card__date {
+  font-size: 12px;
+  color: #9a9a98;
+  margin-top: auto;
+  padding-top: 14px;
+  border-top: 0.5px solid #ebe7de;
+}
+
+@media (max-width: 900px) {
+  .service-listings-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Accessibilité : réduire les animations si demandé */
+@media (prefers-reduced-motion: reduce) {
+  .services-reveal,
+  .services-category-card,
+  .service-listing-card,
+  .services-empty,
+  .services-cta,
+  .services-hero--photo,
+  .services-hero__glow {
+    animation: none !important;
+    transition: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
