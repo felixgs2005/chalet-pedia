@@ -17,6 +17,7 @@ const regionsDispo = Array.from(new Set(ventes.map((v) => v.region)));
 
 export default function Vente() {
   const [searchQuery, setSearchQuery] = useState("");
+  const [locationQuery, setLocationQuery] = useState("");
   const [region, setRegion] = useState("all");
   const [minPrice, setMinPrice] = useState("");
   const [maxPrice, setMaxPrice] = useState("");
@@ -25,6 +26,7 @@ export default function Vente() {
 
   const handleResetFilters = () => {
     setSearchQuery("");
+    setLocationQuery("");
     setRegion("all");
     setMinPrice("");
     setMaxPrice("");
@@ -33,7 +35,7 @@ export default function Vente() {
   };
 
   const hasActiveFilters =
-    searchQuery || region !== "all" || minPrice || maxPrice || sallesDeBain;
+    searchQuery || locationQuery || region !== "all" || minPrice || maxPrice || sallesDeBain;
 
   const filteredVentes = useMemo(() => {
     return ventes
@@ -50,6 +52,11 @@ export default function Vente() {
           if (!matches) return false;
         }
 
+        if (locationQuery.trim() !== "") {
+          const loc = locationQuery.toLowerCase();
+          if (!v.localisation?.toLowerCase().includes(loc)) return false;
+        }
+
         const prix = prixToNumber(v.prix);
         if (minPrice && prix < parseFloat(minPrice)) return false;
         if (maxPrice && prix > parseFloat(maxPrice)) return false;
@@ -64,40 +71,54 @@ export default function Vente() {
         if (sortOption === "price_desc") return prixToNumber(b.prix) - prixToNumber(a.prix);
         return 0;
       });
-  }, [searchQuery, region, minPrice, maxPrice, sallesDeBain, sortOption]);
+  }, [searchQuery, locationQuery, region, minPrice, maxPrice, sallesDeBain, sortOption]);
 
   return (
     <div className="vente-page listing-page">
-      <section className="page-hero">
-        <div className="page-kicker">CHALETS À VENDRE · QUÉBEC</div>
-        <h1 className="page-title">
-          Trouvez votre futur
-          <br />
-          chez-vous en nature.
-        </h1>
-        <p className="page-sub">
-          Propriétés exceptionnelles à travers les régions du Québec, vendues directement par leurs
-          propriétaires.
-        </p>
+      <section className="header-hero listing-hero">
+        <div className="header-hero__content">
+          <div className="container">
+            <div className="hp-listing-category__header">
+              <div className="hp-listing-category__item-count">
+                {ventes.length} annonce{ventes.length !== 1 ? "s" : ""}
+              </div>
+              <h1 className="hp-listing-category__name">Chalets à vendre</h1>
+              <p className="hp-listing-category__description">
+                Propriétés exceptionnelles à travers les régions du Québec, vendues directement par
+                leurs propriétaires.
+              </p>
+            </div>
+          </div>
+        </div>
       </section>
 
       <div className="site-content" style={{ padding: "0 36px 52px" }}>
-        {/* BARRE DE RECHERCHE */}
         <div
           className="listing-search-wrap"
-          style={{ margin: "32px auto", position: "relative", zIndex: 10 }}
+          style={{ margin: "-24px auto 32px", position: "relative", zIndex: 10 }}
         >
           <div className="search-bar">
-            <div className="search-field" style={{ borderRight: "none" }}>
+            <div className="search-field">
               <div className="label">Rechercher</div>
               <input
                 type="text"
-                placeholder="Nom, région ou mot-clé..."
+                placeholder="Ville, région ou mot-clé..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
             </div>
-            <button className="search-btn">⌕ Filtrer</button>
+            <div className="search-field" style={{ borderRight: "none" }}>
+              <div className="label">Localisation</div>
+              <input
+                type="text"
+                placeholder="Où cherchez-vous ?"
+                value={locationQuery}
+                onChange={(e) => setLocationQuery(e.target.value)}
+              />
+            </div>
+            <button type="button" className="search-btn">
+              ⌕ Filtrer
+            </button>
           </div>
         </div>
 
