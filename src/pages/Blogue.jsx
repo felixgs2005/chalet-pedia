@@ -1,113 +1,121 @@
 // src/pages/Blogue.jsx
-// Page Blogue — statique pour l'instant (contenu repris de la maquette).
+// ============================================================
+// PAGE BLOGUE — DYNAMIQUE
+// La liste, l'article à la une et les filtres sont générés à
+// partir de src/data/articles.js. Pour ajouter un article,
+// modifiez uniquement ce fichier de données.
+// ============================================================
 
-const filtres = [
-  "Tous les articles",
-  "Photographie",
-  "SEO & visibilité",
-  "Avis clients",
-  "Décoration",
-  "Tarification",
-];
-
-const articlesBlogue = [
-  {
-    img: "https://images.unsplash.com/photo-1554995207-c18c203602cb?w=1200&q=85&auto=format&fit=crop",
-    cat: "PHOTOGRAPHIE · 8 MIN LECTURE",
-    titre: "Pourquoi les photos professionnelles sont essentielles pour un chalet",
-    excerpt:
-      "Les annonces avec photos professionnelles génèrent 60 % de réservations supplémentaires. Voici pourquoi — et comment investir intelligemment dans votre image.",
-    date: "9 janvier 2026 · par ChaletPedia",
-  },
-  {
-    img: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=1200&q=85&auto=format&fit=crop",
-    cat: "STRATÉGIE SEO · 10 MIN LECTURE",
-    titre: "Pourquoi la visibilité est la clé pour un chalet rentable",
-    excerpt:
-      "Un chalet bien décoré ne suffit pas. Sans visibilité Google et plateformes, il reste invisible. Le levier SEO local expliqué simplement.",
-    date: "9 janvier 2026 · par ChaletPedia",
-  },
-];
+import { useMemo, useState } from "react";
+import { Link } from "react-router-dom";
+import {
+  filtresBlogue,
+  getFeaturedArticle,
+  getArticlesNonFeatured,
+} from "../data/articles";
 
 export default function Blogue() {
+  const [filtreActif, setFiltreActif] = useState("Tous les articles");
+  const featured = getFeaturedArticle();
+
+  const articlesAffiches = useMemo(() => {
+    const liste = getArticlesNonFeatured();
+    if (filtreActif === "Tous les articles") return liste;
+    return liste.filter((a) => a.filtre === filtreActif);
+  }, [filtreActif]);
+
   return (
     <div className="blogue-page">
-      <section className="blogue-hero">
-        <div className="blogue-kicker">LE JOURNAL · CHALETPEDIA</div>
-        <h1 className="blogue-title">
+      <section className="blog-hero">
+        <div className="blog-hero-kicker">LE JOURNAL · CHALETPEDIA</div>
+        <h1 className="blog-hero-title">
           Pour louer mieux,
           <br />
           pour louer plus.
         </h1>
-        <p className="blogue-sub">
-          Conseils, stratégies et études de cas pour transformer votre chalet en machine à
-          réservations.
+        <p className="blog-hero-sub">
+          Conseils, stratégies, études de cas et inspirations pour les propriétaires et locataires
+          de chalets au Québec.
         </p>
       </section>
 
-      <div className="blogue-filters">
-        {filtres.map((f, i) => (
-          <a
+      <div className="blog-filters">
+        {filtresBlogue.map((f) => (
+          <button
             key={f}
-            href="#"
-            onClick={(e) => e.preventDefault()}
-            className={`filter-chip${i === 0 ? " active" : ""}`}
+            type="button"
+            onClick={() => setFiltreActif(f)}
+            className={`filter-pill${filtreActif === f ? " active" : ""}`}
           >
             {f}
-          </a>
+          </button>
         ))}
       </div>
 
-      <div className="articles-section">
-        <div className="articles-grid">
-          {articlesBlogue.map((a) => (
-            <a
-              key={a.titre}
-              href="#"
-              onClick={(e) => e.preventDefault()}
-              className="article-card"
-            >
-              <div
-                className="article-img"
-                style={{ backgroundImage: `url('${a.img}')` }}
-              />
-              <div className="article-body">
-                <div className="article-cat">{a.cat}</div>
-                <div className="article-title">{a.titre}</div>
-                <div className="article-excerpt">{a.excerpt}</div>
-                <div className="article-date">{a.date}</div>
+      {filtreActif === "Tous les articles" && featured && (
+        <div className="featured-section">
+          <Link to={`/blogue/${featured.slug}`} className="featured-article">
+            <div
+              className="featured-img"
+              style={{ backgroundImage: `url('${featured.heroImage}')` }}
+            />
+            <div className="featured-body">
+              <div className="featured-badge">{featured.tag}</div>
+              <h2 className="featured-title">{featured.titre}</h2>
+              <p className="featured-excerpt">{featured.excerpt}</p>
+              <div className="featured-meta">
+                par <strong>{featured.auteur}</strong> · {featured.dateFull} · {featured.lectureFull}
               </div>
-            </a>
-          ))}
+              <div className="featured-cta">Lire l'article →</div>
+            </div>
+          </Link>
         </div>
+      )}
 
-        <div className="load-more">
-          <button className="load-more-btn">
-            Voir plus d'articles <span>↓</span>
-          </button>
-          <div className="load-more-note">
-            D'autres articles sont en préparation. Abonnez-vous à l'infolettre pour ne rien
-            manquer.
+      <div className="articles-section">
+        <div className="articles-section-head">
+          <h2 className="articles-section-title">
+            {filtreActif === "Tous les articles" ? "Tous les articles" : filtreActif}
+          </h2>
+          <div className="articles-section-count">
+            {articlesAffiches.length} article{articlesAffiches.length > 1 ? "s" : ""}
           </div>
         </div>
-      </div>
 
-      <section className="newsletter">
-        <div className="newsletter-kicker">INFOLETTRE · CHALETPEDIA</div>
-        <h2 className="newsletter-title">
-          Recevez nos conseils,
-          <br />
-          directement dans votre boîte.
-        </h2>
-        <p className="newsletter-sub">
-          Un courriel par mois, sans spam. Astuces de propriétaires, études de cas, tendances du
-          marché.
-        </p>
-        <form className="newsletter-form" onSubmit={(e) => e.preventDefault()}>
-          <input type="email" placeholder="votre@courriel.com" required />
-          <button type="submit">S'abonner</button>
-        </form>
-      </section>
+        {articlesAffiches.length > 0 ? (
+          <div className="articles-grid">
+            {articlesAffiches.map((a) => (
+              <Link key={a.id} to={`/blogue/${a.slug}`} className="article-card">
+                <div className="article-img" style={{ backgroundImage: `url('${a.image}')` }}>
+                  <div className={`article-cat-tag${a.partner ? " partner-tag" : ""}`}>{a.tag}</div>
+                </div>
+                <div className="article-body">
+                  <div className="article-title">{a.titre}</div>
+                  <p className="article-excerpt">{a.excerpt}</p>
+                  <div className="article-meta">
+                    <span>{a.date}</span>
+                    <span className="article-meta-time">{a.lecture}</span>
+                  </div>
+                </div>
+              </Link>
+            ))}
+          </div>
+        ) : (
+          <p className="articles-empty">Aucun article dans cette catégorie pour le moment.</p>
+        )}
+
+        <div className="newsletter-cta">
+          <h3>Recevez nos meilleurs articles</h3>
+          <p>
+            Une fois par mois, conseils, études de cas et inspirations pour louer mieux et louer
+            plus. Pas de spam, désinscription en un clic.
+          </p>
+          <form className="newsletter-form" onSubmit={(e) => e.preventDefault()}>
+            <input type="email" placeholder="votre@email.com" required />
+            <button type="submit">S'abonner →</button>
+          </form>
+        </div>
+      </div>
     </div>
   );
 }
