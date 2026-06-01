@@ -25,6 +25,28 @@ const ACTIVITY_OPTIONS = [
   { key: "ski", label: "Ski" },
 ];
 
+const TAG_OPTIONS = [
+  { key: "luxe", label: "Luxe" },
+  { key: "romantique", label: "Romantique" },
+  { key: "famille", label: "Famille" },
+  { key: "groupe", label: "Groupe" },
+  { key: "nature", label: "Nature" },
+  { key: "eau", label: "Eau & Lac" },
+  { key: "montagne", label: "Montagne" },
+  { key: "rustique", label: "Rustique" },
+  { key: "scandinave", label: "Scandinave" },
+  { key: "couple", label: "Couple" },
+  { key: "activités", label: "Activités" },
+  { key: "glamping", label: "Glamping" },
+  { key: "unique", label: "Unique" },
+  { key: "hiver", label: "Hiver" },
+  { key: "été", label: "Été" },
+  { key: "touristique", label: "Touristique" },
+  { key: "vue", label: "Vue" },
+  { key: "mer", label: "Mer" },
+  { key: "jeux", label: "Jeux" },
+];
+
 const SIDEBAR_FEATURE_OPTIONS = [
   { key: "animaux", label: "Animaux permis 🐾" },
   { key: "bordEau", label: "Bord de l'eau 🌊" },
@@ -76,6 +98,28 @@ export default function ALouer() {
     ski: false,
   });
 
+  const [tags, setTags] = useState({
+    luxe: false,
+    romantique: false,
+    famille: false,
+    groupe: false,
+    nature: false,
+    eau: false,
+    montagne: false,
+    rustique: false,
+    scandinave: false,
+    couple: false,
+    activités: false,
+    glamping: false,
+    unique: false,
+    hiver: false,
+    été: false,
+    touristique: false,
+    vue: false,
+    mer: false,
+    jeux: false,
+  });
+
   const [features, setFeatures] = useState(() => featuresFromExperienceKey(experienceKey));
 
   const [sortOption, setSortOption] = useState("date");
@@ -91,6 +135,10 @@ export default function ALouer() {
 
   const handleActivityChange = (name) => {
     setActivities((prev) => ({ ...prev, [name]: !prev[name] }));
+  };
+
+  const handleTagChange = (name) => {
+    setTags((prev) => ({ ...prev, [name]: !prev[name] }));
   };
 
   useEffect(() => {
@@ -117,7 +165,8 @@ export default function ALouer() {
     sallesDeBain ||
     rabaisOnly ||
     hasExtraFeatureFilters ||
-    Object.values(activities).some(Boolean);
+    Object.values(activities).some(Boolean) ||
+    Object.values(tags).some(Boolean);
 
   const handleResetFilters = () => {
     setSearchQuery("");
@@ -129,6 +178,27 @@ export default function ALouer() {
     setSallesDeBain("");
     setRabaisOnly(false);
     setActivities({ peche: false, ski: false });
+    setTags({
+      luxe: false,
+      romantique: false,
+      famille: false,
+      groupe: false,
+      nature: false,
+      eau: false,
+      montagne: false,
+      rustique: false,
+      scandinave: false,
+      couple: false,
+      activités: false,
+      glamping: false,
+      unique: false,
+      hiver: false,
+      été: false,
+      touristique: false,
+      vue: false,
+      mer: false,
+      jeux: false,
+    });
     setFeatures({ ...EMPTY_FEATURES_STATE });
     setSortOption("date");
     setShowMap(false);
@@ -202,6 +272,16 @@ export default function ALouer() {
           }
         }
 
+        const activeTags = Object.entries(tags)
+          .filter(([, on]) => on)
+          .map(([key]) => key);
+        if (activeTags.length > 0) {
+          const chaletTags = chalet.tags || [];
+          if (!activeTags.every((t) => chaletTags.includes(t))) {
+            return false;
+          }
+        }
+
         for (const { key } of SIDEBAR_FEATURE_OPTIONS) {
           if (features[key] && !chaletHasFeature(chalet, key)) return false;
         }
@@ -245,6 +325,7 @@ export default function ALouer() {
     sallesDeBain,
     rabaisOnly,
     activities,
+    tags,
     features,
     sortOption,
   ]);
@@ -475,7 +556,7 @@ export default function ALouer() {
               </div>
 
               <div className="filter-section">
-                <label className="filter-label">Caractéristiques</label>
+                <label className="filter-label">Commodités</label>
                 <div className="checkbox-list">
                   {SIDEBAR_FEATURE_OPTIONS.map((feat) => (
                     <label key={feat.key} className="checkbox-container">
@@ -485,6 +566,22 @@ export default function ALouer() {
                         onChange={() => handleFeatureChange(feat.key)}
                       />
                       <span>{feat.label}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+
+              <div className="filter-section">
+                <label className="filter-label">Tags</label>
+                <div className="checkbox-list">
+                  {TAG_OPTIONS.map((tag) => (
+                    <label key={tag.key} className="checkbox-container">
+                      <input
+                        type="checkbox"
+                        checked={tags[tag.key]}
+                        onChange={() => handleTagChange(tag.key)}
+                      />
+                      <span>{tag.label}</span>
                     </label>
                   ))}
                 </div>

@@ -17,6 +17,7 @@ import Decoration from "./pages/Decoration";
 import Entretien from "./pages/Entretien";
 import Multimedia from "./pages/Multimedia";
 import ServiceDetail from "./pages/ServiceDetail";
+import Wikia from "./pages/Wikia";
 import "./styles/global.css";
 
 function Layout({ children }) {
@@ -45,6 +46,7 @@ export default function App() {
           <Route path="/blogue/" element={<Blogue />} />
           <Route path="/blogue/:slug" element={<ArticlePage />} />
           <Route path="/academie/astuces/" element={<Astuces />} />
+          <Route path="/academie/astuces/Wikia" element={<Wikia />} />
           <Route path="/academie/astuces/:slug" element={<ArticlePage />} />
           <Route path="/chalets/services/" element={<AccueilServices />} />
           <Route path="/chalets/construction/" element={<Construction />} />

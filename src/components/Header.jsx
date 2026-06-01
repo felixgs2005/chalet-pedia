@@ -84,7 +84,7 @@ export default function Header() {
               | Astuces
             </Link>
             <a href="#">| Formations</a>
-            <a href="#">| Wikia</a>
+            <Link to="/academie/astuces/Wikia" onClick={() => setMenuOpen(false)}>| Wikia</Link>
           </div>
         </div>
 
