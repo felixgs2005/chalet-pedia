@@ -249,15 +249,15 @@ export default function HomePage() {
           <Link to="/blogue/" className="section-link">Tous les articles →</Link>
         </div>
         <div className="journal-grid">
-          {articles.map((art) => (
-            <div className="article" key={art.id}>
+          {articles.slice(0, 3).map((art) => (
+            <Link className="article" key={art.id} to={`/blogue/${art.slug}`}>
               <div className="article-img" style={{ backgroundImage: `url('${art.image}')` }} />
               <div className="article-body">
                 <div className="article-cat">{art.categorie}</div>
                 <div className="article-title">{art.titre}</div>
                 <div className="article-date">{art.date}</div>
               </div>
-            </div>
+            </Link>
           ))}
         </div>
       </section>

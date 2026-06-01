@@ -572,29 +572,6 @@ export const getChaletById = (id) => chalets.find((c) => c.id === id);
 export const getChaletsByRegion = (region) => chalets.filter((c) => c.region === region);
 export const getChaletsCoups = () => chalets.slice(0, 3);
 
-export const articles = [
-  {
-    id: 1,
-    categorie: "PHOTOGRAPHIE",
-    titre: "Pourquoi les photos pro changent tout",
-    date: "09 janvier 2026",
-    image: "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=600&q=80",
-    slug: "photos-professionnelles-chalet",
-  },
-  {
-    id: 2,
-    categorie: "STRATÉGIE",
-    titre: "Sans visibilité, pas de réservations",
-    date: "09 janvier 2026",
-    image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=600&q=80",
-    slug: "vsibilite-seo-chalets-quebec",
-  },
-  {
-    id: 3,
-    categorie: "GUIDE PRATIQUE",
-    titre: "Créer une fiche Google My Business",
-    date: "05 juin 2025",
-    image: "https://images.unsplash.com/photo-1529148482759-b35b25c5f217?w=600&q=80",
-    slug: "comment-creer-une-fiche-google-my-business-pour-son-chalet-guide-debutant",
-  },
-];
+// Les articles du blogue sont désormais centralisés dans src/data/articles.js.
+// On réexporte ici pour préserver la compatibilité des imports existants.
+export { articles } from "./articles";
