@@ -107,6 +107,7 @@ export const chalets = [
     badge: "LAURENTIDES",
     dateAjout: "septembre 7, 2024",
     isFavori: false,
+    activites: ["peche", "ski"],
     images: [
       "/images/LeRoiDeLaMontageImages/chalets_quebecois_chalets_a_louer_roi_de_la_montagne.webp",
     ],
@@ -132,6 +133,7 @@ export const chalets = [
     badge: "LAURENTIDES",
     dateAjout: "septembre 7, 2024",
     isFavori: false,
+    activites: ["peche", "ski"],
     images: [
       "/images/LeRaconteurImages/chalets_quebecois_chalets_a_louer_raconteur_histoires.webp",
     ],
@@ -475,10 +477,11 @@ export const chalets = [
     invites: 20,
     chambres: 2,
     sdb: 1,
-    prixNuit: null,
+    prixNuit: 100,
     badge: "LAURENTIDES",
     dateAjout: "septembre 7, 2024",
     isFavori: false,
+    activites: ["peche", "ski"],
     images: [
       "/images/MontagnardImages/chalets_quebecois_chalets_a_louer_le_montagnard.webp",
     ],
@@ -500,10 +503,11 @@ export const chalets = [
     invites: 20,
     chambres: 1,
     sdb: 1,
-    prixNuit: null,
+    prixNuit: 1,
     badge: "LAURENTIDES",
     dateAjout: "septembre 7, 2024",
     isFavori: false,
+    activites: ["peche", "ski"],
     images: [
       "/images/LeRocImages/chalets_quebecois_chalets_a_louer_le_roc.webp",
     ],
@@ -529,6 +533,7 @@ export const chalets = [
     badge: "LAURENTIDES",
     dateAjout: "septembre 7, 2024",
     isFavori: false,
+    activites: ["peche", "ski"],
     images: [
       "/images/AinéImages/chalets_quebecois_chalets_a_louer_aine.webp",
     ],
@@ -554,6 +559,7 @@ export const chalets = [
     badge: "LAURENTIDES",
     dateAjout: "septembre 7, 2024",
     isFavori: false,
+    activites: ["peche", "ski"],
     images: [
       "/images/UitimeImage/chalets_quebecois_chalets_a_louer_ultime.webp",
       "/images/UitimeImage/chalets_quebecois_chalets_a_louer_ultime_vue_de_face.webp",
