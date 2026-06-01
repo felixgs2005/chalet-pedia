@@ -25,7 +25,8 @@ export default function App() {
           <Route path="/" element={<HomePage />} />
           <Route path="/chalet/:slug" element={<ChaletPage />} />
           <Route path="/chalets/chalet-a-louer/" element={<ALouer />} />
-          <Route path="/chalets/chalets-a-louer-:regionSlug/" element={<ALouer />} />
+          {/* URLs type chaletpedia.com : /chalets/chalets-a-louer-laurentides/ */}
+          <Route path="/chalets/:pageSlug" element={<ALouer />} />
           <Route
             path="*"
             element={
