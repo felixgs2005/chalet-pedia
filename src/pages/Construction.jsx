@@ -1,19 +1,14 @@
 // src/pages/Construction.jsx
 // Page catégorie "Construction" — reproduit chaletpedia.com/chalets/construction/
 import { useMemo, useState } from "react";
+import { Link } from "react-router-dom";
+import { getCategoryListings } from "../data/services";
 
 const CATEGORIE = "Construction";
+const CATEGORIE_SLUG = "construction";
 const DESCRIPTION = "Services de construction, rénovation et agrandissement de chalets.";
 
-const annonces = [
-  {
-    id: "ova-chalet-design",
-    titre: "OVA Chalet Design - Design de Chalets Privés & Locatifs",
-    localisation: "Québec, Québec, Canada",
-    date: "16 mai 2025",
-    image: "/images/services/construction.webp",
-  },
-];
+const annonces = getCategoryListings(CATEGORIE_SLUG);
 
 export default function Construction() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -111,9 +106,10 @@ export default function Construction() {
         ) : (
           <div className="service-listings-grid">
             {filtered.map((a, i) => (
-              <article
-                key={a.id}
-                className="service-listing-card"
+              <Link
+                key={a.slug}
+                to={`/chalets/${CATEGORIE_SLUG}/${a.slug}`}
+                className="service-listing-card service-listing-card--link"
                 style={{ "--card-index": i }}
               >
                 <div
@@ -127,7 +123,7 @@ export default function Construction() {
                   <div className="service-listing-card__loc">{a.localisation}</div>
                   <div className="service-listing-card__date">Ajouté le {a.date}</div>
                 </div>
-              </article>
+              </Link>
             ))}
           </div>
         )}

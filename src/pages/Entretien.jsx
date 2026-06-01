@@ -1,27 +1,15 @@
 // src/pages/Entretien.jsx
 // Page catégorie "Entretien" — reproduit chaletpedia.com/chalets/entretien/
 import { useMemo, useState } from "react";
+import { Link } from "react-router-dom";
+import { getCategoryListings } from "../data/services";
 
 const CATEGORIE = "Entretien";
+const CATEGORIE_SLUG = "entretien";
 const DESCRIPTION = "Ménage, entretien du terrain, piscine, spa et déneigement.";
 const HERO_IMAGE = "/images/services/entretien.webp";
 
-const annonces = [
-  {
-    id: "mbeauchamp-entretien",
-    titre: "M.Beauchamp | Spécialiste entretien ménager chalet locatif",
-    localisation: "Saint-Donat-de-Montcalm, Lanaudière",
-    date: "10 décembre 2024",
-    image: "/images/services/M.beauchamp.webp",
-  },
-  {
-    id: "jessa-clean",
-    titre: "Jess'a Clean | Service d'entretien ménager",
-    localisation: "Saint-Jean-sur-Richelieu, Montérégie",
-    date: "10 décembre 2024",
-    image: "/images/services/jessa-clean.webp",
-  },
-];
+const annonces = getCategoryListings(CATEGORIE_SLUG);
 
 export default function Entretien() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -119,9 +107,10 @@ export default function Entretien() {
         ) : (
           <div className="service-listings-grid">
             {filtered.map((a, i) => (
-              <article
-                key={a.id}
-                className="service-listing-card"
+              <Link
+                key={a.slug}
+                to={`/chalets/${CATEGORIE_SLUG}/${a.slug}`}
+                className="service-listing-card service-listing-card--link"
                 style={{ "--card-index": i }}
               >
                 <div
@@ -135,7 +124,7 @@ export default function Entretien() {
                   <div className="service-listing-card__loc">{a.localisation}</div>
                   <div className="service-listing-card__date">Ajouté le {a.date}</div>
                 </div>
-              </article>
+              </Link>
             ))}
           </div>
         )}

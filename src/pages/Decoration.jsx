@@ -1,34 +1,15 @@
 // src/pages/Decoration.jsx
 // Page catégorie "Décoration" — reproduit chaletpedia.com/chalets/decoration/
 import { useMemo, useState } from "react";
+import { Link } from "react-router-dom";
+import { getCategoryListings } from "../data/services";
 
 const CATEGORIE = "Décoration";
+const CATEGORIE_SLUG = "decoration";
 const DESCRIPTION = "Mobilier, aménagement et décoration intérieure & extérieure.";
 const HERO_IMAGE = "/images/services/decoration.webp";
 
-const annonces = [
-  {
-    id: "meubles-cle-en-main",
-    titre: "Meubles de chalet clé en main – lot complet à vendre",
-    localisation: "Québec, Canada",
-    date: "3 octobre 2025",
-    image: "/images/services/MeubleDeChalet.webp",
-  },
-  {
-    id: "verbois-meubles",
-    titre: "Verbois - Meubles contemporains fabriqués au Québec",
-    localisation: "Rivière-du-Loup, Québec, Canada",
-    date: "17 janvier 2025",
-    image: "/images/services/Verbois.webp",
-  },
-  {
-    id: "rustik-decorations",
-    titre: "RUSTIK | Décorations en bois pour chalets 🪵",
-    localisation: "Saint-Sauveur, Québec, Canada",
-    date: "28 octobre 2024",
-    image: "/images/services/Rustik.webp",
-  },
-];
+const annonces = getCategoryListings(CATEGORIE_SLUG);
 
 export default function Decoration() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -126,9 +107,10 @@ export default function Decoration() {
         ) : (
           <div className="service-listings-grid">
             {filtered.map((a, i) => (
-              <article
-                key={a.id}
-                className="service-listing-card"
+              <Link
+                key={a.slug}
+                to={`/chalets/${CATEGORIE_SLUG}/${a.slug}`}
+                className="service-listing-card service-listing-card--link"
                 style={{ "--card-index": i }}
               >
                 <div
@@ -142,7 +124,7 @@ export default function Decoration() {
                   <div className="service-listing-card__loc">{a.localisation}</div>
                   <div className="service-listing-card__date">Ajouté le {a.date}</div>
                 </div>
-              </article>
+              </Link>
             ))}
           </div>
         )}

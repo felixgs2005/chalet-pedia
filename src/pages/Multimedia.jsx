@@ -1,20 +1,15 @@
 // src/pages/Multimedia.jsx
 // Page catégorie "Multimédia" — reproduit chaletpedia.com/chalets/multimedia/
 import { useMemo, useState } from "react";
+import { Link } from "react-router-dom";
+import { getCategoryListings } from "../data/services";
 
 const CATEGORIE = "Multimédia";
+const CATEGORIE_SLUG = "multimedia";
 const DESCRIPTION = "Photographie, vidéos et captation par drone pour vos chalets.";
 const HERO_IMAGE = "/images/services/multimedia.webp";
 
-const annonces = [
-  {
-    id: "sylvain-gen-drone",
-    titre: "Photographie Aérienne de Chalet | Sylvain Gen-DRONE",
-    localisation: "Québec, Québec, Canada",
-    date: "5 septembre 2025",
-    image: "/images/services/photographie-aerienne.webp",
-  },
-];
+const annonces = getCategoryListings(CATEGORIE_SLUG);
 
 export default function Multimedia() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -112,9 +107,10 @@ export default function Multimedia() {
         ) : (
           <div className="service-listings-grid">
             {filtered.map((a, i) => (
-              <article
-                key={a.id}
-                className="service-listing-card"
+              <Link
+                key={a.slug}
+                to={`/chalets/${CATEGORIE_SLUG}/${a.slug}`}
+                className="service-listing-card service-listing-card--link"
                 style={{ "--card-index": i }}
               >
                 <div
@@ -128,7 +124,7 @@ export default function Multimedia() {
                   <div className="service-listing-card__loc">{a.localisation}</div>
                   <div className="service-listing-card__date">Ajouté le {a.date}</div>
                 </div>
-              </article>
+              </Link>
             ))}
           </div>
         )}

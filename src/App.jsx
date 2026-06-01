@@ -16,6 +16,7 @@ import Construction from "./pages/Construction";
 import Decoration from "./pages/Decoration";
 import Entretien from "./pages/Entretien";
 import Multimedia from "./pages/Multimedia";
+import ServiceDetail from "./pages/ServiceDetail";
 import "./styles/global.css";
 
 function Layout({ children }) {
@@ -50,6 +51,8 @@ export default function App() {
           <Route path="/chalets/decoration/" element={<Decoration />} />
           <Route path="/chalets/entretien/" element={<Entretien />} />
           <Route path="/chalets/multimedia/" element={<Multimedia />} />
+          {/* Détail d'une annonce de service : /chalets/construction/ova-chalet-design */}
+          <Route path="/chalets/:categorie/:slug" element={<ServiceDetail />} />
           <Route
             path="*"
             element={
