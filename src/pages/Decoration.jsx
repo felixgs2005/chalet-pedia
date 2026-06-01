@@ -98,19 +98,15 @@ export default function Decoration() {
           </div>
         </form>
 
-        <div className="services-toolbar">
-          <span className="services-toolbar__count">
-            Affichage de {count} résultat{count > 1 ? "s" : ""} sur {annonces.length}
-          </span>
-          <div className="services-toolbar__sort">
-            <label htmlFor="sort-decoration">Trier par</label>
-            <select
-              id="sort-decoration"
-              value={sortOption}
-              onChange={(e) => setSortOption(e.target.value)}
-            >
-              <option value="date">Date</option>
-              <option value="title">Titre</option>
+        <div className="listing-topbar services-reveal services-reveal--d2" style={{ marginBottom: 24 }}>
+          <div className="results-count">
+            Affichage de 1-{count} résultat{count > 1 ? "s" : ""} sur {annonces.length}
+          </div>
+          <div className="sort-by">
+            <span>Trier par</span>
+            <select value={sortOption} onChange={(e) => setSortOption(e.target.value)}>
+              <option value="date">Date d'ajout</option>
+              <option value="title">Titre (A-Z)</option>
             </select>
           </div>
         </div>
