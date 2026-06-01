@@ -6,6 +6,7 @@ import HomePage from "./pages/HomePage";
 import ChaletPage from "./pages/ChaletPage";
 import ALouer from "./pages/ALouer";
 import Blogue from "./pages/Blogue";
+import ArticlePage from "./pages/ArticlePage";
 import AuthPage from "./pages/auth";
 import "./styles/global.css";
 
@@ -29,6 +30,7 @@ export default function App() {
           <Route path="/chalet/:slug" element={<ChaletPage />} />
           <Route path="/chalets/chalet-a-louer/" element={<ALouer />} />
           <Route path="/blogue/" element={<Blogue />} />
+          <Route path="/blogue/:slug" element={<ArticlePage />} />
           {/* Ajoutez d'autres routes ici au besoin */}
           <Route
             path="*"
