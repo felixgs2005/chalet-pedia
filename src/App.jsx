@@ -5,6 +5,8 @@ import Footer from "./components/Footer";
 import HomePage from "./pages/HomePage";
 import ChaletPage from "./pages/ChaletPage";
 import ALouer from "./pages/ALouer";
+import Vente from "./pages/Vente";
+import VentePage from "./pages/VentePage";
 import Blogue from "./pages/Blogue";
 import ArticlePage from "./pages/ArticlePage";
 import AuthPage from "./pages/auth";
@@ -29,6 +31,8 @@ export default function App() {
           <Route path="/" element={<HomePage />} />
           <Route path="/chalet/:slug" element={<ChaletPage />} />
           <Route path="/chalets/chalet-a-louer/" element={<ALouer />} />
+          <Route path="/chalets/chalets-a-vendre/" element={<Vente />} />
+          <Route path="/chalets/chalets-a-vendre/:slug" element={<VentePage />} />
           {/* URLs type chaletpedia.com : /chalets/chalets-a-louer-laurentides/ */}
           <Route path="/chalets/:pageSlug" element={<ALouer />} />
           <Route path="/blogue/" element={<Blogue />} />
