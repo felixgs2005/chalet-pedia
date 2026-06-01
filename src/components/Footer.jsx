@@ -28,6 +28,7 @@ export default function Footer() {
         <div>
           <div className="footer-col-title">Ressources</div>
           <Link to="/blogue/" className="footer-link">Le journal</Link>
+          <Link to="/academie/astuces/" className="footer-link">Astuces</Link>
           <a href="/guides/" className="footer-link">Guides pratiques</a>
           <a href="#" className="footer-link">Formations</a>
           <a href="#" className="footer-link">Wiki Chalet</a>

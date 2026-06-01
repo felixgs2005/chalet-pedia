@@ -8,6 +8,7 @@ import ALouer from "./pages/ALouer";
 import Vente from "./pages/Vente";
 import VentePage from "./pages/VentePage";
 import Blogue from "./pages/Blogue";
+import Astuces from "./pages/Astuces";
 import ArticlePage from "./pages/ArticlePage";
 import AuthPage from "./pages/auth";
 import AccueilServices from "./pages/AccueilServices";
@@ -42,12 +43,13 @@ export default function App() {
           <Route path="/chalets/:pageSlug" element={<ALouer />} />
           <Route path="/blogue/" element={<Blogue />} />
           <Route path="/blogue/:slug" element={<ArticlePage />} />
+          <Route path="/academie/astuces/" element={<Astuces />} />
+          <Route path="/academie/astuces/:slug" element={<ArticlePage />} />
           <Route path="/chalets/services/" element={<AccueilServices />} />
           <Route path="/chalets/construction/" element={<Construction />} />
           <Route path="/chalets/decoration/" element={<Decoration />} />
           <Route path="/chalets/entretien/" element={<Entretien />} />
           <Route path="/chalets/multimedia/" element={<Multimedia />} />
-          {/* Ajoutez d'autres routes ici au besoin */}
           <Route
             path="*"
             element={

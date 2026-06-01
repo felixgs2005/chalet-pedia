@@ -3,13 +3,12 @@
 // DONNÉES DYNAMIQUES DU BLOGUE
 // Source de vérité unique pour la page liste (/blogue/) et les
 // pages d'article dynamiques (/blogue/:slug).
-// Pour ajouter un article, ajoutez un objet à ce tableau.
-// Le contenu (contenuHtml) reprend la mise en forme de la maquette.
+// Pour ajouter un article, ajoutez un objet à articlesRaw (sans id).
+// L'id est assigné automatiquement ; le slug doit rester unique.
 // ============================================================
 
-export const articles = [
+const articlesRaw = [
   {
-    id: 1,
     slug: "photos-professionnelles-chalet",
     filtre: "Photographie",
     tag: "Photographie",
@@ -97,7 +96,6 @@ export const articles = [
     `,
   },
   {
-    id: 2,
     slug: "visibilite-cle-chalet-rentable",
     filtre: "Marketing",
     tag: "SEO · Marketing",
@@ -169,7 +167,6 @@ export const articles = [
     `,
   },
   {
-    id: 3,
     slug: "glamping-luxe-gaspesie-yourte",
     filtre: "Découvertes",
     tag: "Découvertes",
@@ -239,7 +236,6 @@ export const articles = [
     `,
   },
   {
-    id: 4,
     slug: "15-pieges-eviter-location-chalet",
     filtre: "Astuces",
     tag: "Astuces",
@@ -304,7 +300,6 @@ export const articles = [
     `,
   },
   {
-    id: 5,
     slug: "noel-au-chalet-guide-decoration",
     filtre: "Décoration",
     tag: "À LA UNE · DÉCORATION",
@@ -365,7 +360,6 @@ export const articles = [
     `,
   },
   {
-    id: 6,
     slug: "fabricants-chalets-quebecois-liste",
     filtre: "Construction",
     tag: "Construction",
@@ -447,7 +441,6 @@ export const articles = [
     `,
   },
   {
-    id: 7,
     slug: "instagram-promouvoir-son-chalet",
     filtre: "Marketing",
     tag: "Marketing",
@@ -525,7 +518,60 @@ export const articles = [
     `,
   },
   {
-    id: 8,
+    slug: "5-astuces-augmenter-reservations-chalet-locatif",
+    filtre: "Astuces",
+    tag: "Astuces · Investissement",
+    categorie: "INVESTISSEMENT",
+    partner: false,
+    featured: false,
+    titre: "5 astuces pour augmenter les réservations de son chalet locatif",
+    excerpt:
+      "Tarification dynamique, photos pro, avis clients et visibilité : cinq leviers concrets pour remplir votre calendrier.",
+    image: "https://images.unsplash.com/photo-1582268611958-ebfd161ef9cf?w=1200&q=85&auto=format&fit=crop",
+    date: "7 septembre 2024",
+    dateFull: "7 septembre 2024",
+    lecture: "7 min",
+    lectureFull: "7 min de lecture",
+    auteur: "ChaletPedia",
+    auteurInitiales: "CP",
+    badge: "INVESTISSEMENT",
+    badgeType: "cat",
+    breadcrumb: "5 astuces réservations",
+    heroImage: "https://images.unsplash.com/photo-1582268611958-ebfd161ef9cf?w=1600&q=90&auto=format&fit=crop",
+    heroAlt: "Chalet locatif avec terrasse et vue sur la nature",
+    heroCaption: "Une annonce optimisée et une expérience client soignée transforment les visites en réservations.",
+    contenuHtml: `
+    <p class="article-lead">Louer un chalet au Québec peut être très rentable, à condition d'optimiser chaque levier : visibilité, confiance et expérience client. Voici cinq astuces éprouvées pour augmenter vos réservations.</p>
+    <div class="step-card">
+      <div class="step-num">ASTUCE 01</div>
+      <h3>Investir dans des photos professionnelles</h3>
+      <p>Les vacanciers décident en quelques secondes. Des photos lumineuses, bien cadrées et cohérentes augmentent le taux de clic et inspirent confiance. Visez 20 à 25 images couvrant chaque pièce, l'extérieur et les attraits (lac, spa, foyer).</p>
+    </div>
+    <div class="step-card">
+      <div class="step-num">ASTUCE 02</div>
+      <h3>Adopter une tarification dynamique</h3>
+      <p>Ajustez vos prix selon la saison, les vacances scolaires et la demande locale. Un tarif trop bas laisse de l'argent sur la table ; un tarif trop haut vide le calendrier. Observez les chalets comparables dans votre secteur.</p>
+    </div>
+    <div class="step-card">
+      <div class="step-num">ASTUCE 03</div>
+      <h3>Collecter et mettre en avant les avis</h3>
+      <p>Les avis authentiques rassurent les nouveaux clients. Envoyez un message de remerciement après le séjour et invitez poliment à laisser un commentaire. Répondez à chaque avis, positif ou négatif.</p>
+    </div>
+    <div class="step-card">
+      <div class="step-num">ASTUCE 04</div>
+      <h3>Optimiser votre fiche pour le référencement</h3>
+      <p>Un titre clair, une description riche en mots-clés (région, équipements, expérience) et des balises ALT sur vos images améliorent votre visibilité sur Google et ChaletPedia.</p>
+    </div>
+    <div class="step-card">
+      <div class="step-num">ASTUCE 05</div>
+      <h3>Offrir une expérience mémorable</h3>
+      <p>Guide d'accueil, recommandations locales, literie confortable et communication rapide : ces détails génèrent des réservations récurrentes et le bouche-à-oreille.</p>
+    </div>
+    <h2>Conclusion</h2>
+    <p>En combinant visibilité, confiance et qualité d'accueil, vous transformez votre chalet en location performante toute l'année. Appliquez ces astuces une par une et mesurez l'impact sur votre calendrier.</p>
+    `,
+  },
+  {
     slug: "concevoir-chalet-reve-ova-design",
     filtre: "Partenaires",
     tag: "Partenaire · OVA Design",
@@ -576,7 +622,6 @@ export const articles = [
     `,
   },
   {
-    id: 9,
     slug: "domaine-vita-laurentides",
     filtre: "Partenaires",
     tag: "Invité · Domaine VITA",
@@ -654,6 +699,36 @@ export const articles = [
     `,
   },
 ];
+
+/** Assigne un id séquentiel et valide l'unicité des slugs. */
+function prepareArticles(raw) {
+  const seenSlugs = new Set();
+
+  return raw.map((article, index) => {
+    const { id: _manualId, ...rest } = article;
+    const slug = rest.slug?.trim();
+
+    if (!slug) {
+      throw new Error(
+        `[articles.js] Article sans slug à la position ${index + 1} (« ${rest.titre ?? "sans titre"} »).`
+      );
+    }
+    if (seenSlugs.has(slug)) {
+      throw new Error(`[articles.js] Slug en double : « ${slug} ».`);
+    }
+    seenSlugs.add(slug);
+
+    if (_manualId != null && process.env.NODE_ENV !== "production") {
+      console.warn(
+        `[articles.js] L'id manuel (${_manualId}) de « ${slug} » est ignoré — id auto : ${index + 1}.`
+      );
+    }
+
+    return { ...rest, slug, id: index + 1 };
+  });
+}
+
+export const articles = prepareArticles(articlesRaw);
 
 // Filtres dérivés des catégories présentes (l'ordre suit la maquette).
 export const filtresBlogue = [

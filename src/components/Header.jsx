@@ -80,7 +80,9 @@ export default function Header() {
             Académie <span className="caret">▾</span>
           </span>
           <div className="submenu">
-            <a href="#">| Astuces</a>
+            <Link to="/academie/astuces/" onClick={() => setMenuOpen(false)}>
+              | Astuces
+            </Link>
             <a href="#">| Formations</a>
             <a href="#">| Wikia</a>
           </div>

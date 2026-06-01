@@ -85,7 +85,7 @@ export default function Blogue() {
         {articlesAffiches.length > 0 ? (
           <div className="articles-grid">
             {articlesAffiches.map((a) => (
-              <Link key={a.id} to={`/blogue/${a.slug}`} className="article-card">
+              <Link key={a.slug} to={`/blogue/${a.slug}`} className="article-card">
                 <div className="article-img" style={{ backgroundImage: `url('${a.image}')` }}>
                   <div className={`article-cat-tag${a.partner ? " partner-tag" : ""}`}>{a.tag}</div>
                 </div>
