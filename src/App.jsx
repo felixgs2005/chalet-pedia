@@ -7,6 +7,8 @@ import ChaletPage from "./pages/ChaletPage";
 import ALouer from "./pages/ALouer";
 import Blogue from "./pages/Blogue";
 import AuthPage from "./pages/auth";
+import AccueilServices from "./pages/AccueilServices";
+import Construction from "./pages/Construction";
 import "./styles/global.css";
 
 function Layout({ children }) {
@@ -29,6 +31,8 @@ export default function App() {
           <Route path="/chalet/:slug" element={<ChaletPage />} />
           <Route path="/chalets/chalet-a-louer/" element={<ALouer />} />
           <Route path="/blogue/" element={<Blogue />} />
+          <Route path="/chalets/services/" element={<AccueilServices />} />
+          <Route path="/chalets/construction/" element={<Construction />} />
           {/* Ajoutez d'autres routes ici au besoin */}
           <Route
             path="*"

@@ -42,11 +42,11 @@ export default function Header() {
         <Link to="/chalets/chalets-a-vendre/">Chalets à vendre</Link>
 
         <div className="nav-item">
-          <span className="nav-link">
+          <Link to="/chalets/services/" className="nav-link" onClick={() => setMenuOpen(false)}>
             Services <span className="caret">▾</span>
-          </span>
+          </Link>
           <div className="submenu">
-            <a href="#">| Construction</a>
+            <Link to="/chalets/construction/" onClick={() => setMenuOpen(false)}>| Construction</Link>
             <a href="#">| Décoration</a>
             <a href="#">| Entretien</a>
             <a href="#">Multimédia</a>
