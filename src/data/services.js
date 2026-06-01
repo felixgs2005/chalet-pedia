@@ -20,6 +20,7 @@ export const serviceCategories = [
     tagline: "Aménager avec style",
     annonceCount: 3,
     image: "/images/services/decoration.webp",
+    href: "/chalets/decoration/",
   },
   {
     slug: "entretien",
@@ -29,6 +30,7 @@ export const serviceCategories = [
     tagline: "Garder impeccable",
     annonceCount: 2,
     image: "/images/services/entretien.webp",
+    href: "/chalets/entretien/",
   },
   {
     slug: "multimedia",
@@ -38,6 +40,7 @@ export const serviceCategories = [
     tagline: "Mettre en valeur",
     annonceCount: 1,
     image: "/images/services/multimedia.webp",
+    href: "/chalets/multimedia/",
   },
 ];
 

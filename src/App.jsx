@@ -9,6 +9,9 @@ import Blogue from "./pages/Blogue";
 import AuthPage from "./pages/auth";
 import AccueilServices from "./pages/AccueilServices";
 import Construction from "./pages/Construction";
+import Decoration from "./pages/Decoration";
+import Entretien from "./pages/Entretien";
+import Multimedia from "./pages/Multimedia";
 import "./styles/global.css";
 
 function Layout({ children }) {
@@ -33,6 +36,9 @@ export default function App() {
           <Route path="/blogue/" element={<Blogue />} />
           <Route path="/chalets/services/" element={<AccueilServices />} />
           <Route path="/chalets/construction/" element={<Construction />} />
+          <Route path="/chalets/decoration/" element={<Decoration />} />
+          <Route path="/chalets/entretien/" element={<Entretien />} />
+          <Route path="/chalets/multimedia/" element={<Multimedia />} />
           {/* Ajoutez d'autres routes ici au besoin */}
           <Route
             path="*"

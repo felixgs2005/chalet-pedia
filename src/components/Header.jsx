@@ -47,9 +47,9 @@ export default function Header() {
           </Link>
           <div className="submenu">
             <Link to="/chalets/construction/" onClick={() => setMenuOpen(false)}>| Construction</Link>
-            <a href="#">| Décoration</a>
-            <a href="#">| Entretien</a>
-            <a href="#">Multimédia</a>
+            <Link to="/chalets/decoration/" onClick={() => setMenuOpen(false)}>| Décoration</Link>
+            <Link to="/chalets/entretien/" onClick={() => setMenuOpen(false)}>| Entretien</Link>
+            <Link to="/chalets/multimedia/" onClick={() => setMenuOpen(false)}>Multimédia</Link>
           </div>
         </div>
 
