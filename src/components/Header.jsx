@@ -26,7 +26,7 @@ export default function Header() {
 
         <div className="nav-item">
           <span className="nav-link">
-            Chalets à Relocatsdflasukfgasiof <span className="caret">▾</span>
+            Chalets à Test331234124 <span className="caret">▾</span>
           </span>
           <div className="submenu">
             <div className="submenu-label">Par Région</div>
