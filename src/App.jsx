@@ -8,6 +8,7 @@ import ALouer from "./pages/ALouer";
 import Vente from "./pages/Vente";
 import VentePage from "./pages/VentePage";
 import Blogue from "./pages/Blogue";
+import Astuces from "./pages/Astuces";
 import ArticlePage from "./pages/ArticlePage";
 import AuthPage from "./pages/auth";
 import "./styles/global.css";
@@ -37,6 +38,8 @@ export default function App() {
           <Route path="/chalets/:pageSlug" element={<ALouer />} />
           <Route path="/blogue/" element={<Blogue />} />
           <Route path="/blogue/:slug" element={<ArticlePage />} />
+          <Route path="/academie/astuces/" element={<Astuces />} />
+          <Route path="/academie/astuces/:slug" element={<ArticlePage />} />
           <Route
             path="*"
             element={
