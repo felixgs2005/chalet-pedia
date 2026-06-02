@@ -5,49 +5,70 @@ export default function Footer() {
   return (
     <footer className="footer">
       <div className="footer-grid">
-        <div>
+
+        {/* ── Colonne 1 : Brand ── */}
+        <div className="footer-brand-col">
           <div className="footer-logo">
             CHALET<span>PEDIA</span>
           </div>
           <p className="footer-desc">
-            La marketplace québécoise pour louer un chalet directement auprès du propriétaire. Sans commission. Sans intermédiaire.
+            Trouvez un chalet à louer en toute simplicité pour vos prochaines
+            vacances au Québec.
           </p>
-          <a href="/annoncez-votre-chalet/" className="footer-cta">
-            Annoncer mon chalet →
-          </a>
+          <Link to="/chalets/chalet-a-louer/" className="footer-cta">
+            En savoir plus →
+          </Link>
         </div>
 
-        <div>
+        {/* ── Colonne 2 : Propriétaires ── */}
+        <div className="footer-nav-col">
           <div className="footer-col-title">Propriétaires</div>
-          <a href="/annoncez-votre-chalet/" className="footer-link">Annoncer un chalet</a>
-          <a href="/inscrivez-votre-entreprise-dans-le-repertoire/" className="footer-link">Inscrire un service</a>
-          <a href="/promotions/" className="footer-link">Booster une annonce</a>
-          <a href="/publicite/" className="footer-link">Espace publicitaire</a>
+          <Link to="/annoncez-votre-chalet/" className="footer-link">
+            Annoncez votre chalet
+          </Link>
+          <Link to="/inscrivez-votre-entreprise-dans-le-repertoire/" className="footer-link">
+            Inscrire ses services
+          </Link>
+          <Link to="/promotions/" className="footer-link">
+            Boosté une annonce
+          </Link>
+          <Link to="/publicite/" className="footer-link">
+            Espace publicitaire
+          </Link>
         </div>
 
-        <div>
-          <div className="footer-col-title">Ressources</div>
-          <Link to="/blogue/" className="footer-link">Le journal</Link>
-          <Link to="/academie/astuces/" className="footer-link">Astuces</Link>
-          <a href="/guides/" className="footer-link">Guides pratiques</a>
-          <a href="#" className="footer-link">Formations</a>
-          <a href="#" className="footer-link">Wiki Chalet</a>
+        {/* ── Colonne 3 : Outils & Ressources ── */}
+        <div className="footer-nav-col">
+          <div className="footer-col-title">Outils &amp; Ressources</div>
+          <Link to="/formations/" className="footer-link">
+            Formations
+          </Link>
+          <Link to="/academie/astuces/" className="footer-link">
+            Guides pratiques
+          </Link>
+          <Link to="/academie/astuces/Wikia" className="footer-link">
+            Wiki Chalet
+          </Link>
         </div>
 
-        <div>
-          <div className="footer-col-title">Aide</div>
-          <a href="/faq/" className="footer-link">F.A.Q</a>
-          <a href="/contact/" className="footer-link">Contact</a>
-          <a href="/politique-de-confidentialite/" className="footer-link">Confidentialité</a>
-          <a href="/conditions-utilisation/" className="footer-link">Conditions</a>
+        {/* ── Colonne 4 : Besoin d'aide? ── */}
+        <div className="footer-nav-col">
+          <div className="footer-col-title">Besoin d&apos;aide?</div>
+          <Link to="/faq/" className="footer-link">
+            F.A.Q
+          </Link>
+          <Link to="/contact/" className="footer-link">
+            Contact
+          </Link>
         </div>
+
       </div>
 
       <div className="footer-bottom">
-        <span>© 2026 CHALETPEDIA · TOUS DROITS RÉSERVÉS</span>
+        <span>© 2025 ChaletPedia. Tous droits réservés.</span>
         <div className="footer-bottom-links">
-          <a href="/politique-de-confidentialite/">Politique de confidentialité</a>
-          <a href="/conditions-utilisation/">Conditions d'utilisation</a>
+          <Link to="/politique-de-confidentialite/">Politique de confidentialité</Link>
+          <Link to="/conditions-utilisation/">Conditions d'utilisation</Link>
         </div>
       </div>
     </footer>

@@ -18,6 +18,13 @@ import Entretien from "./pages/Entretien";
 import Multimedia from "./pages/Multimedia";
 import ServiceDetail from "./pages/ServiceDetail";
 import Wikia from "./pages/Wikia";
+import FAQ from "./pages/footer/FAQ";
+import Contact from "./pages/footer/Contact";
+import Formations from "./pages/footer/Formations";
+import Promotions from "./pages/footer/Promotions";
+import Publicite from "./pages/footer/Publicite";
+import PolitiqueConfidentialite from "./pages/footer/PolitiqueConfidentialite";
+import ConditionsUtilisation from "./pages/footer/ConditionsUtilisation";
 import "./styles/global.css";
 
 function Layout({ children }) {
@@ -55,6 +62,14 @@ export default function App() {
           <Route path="/chalets/multimedia/" element={<Multimedia />} />
           {/* Détail d'une annonce de service : /chalets/construction/ova-chalet-design */}
           <Route path="/chalets/:categorie/:slug" element={<ServiceDetail />} />
+          {/* Pages footer */}
+          <Route path="/faq/" element={<FAQ />} />
+          <Route path="/contact/" element={<Contact />} />
+          <Route path="/formations/" element={<Formations />} />
+          <Route path="/promotions/" element={<Promotions />} />
+          <Route path="/publicite/" element={<Publicite />} />
+          <Route path="/politique-de-confidentialite/" element={<PolitiqueConfidentialite />} />
+          <Route path="/conditions-utilisation/" element={<ConditionsUtilisation />} />
           <Route
             path="*"
             element={
