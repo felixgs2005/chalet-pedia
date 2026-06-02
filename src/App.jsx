@@ -20,11 +20,11 @@ import ServiceDetail from "./pages/ServiceDetail";
 import Wikia from "./pages/Wikia";
 import FAQ from "./pages/footer/FAQ";
 import Contact from "./pages/footer/Contact";
-import Formations from "./pages/footer/Formations";
 import Promotions from "./pages/footer/Promotions";
 import Publicite from "./pages/footer/Publicite";
 import PolitiqueConfidentialite from "./pages/footer/PolitiqueConfidentialite";
 import ConditionsUtilisation from "./pages/footer/ConditionsUtilisation";
+import APropos from "./pages/footer/APropos";
 import "./styles/global.css";
 import "./styles/footer-pages.css";
 
@@ -66,11 +66,11 @@ export default function App() {
           {/* Pages footer */}
           <Route path="/faq/" element={<FAQ />} />
           <Route path="/contact/" element={<Contact />} />
-          <Route path="/formations/" element={<Formations />} />
           <Route path="/promotions/" element={<Promotions />} />
           <Route path="/publicite/" element={<Publicite />} />
           <Route path="/politique-de-confidentialite/" element={<PolitiqueConfidentialite />} />
           <Route path="/conditions-utilisation/" element={<ConditionsUtilisation />} />
+          <Route path="/a-propos/" element={<APropos />} />
           <Route
             path="*"
             element={

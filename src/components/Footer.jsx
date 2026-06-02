@@ -15,7 +15,7 @@ export default function Footer() {
             Trouvez un chalet à louer en toute simplicité pour vos prochaines
             vacances au Québec.
           </p>
-          <Link to="/chalets/chalet-a-louer/" className="footer-cta">
+          <Link to="/a-propos/" className="footer-cta">
             En savoir plus →
           </Link>
         </div>
@@ -40,9 +40,9 @@ export default function Footer() {
         {/* ── Colonne 3 : Outils & Ressources ── */}
         <div className="footer-nav-col">
           <div className="footer-col-title">Outils &amp; Ressources</div>
-          <Link to="/formations/" className="footer-link">
+          <span className="footer-link footer-link-static">
             Formations
-          </Link>
+          </span>
           <Link to="/academie/astuces/" className="footer-link">
             Guides pratiques
           </Link>

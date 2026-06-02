@@ -1137,6 +1137,16 @@ a {
   color: #7FA890;
 }
 
+.footer-link-static {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.footer-link-static:hover {
+  opacity: 0.5;
+  color: inherit;
+}
+
 .footer-bottom {
   border-top: 1px solid rgba(248, 245, 238, 0.18);
   padding-top: 20px;
