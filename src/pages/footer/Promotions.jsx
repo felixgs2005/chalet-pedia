@@ -1,261 +1,218 @@
-// src/pages/Promotions.jsx
+// src/pages/footer/Promotions.jsx
 // ============================================================
 // PAGE PROMOTIONS (/promotions/)
-// Options pour booster la visibilité des annonces.
+// Services marketing pour propriétaires de chalets locatifs.
+// Structure calquée sur chaletpedia.com/promotions/
 // ============================================================
 
+import { Link } from "react-router-dom";
+
+const SERVICES = [
+  {
+    id: "reseaux",
+    emoji: "✨",
+    titre: "Publication épinglée sur les médias sociaux",
+    sousTitre: "1 mois · 65 000 abonnés · portée de 1,2 million",
+    desc: "Pendant un mois entier, votre chalet sera en première ligne sur nos réseaux sociaux, atteignant plus de 65 000 abonnés et générant une portée globale de 1,2 million de personnes. Démarquez-vous de la concurrence et captez l'attention des voyageurs en quête de leur prochaine escapade.",
+    exemple: "« Découvrez le Chalet des Étoiles, un havre de paix avec vue imprenable sur le lac. Réservez dès maintenant pour un séjour mémorable ! »",
+    cta: "Réservez votre publication épinglée",
+  },
+  {
+    id: "seo",
+    emoji: "📝",
+    titre: "Article de blog de 1 000 mots",
+    sousTitre: "Référencement optimal sur Google",
+    desc: "Renforcez votre présence en ligne avec un article richement rédigé et optimisé pour Google. En intégrant des mots-clés stratégiques, nous mettons en valeur votre chalet pour capter l'attention des visiteurs et améliorer votre classement dans les recherches.",
+    exemple: "« Le Chalet des Sommets vous offre une expérience luxueuse avec ses vues panoramiques et ses équipements modernes. Découvrez pourquoi c'est le choix parfait pour votre prochaine aventure. »",
+    cta: "Demandez votre article SEO",
+  },
+  {
+    id: "rabais",
+    emoji: "💡",
+    titre: "Publiez vos rabais et offres de dernières minutes",
+    sousTitre: "Page dédiée aux promotions",
+    desc: "Stimulez vos réservations en affichant des promotions captivantes et des offres de dernière minute. Mettez en avant vos meilleures réductions pour séduire les voyageurs à la recherche de bonnes affaires et offrez-leur une valeur ajoutée qui les incitera à réserver.",
+    exemple: "« Réservez maintenant au Chalet des Rêves et profitez de 20 % de réduction pour les séjours réservés cette semaine seulement ! »",
+    cta: "Publier mes offres",
+  },
+  {
+    id: "accueil",
+    emoji: "🏡",
+    titre: "Affichage sur la page d'accueil et top recherches",
+    sousTitre: "Visibilité maximale sur le site",
+    desc: "Profitez d'une visibilité optimale ! Placez votre chalet en première ligne sur notre site web, en vue auprès de tous nos visiteurs. Un emplacement privilégié sur la page d'accueil augmente considérablement vos chances de réservation.",
+    exemple: "« Le Chalet du Bord du Lac, avec son accès direct au lac et ses conforts modernes, vous attend pour une expérience inoubliable. »",
+    cta: "Mettre mon chalet en avant",
+  },
+  {
+    id: "video",
+    emoji: "🎥",
+    titre: "Création et diffusion de courtes vidéos",
+    sousTitre: "Réels engageants sur nos réseaux",
+    desc: "Transformez l'image de votre chalet avec de courtes vidéos dynamiques. Ces contenus engageants attireront un large public lorsque vous les partagerez sur nos réseaux sociaux, tout en mettant en avant les caractéristiques uniques de votre propriété.",
+    exemple: "« Découvrez le Chalet des Bois en 30 secondes : un refuge parfait avec des vues imprenables et un intérieur chaleureux. »",
+    cta: "Créer ma vidéo",
+  },
+];
+
+const STATS = [
+  { num: "65 000", label: "abonnés sur nos réseaux" },
+  { num: "1,2 M", label: "de portée mensuelle" },
+  { num: "5", label: "leviers marketing" },
+  { num: "100%", label: "dédié aux chalets québécois" },
+];
+
+const ATOUTS = [
+  {
+    icon: "🎯",
+    titre: "Au-delà des promotions tarifaires",
+    desc: "La plupart des concurrents misent sur des réductions. ChaletPedia se démarque avec une stratégie digitale complète : SEO, social, placement premium, vidéo et contenu.",
+  },
+  {
+    icon: "🚀",
+    titre: "Croissance durable",
+    desc: "Nos services visent une augmentation durable des réservations via une stratégie marketing multicanal sophistiquée, pas seulement un pic ponctuel.",
+  },
+  {
+    icon: "📊",
+    titre: "Résultats mesurables",
+    desc: "Chaque service est accompagné de métriques claires : portée, impressions, clics, réservations générées. Vous voyez concrètement l'impact.",
+  },
+];
+
 export default function Promotions() {
-  const options = [
-    {
-      id: "boost",
-      titre: "Boost Simple",
-      prix: "29 $ / mois",
-      periode: "Mise en avant 30 jours",
-      couleur: "#1f4d3a",
-      points: [
-        "Badge 'Promo' sur votre annonce",
-        "Position améliorée dans les résultats",
-        "+200 % de vues en moyenne",
-        "Renouvellement mensuel simple",
-        "Sans engagement",
-      ],
-      recommandation: "Parfait pour tester l'impact",
-    },
-    {
-      id: "pro",
-      titre: "Boost Pro",
-      prix: "79 $ / mois",
-      periode: "Mise en avant premium",
-      couleur: "#2a6b50",
-      points: [
-        "Tous les avantages du Boost Simple",
-        "Placement en tête de page dans votre région",
-        "Badge 'Coup de cœur' exclusif",
-        "Analyses détaillées des performances",
-        "Support prioritaire",
-        "+350 % de vues en moyenne",
-      ],
-      recommandation: "Pour maximiser vos réservations",
-      populaire: true,
-    },
-    {
-      id: "saison",
-      titre: "Pack Saisonnier",
-      prix: "199 $ / 4 mois",
-      periode: "Couverture complète saison",
-      couleur: "#0f0f0f",
-      points: [
-        "Tous les avantages du Boost Pro",
-        "Optimisation saisonnière automatique",
-        "Promotions ciblées (Noël, vacances, etc.)",
-        "Rapport mensuel personnalisé",
-        "Économie de 20 % vs mensuel",
-        "Calendrier de promotions pré-planifié",
-      ],
-      recommandation: "Pour les propriétaires actifs",
-    },
-    {
-      id: "decouverte",
-      titre: "Découverte",
-      prix: "Gratuit",
-      periode: "7 jours",
-      couleur: "#4a3a1f",
-      points: [
-        "Test du Boost Simple gratuitement",
-        "Aucune carte bancaire requise",
-        "Accès aux statistiques de visibilité",
-        "Guide d'optimisation inclus",
-        "Sans engagement, sans automatisation",
-      ],
-      recommandation: "Essayer avant d'acheter",
-    },
-  ];
-
-  const stats = [
-    { num: "+200%", label: "visites en moyenne avec Boost" },
-    { num: "3.5x", label: "plus de réservations" },
-    { num: "87%", label: "de clients renouvellent" },
-    { num: "24h", label: "activation sous 24h" },
-  ];
-
-  const etapes = [
-    {
-      num: 1,
-      titre: "Choisissez votre option",
-      desc: "Sélectionnez le boost qui correspond à vos besoins et budget.",
-    },
-    {
-      num: 2,
-      titre: "Activez en 2 clics",
-      desc: "Rien à installer. Activation immédiate depuis votre tableau de bord.",
-    },
-    {
-      num: 3,
-      titre: "Suivez vos performances",
-      desc: "Visualisez l'impact sur vos vues, contacts et réservations.",
-    },
-    {
-      num: 4,
-      titre: "Optimisez au besoin",
-      desc: "Notre équipe vous conseille pour maximiser vos résultats.",
-    },
-  ];
-
   return (
-    <div className="promotions-page">
+    <div className="promo-page">
+
       {/* ── HERO ── */}
-      <section className="promotions-hero">
-        <div className="promotions-hero-kicker">PROPRIÉTAIRES · CHALETPEDIA</div>
-        <h1 className="promotions-hero-title">
-          Boostez votre <span className="promotions-hero-accent">visibilité</span>
-        </h1>
-        <p className="promotions-hero-sub">
-          Faites sortir votre annonce du lot et multipliez vos réservations avec
-          nos options de promotion ciblées.
-        </p>
+      <section className="promo-hero">
+        <div className="promo-hero-inner">
+          <div className="promo-hero-kicker">PROPRIÉTAIRES · CHALETPEDIA</div>
+          <h1 className="promo-hero-title">Services marketing</h1>
+          <p className="promo-hero-sub">
+            Libérez tout le potentiel de votre chalet avec nos services
+            exceptionnels — une transformation numérique complète et une
+            visibilité multicanal pour augmenter vos réservations.
+          </p>
+          <Link to="/contact/" className="promo-hero-cta">
+            Réservez nos services →
+          </Link>
+        </div>
       </section>
 
       {/* ── STATS ── */}
-      <section className="promotions-stats">
-        <div className="promotions-stats-inner">
-          {stats.map((stat) => (
-            <div key={stat.label} className="promotions-stat">
-              <span className="promotions-stat-num">{stat.num}</span>
-              <span className="promotions-stat-label">{stat.label}</span>
-            </div>
-          ))}
-        </div>
-      </section>
+      <div className="promo-stats-band">
+        {STATS.map((s) => (
+          <div key={s.label} className="promo-stat">
+            <span className="promo-stat-num">{s.num}</span>
+            <span className="promo-stat-label">{s.label}</span>
+          </div>
+        ))}
+      </div>
 
-      {/* ── OPTIONS ── */}
-      <section className="promotions-options">
-        <div className="promotions-options-inner">
-          <h2 className="promotions-section-title">Choisissez votre boost</h2>
-          <p className="promotions-section-sub">
-            Des options flexibles pour tous les budgets et tous les niveaux
-            d'activité.
-          </p>
-
-          <div className="promotions-grid">
-            {options.map((option) => (
-              <div
-                key={option.id}
-                className={`promotion-card${option.populaire ? " populaire" : ""}`}
-                style={{ borderColor: option.couleur }}
-              >
-                {option.populaire && (
-                  <div className="promotion-badge">Le plus populaire</div>
-                )}
-
-                <div className="promotion-header">
-                  <h3 className="promotion-titre">{option.titre}</h3>
-                  <div className="promotion-prix">{option.prix}</div>
-                  <div className="promotion-periode">{option.periode}</div>
+      {/* ── STRATÉGIE ── */}
+      <section className="promo-strategy">
+        <div className="promo-strategy-inner">
+          <div className="promo-strategy-text">
+            <div className="promo-strategy-kicker">Notre approche</div>
+            <h2 className="promo-strategy-title">Stratégie marketing complète</h2>
+            <p className="promo-strategy-desc">
+              Notre approche va bien au-delà des promotions tarifaires classiques.
+              ChaletPedia se démarque avec une stratégie digitale incluant SEO,
+              visibilité sociale, placement premium, vidéos engageantes et
+              contenu optimisé.
+            </p>
+            <ul className="promo-strategy-list">
+              <li>Publication épinglée 1 mois — 65 000 abonnés, portée 1,2 million</li>
+              <li>Article de blog 1 000 mots optimisé pour Google</li>
+              <li>Publication de vos rabais et offres de dernières minutes</li>
+              <li>Affichage page d'accueil et top recherches</li>
+              <li>Création et diffusion de courtes vidéos engageantes</li>
+            </ul>
+          </div>
+          <div className="promo-strategy-atouts">
+            {ATOUTS.map((a) => (
+              <div key={a.titre} className="promo-atout-card">
+                <span className="promo-atout-icon">{a.icon}</span>
+                <div>
+                  <h3 className="promo-atout-titre">{a.titre}</h3>
+                  <p className="promo-atout-desc">{a.desc}</p>
                 </div>
-
-                <ul className="promotion-points">
-                  {option.points.map((point, idx) => (
-                    <li key={idx} className="promotion-point">
-                      <span className="promotion-point-icon">✓</span>
-                      {point}
-                    </li>
-                  ))}
-                </ul>
-
-                <div className="promotion-recommandation">
-                  <strong>Recommandé :</strong> {option.recommandation}
-                </div>
-
-                <button
-                  className="promotion-cta"
-                  type="button"
-                  style={{ background: option.couleur }}
-                >
-                  {option.id === "decouverte"
-                    ? "Essayer gratuitement →"
-                    : "Choisir cette option →"}
-                </button>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* ── ÉTAPES ── */}
-      <section className="promotions-etapes">
-        <div className="promotions-etapes-inner">
-          <h2 className="promotions-section-title">Comment ça marche ?</h2>
-          <p className="promotions-section-sub">
-            Un processus simple et transparent pour maximiser vos résultats.
+      {/* ── SERVICES ── */}
+      <section className="promo-services">
+        <div className="promo-services-inner">
+          <h2 className="promo-services-title">Nos services en détail</h2>
+          <p className="promo-services-sub">
+            Cinq leviers complémentaires pour maximiser la visibilité de votre chalet.
           </p>
 
-          <div className="etapes-grid">
-            {etapes.map((etape) => (
-              <div key={etape.num} className="etape-card">
-                <div className="etape-num">{etape.num}</div>
-                <h3 className="etape-titre">{etape.titre}</h3>
-                <p className="etape-desc">{etape.desc}</p>
+          <div className="promo-services-list">
+            {SERVICES.map((service, idx) => (
+              <div key={service.id} className={`promo-service-row${idx % 2 === 1 ? " promo-service-row--alt" : ""}`}>
+                <div className="promo-service-num">0{idx + 1}</div>
+                <div className="promo-service-body">
+                  <div className="promo-service-header">
+                    <span className="promo-service-emoji" aria-hidden="true">{service.emoji}</span>
+                    <div>
+                      <h3 className="promo-service-titre">{service.titre}</h3>
+                      <div className="promo-service-sous">{service.sousTitre}</div>
+                    </div>
+                  </div>
+                  <p className="promo-service-desc">{service.desc}</p>
+                  <div className="promo-service-exemple">
+                    <span className="promo-exemple-label">Exemple</span>
+                    <p>{service.exemple}</p>
+                  </div>
+                  <Link to="/contact/" className="promo-service-cta">
+                    {service.cta} →
+                  </Link>
+                </div>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* ── FAQ ── */}
-      <section className="promotions-faq">
-        <div className="promotions-faq-inner">
-          <h2 className="promotions-section-title">Questions fréquentes</h2>
-
-          <div className="promotions-faq-items">
-            <div className="promotions-faq-item">
-              <h3>Puis-je annuler à tout moment ?</h3>
-              <p>
-                Oui, toutes nos options sont sans engagement. Vous pouvez
-                annuler à tout moment depuis votre tableau de bord. Aucun frais
-                d'annulation.
-              </p>
-            </div>
-            <div className="promotions-faq-item">
-              <h3>Combien de temps pour voir les résultats ?</h3>
-              <p>
-                Les effets sont généralement visibles dans les 48h suivant
-                l'activation. Nous fournissons des statistiques en temps réel
-                pour suivre l'impact.
-              </p>
-            </div>
-            <div className="promotions-faq-item">
-              <h3>Le boost fonctionne-t-il sur tous les chalets ?</h3>
-              <p>
-                Oui, tant que votre annonce est active et conforme. L'impact
-                peut varier selon la région, la saison et la qualité de votre
-                annonce.
-              </p>
-            </div>
-            <div className="promotions-faq-item">
-              <h3>Y a-t-il un remboursement si je ne suis pas satisfait ?</h3>
-              <p>
-                Oui, garantie satisfait ou remboursé pendant 14 jours. Si vous
-                n'êtes pas satisfait des résultats, nous vous remboursons
-                intégralement.
-              </p>
+      {/* ── CITATION FONDATEUR ── */}
+      <section className="promo-quote">
+        <div className="promo-quote-inner">
+          <div className="promo-quote-bar" aria-hidden="true" />
+          <blockquote className="promo-quote-text">
+            Un article bien placé sur Google peut vous rapporter des milliers
+            de visiteurs qualifiés par an… sans aucun frais publicitaire.
+          </blockquote>
+          <div className="promo-quote-author">
+            <div className="promo-quote-avatar">NR</div>
+            <div>
+              <strong>Nicolas Roy</strong>
+              <span>Fondateur · ChaletPedia</span>
             </div>
           </div>
         </div>
       </section>
 
       {/* ── CTA FINAL ── */}
-      <section className="promotions-final-cta">
-        <div className="promotions-final-cta-inner">
-          <h2 className="promotions-final-title">Prêt à booster vos réservations ?</h2>
-          <p className="promotions-final-sub">
-            Commencez par l'option Découverte gratuite et voyez la différence
-            par vous-même.
+      <section className="promo-final-cta">
+        <div className="promo-final-inner">
+          <div className="promo-final-kicker">PASSEZ À L'ACTION</div>
+          <h2 className="promo-final-title">Donnez vie à votre chalet</h2>
+          <p className="promo-final-sub">
+            Ne manquez pas l'opportunité de démarquer votre chalet sur le marché.
+            Profitez de nos services pour attirer des clients qualifiés et
+            générer des réservations facilement.
           </p>
-          <button className="promotions-final-btn" type="button">
-            Essayer gratuitement →
-          </button>
+          <Link to="/contact/" className="promo-final-btn">
+            Réservez nos services marketing →
+          </Link>
         </div>
       </section>
+
     </div>
   );
 }

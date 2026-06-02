@@ -26,6 +26,7 @@ import Publicite from "./pages/footer/Publicite";
 import PolitiqueConfidentialite from "./pages/footer/PolitiqueConfidentialite";
 import ConditionsUtilisation from "./pages/footer/ConditionsUtilisation";
 import "./styles/global.css";
+import "./styles/footer-pages.css";
 
 function Layout({ children }) {
   return (
