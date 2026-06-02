@@ -30,7 +30,7 @@ export default function Footer() {
             Inscrire ses services
           </Link>
           <Link to="/promotions/" className="footer-link">
-            Boosté une annonce
+            Booster une annonce
           </Link>
           <Link to="/publicite/" className="footer-link">
             Espace publicitaire
