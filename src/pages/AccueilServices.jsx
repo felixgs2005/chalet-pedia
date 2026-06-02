@@ -219,9 +219,12 @@ export default function AccueilServices() {
               Rejoignez le plus grand répertoire de services pour chalets au Québec et
               gagnez en visibilité auprès des propriétaires.
             </p>
-            <a href="/inscrivez-votre-entreprise-dans-le-repertoire/" className="services-cta__btn">
+            <Link
+              to="/inscrivez-votre-entreprise-dans-le-repertoire/"
+              className="services-cta__btn"
+            >
               Inscrire mes services →
-            </a>
+            </Link>
           </div>
         </section>
       </div>

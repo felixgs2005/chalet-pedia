@@ -25,6 +25,7 @@ import Publicite from "./pages/footer/Publicite";
 import PolitiqueConfidentialite from "./pages/footer/PolitiqueConfidentialite";
 import ConditionsUtilisation from "./pages/footer/ConditionsUtilisation";
 import APropos from "./pages/footer/APropos";
+import InscrireRepertoire from "./pages/footer/InscrireRepertoire";
 import "./styles/global.css";
 import "./styles/footer-pages.css";
 
@@ -71,6 +72,10 @@ export default function App() {
           <Route path="/politique-de-confidentialite/" element={<PolitiqueConfidentialite />} />
           <Route path="/conditions-utilisation/" element={<ConditionsUtilisation />} />
           <Route path="/a-propos/" element={<APropos />} />
+          <Route
+            path="/inscrivez-votre-entreprise-dans-le-repertoire/"
+            element={<InscrireRepertoire />}
+          />
           <Route
             path="*"
             element={
