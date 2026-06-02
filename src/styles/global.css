@@ -1,4 +1,4 @@
-﻿/* src/styles/global.css */
+/* src/styles/global.css */
 /* ============ BASE ============ */
 * {
   box-sizing: border-box;
@@ -604,15 +604,15 @@ a {
 
 /* ============ RÉGIONS ============ */
 .regions-section {
-  padding: 52px 32px;
-  background: #fff;
+  padding: 56px 32px;
+  background: #FFFFFF;
 }
 
 .regions-head {
   display: flex;
   justify-content: space-between;
   align-items: flex-end;
-  margin-bottom: 24px;
+  margin-bottom: 28px;
 }
 
 .kicker-brut {
@@ -622,15 +622,18 @@ a {
   font-size: 10px;
   font-weight: 800;
   letter-spacing: 0.22em;
-  margin-bottom: 12px;
+  margin-bottom: 14px;
+  color: #0F0F0F;
+  text-transform: uppercase;
 }
 
 .section-title-brut {
   font-family: 'Archivo Black', sans-serif;
-  font-size: 38px;
+  font-size: 40px;
   line-height: 0.92;
   letter-spacing: -0.03em;
   text-transform: uppercase;
+  color: #0F0F0F;
 }
 
 .link-brut {
@@ -638,6 +641,8 @@ a {
   font-weight: 800;
   letter-spacing: 0.22em;
   color: #0F0F0F;
+  text-decoration: none;
+  text-transform: uppercase;
 }
 
 .regions-grid {
@@ -646,13 +651,19 @@ a {
   border: 2px solid #0F0F0F;
 }
 
+a.region-big,
+a.region-cell {
+  text-decoration: none;
+  color: inherit;
+}
+
 .region-big {
   aspect-ratio: 1/1.05;
-  padding: 18px;
+  padding: 20px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  color: #fff;
+  color: #FFFFFF;
   border-right: 2px solid #0F0F0F;
   background-position: center;
   background-size: cover;
@@ -670,11 +681,11 @@ a {
 }
 
 .region-cell {
-  padding: 14px;
+  padding: 16px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  color: #fff;
+  color: #FFFFFF;
   background-position: center;
   background-size: cover;
   cursor: pointer;
@@ -686,27 +697,29 @@ a {
 
 .region-cell.cta {
   background: #1F4D3A;
-  color: #fff;
+  color: #FFFFFF;
 }
 
 .badge-brut {
-  background: #fff;
+  background: #FFFFFF;
   color: #0F0F0F;
   padding: 5px 11px;
   font-size: 10px;
   font-weight: 800;
   letter-spacing: 0.22em;
   align-self: flex-start;
+  text-transform: uppercase;
 }
 
 .badge-brut-sm {
-  background: #fff;
+  background: #FFFFFF;
   color: #0F0F0F;
   padding: 4px 9px;
   font-size: 9px;
   font-weight: 800;
   letter-spacing: 0.22em;
   align-self: flex-start;
+  text-transform: uppercase;
 }
 
 .region-name {
@@ -714,29 +727,34 @@ a {
   line-height: 0.9;
   letter-spacing: -0.02em;
   text-transform: uppercase;
+  color: #FFFFFF;
 }
 
 .region-name.lg {
-  font-size: 30px;
-  margin-bottom: 8px;
+  font-size: 32px;
+  margin-bottom: 10px;
 }
 
 .region-name.md {
-  font-size: 20px;
+  font-size: 22px;
 }
 
 .region-name.sm {
-  font-size: 17px;
+  font-size: 18px;
   line-height: 0.95;
 }
 
 .region-name.xs {
-  font-size: 15px;
-  margin-bottom: 3px;
+  font-size: 16px;
+  margin-bottom: 4px;
 }
 
 .region-desc {
-  font-size: 11px;
+  font-family: 'Inter', sans-serif;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.55;
+  color: #FFFFFF;
   opacity: 0.9;
   max-width: 240px;
 }
@@ -745,6 +763,8 @@ a {
   font-size: 11px;
   font-weight: 800;
   letter-spacing: 0.18em;
+  color: #FFFFFF;
+  text-transform: uppercase;
 }
 
 /* ============ PROPRIÉTAIRES ============ */

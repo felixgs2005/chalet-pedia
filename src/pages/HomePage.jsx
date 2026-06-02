@@ -4,6 +4,33 @@ import { Link } from "react-router-dom";
 import ChaletCard from "../components/ChaletCard";
 import { chalets } from "../data/chalets";
 import { articles } from "../data/articles";
+import { countChaletsByRegion, getPageSlugFromRegionKey } from "../data/listingRegions";
+
+const HOME_REGION_IMAGES = {
+  laurentides:
+    "https://images.unsplash.com/photo-1483728642387-6c3bdd6c93e5?w=800&q=85&auto=format&fit=crop",
+  gaspesie:
+    "https://images.unsplash.com/photo-1502082553048-f009c37129b9?w=600&q=85&auto=format&fit=crop",
+  mauricie:
+    "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=600&q=85&auto=format&fit=crop",
+  saguenay:
+    "https://images.unsplash.com/photo-1486520299386-6d106b22014b?w=600&q=85&auto=format&fit=crop",
+};
+
+function homeRegionBackground(url, large = false) {
+  const overlay = large
+    ? "linear-gradient(rgba(15,15,15,0.1), rgba(15,15,15,0.7))"
+    : "linear-gradient(rgba(15,15,15,0.1), rgba(15,15,15,0.65))";
+  return { backgroundImage: `${overlay}, url('${url}')` };
+}
+
+function countMauricieChalets(list) {
+  return list.filter((c) => (c.region || "").toLowerCase().includes("mauricie")).length;
+}
+
+function listingPath(regionKey) {
+  return `/chalets/${getPageSlugFromRegionKey(regionKey)}/`;
+}
 
 // --- FAQ Data ---
 const faqLocataires = [
@@ -174,50 +201,62 @@ export default function HomePage() {
         <div className="regions-head">
           <div>
             <div className="kicker-brut">N°04 · LES 17 RÉGIONS</div>
-            <h2 className="section-title-brut">Choisir son coin de pays.</h2>
+            <h2 className="section-title-brut">
+              Choisir son
+              <br />
+              coin de pays.
+            </h2>
           </div>
           <Link to="/chalets/chalet-a-louer/" className="link-brut">[ VOIR LA CARTE → ]</Link>
         </div>
         <div className="regions-grid">
-          <div
+          <Link
+            to={listingPath("laurentides")}
             className="region-big"
-            style={{ backgroundImage: "url('https://images.unsplash.com/photo-1519681393784-d120267933ba?w=800&q=80')" }}
+            style={homeRegionBackground(HOME_REGION_IMAGES.laurentides, true)}
           >
-            <div className="badge-brut">[ 6 CHALETS ]</div>
+            <div className="badge-brut">
+              [ {countChaletsByRegion(chalets, "laurentides")} CHALETS ]
+            </div>
             <div>
               <div className="region-name lg">LAURENTIDES</div>
               <p className="region-desc">Montagnes, lacs et stations de ski à 1h de Montréal.</p>
             </div>
-          </div>
+          </Link>
           <div className="region-col">
-            <div
+            <Link
+              to={listingPath("gaspesie")}
               className="region-cell border-bottom"
-              style={{ backgroundImage: "url('https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=600&q=80')" }}
+              style={homeRegionBackground(HOME_REGION_IMAGES.gaspesie)}
             >
-              <div className="badge-brut-sm">[ 4 ]</div>
+              <div className="badge-brut-sm">[ {countChaletsByRegion(chalets, "gaspesie")} ]</div>
               <div className="region-name md">GASPÉSIE</div>
-            </div>
-            <div
+            </Link>
+            <Link
+              to={listingPath("all")}
               className="region-cell"
-              style={{ backgroundImage: "url('https://images.unsplash.com/photo-1501785888041-af3ef285b470?w=600&q=80')" }}
+              style={homeRegionBackground(HOME_REGION_IMAGES.mauricie)}
             >
-              <div className="badge-brut-sm">[ 2 ]</div>
+              <div className="badge-brut-sm">[ {countMauricieChalets(chalets)} ]</div>
               <div className="region-name md">MAURICIE</div>
-            </div>
+            </Link>
           </div>
           <div className="region-col">
-            <div
+            <Link
+              to={listingPath("saguenay")}
               className="region-cell border-bottom"
-              style={{ backgroundImage: "url('https://images.unsplash.com/photo-1598170845058-32b9d6a5da37?w=600&q=80')" }}
+              style={homeRegionBackground(HOME_REGION_IMAGES.saguenay)}
             >
-              <div className="badge-brut-sm">[ 2 ]</div>
+              <div className="badge-brut-sm">[ {countChaletsByRegion(chalets, "saguenay")} ]</div>
               <div className="region-name sm">SAGUENAY-<br />LAC-ST-JEAN</div>
-            </div>
-            <div className="region-cell cta">
-              <div className="region-name xs" style={{ fontSize: 12, letterSpacing: "0.18em", fontFamily: "inherit" }}>+13</div>
-              <div className="region-name sm">AUTRES RÉGIONS</div>
-              <span className="region-link">VOIR TOUT →</span>
-            </div>
+            </Link>
+            <Link to={listingPath("all")} className="region-cell cta">
+              <div className="badge-brut-sm">[ +13 ]</div>
+              <div>
+                <div className="region-name xs">AUTRES RÉGIONS</div>
+                <div className="region-link">VOIR TOUT →</div>
+              </div>
+            </Link>
           </div>
         </div>
       </section>
