@@ -26,6 +26,7 @@ import PolitiqueConfidentialite from "./pages/footer/PolitiqueConfidentialite";
 import ConditionsUtilisation from "./pages/footer/ConditionsUtilisation";
 import APropos from "./pages/footer/APropos";
 import InscrireRepertoire from "./pages/footer/InscrireRepertoire";
+import AnnoncezVotreChalet from "./pages/footer/AnnoncezVotreChalet";
 import "./styles/global.css";
 import "./styles/footer-pages.css";
 
@@ -76,6 +77,7 @@ export default function App() {
             path="/inscrivez-votre-entreprise-dans-le-repertoire/"
             element={<InscrireRepertoire />}
           />
+          <Route path="/annoncez-votre-chalet/" element={<AnnoncezVotreChalet />} />
           <Route
             path="*"
             element={

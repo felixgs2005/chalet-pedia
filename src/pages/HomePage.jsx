@@ -232,8 +232,12 @@ export default function HomePage() {
               1 200 propriétaires louent déjà sur Chaletpedia — sans verser un sou de commission. Inscription gratuite, paiements directs, calendrier sous votre contrôle.
             </p>
             <div className="prop-buttons">
-              <a href="/annoncez-votre-chalet/" className="btn-light">Annoncer mon chalet →</a>
-              <a href="/promotions/" className="btn-outline">Voir les forfaits Pro</a>
+              <Link to="/annoncez-votre-chalet/" className="btn-light">
+                Annoncer mon chalet →
+              </Link>
+              <Link to="/promotions/" className="btn-outline">
+                Voir les forfaits Pro
+              </Link>
             </div>
           </div>
           <div />
