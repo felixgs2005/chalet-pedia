@@ -1,6 +1,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import HomePage from "./HomePage";
+import { useAuth } from "../context/AuthContext";
 
 /** Page d’accueil visible derrière la modale (header reste au-dessus via z-index). */
 export function AuthPage() {
@@ -14,8 +15,17 @@ export function AuthPage() {
 
 function Auth() {
   const navigate = useNavigate();
+  const { login, signup } = useAuth();
+
   const [visible, setVisible] = useState(false);
   const [closing, setClosing] = useState(false);
+  const [isSignUp, setIsSignUp] = useState(false);
+
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const frame = requestAnimationFrame(() => setVisible(true));
@@ -29,8 +39,61 @@ function Auth() {
     window.setTimeout(() => navigate("/"), 280);
   }, [closing, navigate]);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setError("");
+
+    if (!email || !password) {
+      setError("Veuillez remplir tous les champs.");
+      return;
+    }
+
+    if (isSignUp) {
+      if (password !== confirmPassword) {
+        setError("Les mots de passe ne correspondent pas.");
+        return;
+      }
+      if (password.length < 6) {
+        setError("Le mot de passe doit contenir au moins 6 caractères.");
+        return;
+      }
+    }
+
+    try {
+      setLoading(true);
+      if (isSignUp) {
+        await signup(email, password);
+      } else {
+        await login(email, password);
+      }
+      handleClose();
+    } catch (err) {
+      console.error(err);
+      switch (err.code) {
+        case "auth/user-not-found":
+          setError("Aucun compte trouvé avec cet e-mail.");
+          break;
+        case "auth/wrong-password":
+          setError("Mot de passe incorrect.");
+          break;
+        case "auth/invalid-email":
+          setError("Adresse e-mail invalide.");
+          break;
+        case "auth/email-already-in-use":
+          setError("Cette adresse e-mail est déjà utilisée.");
+          break;
+        case "auth/weak-password":
+          setError("Le mot de passe doit contenir au moins 6 caractères.");
+          break;
+        case "auth/invalid-credential":
+          setError("Identifiants de connexion invalides. Veuillez réessayer.");
+          break;
+        default:
+          setError("Une erreur est survenue. Veuillez réessayer.");
+      }
+    } finally {
+      setLoading(false);
+    }
   };
 
   const pageClass = [
@@ -65,22 +128,29 @@ function Auth() {
         </Link>
 
         <h1 id="auth-title" className="auth-modal__title">
-          SE CONNECTER.
+          {isSignUp ? "S'INSCRIRE." : "SE CONNECTER."}
         </h1>
         <p className="auth-modal__subtitle">
-          Accédez à votre espace pour gérer vos annonces, vos favoris et vos messages.
+          {isSignUp
+            ? "Créez votre compte pour commencer à publier et gérer vos annonces."
+            : "Accédez à votre espace pour gérer vos annonces, vos favoris et vos messages."}
         </p>
+
+        {error && <div className="auth-form__error">{error}</div>}
 
         <form className="auth-form" onSubmit={handleSubmit}>
           <label className="auth-form__label" htmlFor="auth-identifier">
-            Identifiant ou e-mail
+            Adresse e-mail
           </label>
           <input
             id="auth-identifier"
-            type="text"
+            type="email"
+            required
             className="auth-form__input"
             placeholder="votre@courriel.com"
             autoComplete="username"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
           />
 
           <label className="auth-form__label" htmlFor="auth-password">
@@ -89,17 +159,40 @@ function Auth() {
           <input
             id="auth-password"
             type="password"
+            required
             className="auth-form__input"
             placeholder="••••••••"
             autoComplete="current-password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
           />
 
-          <div className="auth-form__forgot">
-            <a href="#mot-de-passe">Mot de passe oublié ?</a>
-          </div>
+          {isSignUp && (
+            <>
+              <label className="auth-form__label" htmlFor="auth-confirm-password">
+                Confirmer le mot de passe
+              </label>
+              <input
+                id="auth-confirm-password"
+                type="password"
+                required
+                className="auth-form__input"
+                placeholder="••••••••"
+                autoComplete="new-password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+              />
+            </>
+          )}
 
-          <button type="submit" className="auth-form__submit">
-            Se connecter →
+          {!isSignUp && (
+            <div className="auth-form__forgot">
+              <a href="#mot-de-passe">Mot de passe oublié ?</a>
+            </div>
+          )}
+
+          <button type="submit" className="auth-form__submit" disabled={loading}>
+            {loading ? "Chargement..." : isSignUp ? "S'inscrire →" : "Se connecter →"}
           </button>
         </form>
 
@@ -108,8 +201,35 @@ function Auth() {
         </div>
 
         <p className="auth-modal__signup">
-          Vous n&apos;avez pas encore de compte ?{" "}
-          <a href="#inscription">S&apos;inscrire</a>
+          {isSignUp ? (
+            <>
+              Déjà un compte ?{" "}
+              <a
+                href="#connexion"
+                onClick={(e) => {
+                  e.preventDefault();
+                  setError("");
+                  setIsSignUp(false);
+                }}
+              >
+                Se connecter
+              </a>
+            </>
+          ) : (
+            <>
+              Vous n&apos;avez pas encore de compte ?{" "}
+              <a
+                href="#inscription"
+                onClick={(e) => {
+                  e.preventDefault();
+                  setError("");
+                  setIsSignUp(true);
+                }}
+              >
+                S&apos;inscrire
+              </a>
+            </>
+          )}
         </p>
       </div>
     </div>

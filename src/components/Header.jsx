@@ -1,6 +1,7 @@
 // src/components/Header.jsx
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 import { LISTING_EXPERIENCES } from "../data/listingExperiences";
 import { LISTING_PREFIX } from "../data/listingPageSlug";
 
@@ -8,6 +9,7 @@ const HEADER_EXPERIENCE_KEYS = ["animaux", "bordEau", "spa", "boise"];
 
 export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const { currentUser, logout } = useAuth();
 
   return (
     <header className="header">
@@ -89,9 +91,24 @@ export default function Header() {
         </div>
 
         <Link to="/blogue/">Blogue</Link>
-        <Link to="/auth" className="nav-login" onClick={() => setMenuOpen(false)}>
-          Se connecter
-        </Link>
+        {currentUser ? (
+          <div className="nav-user">
+            <span className="user-email">{currentUser.email}</span>
+            <button
+              onClick={() => {
+                logout();
+                setMenuOpen(false);
+              }}
+              className="nav-logout"
+            >
+              Déconnexion
+            </button>
+          </div>
+        ) : (
+          <Link to="/auth" className="nav-login" onClick={() => setMenuOpen(false)}>
+            Se connecter
+          </Link>
+        )}
 
         <Link
           to="/annoncez-votre-chalet/"
