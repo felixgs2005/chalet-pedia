@@ -9,10 +9,13 @@ import { useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { useVenteBySlug } from "../hooks/useVenteBySlug";
 import { PinIcon, CameraIcon } from "../components/Icons";
+import { useSharePage } from "../hooks/useSharePage";
+import ShareToast from "../components/ShareToast";
 
 export default function VentePage() {
   const { slug } = useParams();
   const { vente, loading, error } = useVenteBySlug(slug);
+  const { share, feedback: shareFeedback } = useSharePage();
   const [galleryOpen, setGalleryOpen] = useState(false);
   const [activeImg, setActiveImg] = useState(0);
 
@@ -64,8 +67,16 @@ export default function VentePage() {
     { num: vente.etages, label: "Étages" },
   ];
 
+  const handleShare = () => {
+    share({
+      title: vente.titre || vente.nom,
+      text: `${vente.regionBadge || ""} · ${vente.localisation}`,
+    });
+  };
+
   return (
     <div className="vente-detail">
+      <ShareToast message={shareFeedback} />
       <nav className="breadcrumb">
         <Link to="/">Accueil</Link>
         <span className="separator">›</span>
@@ -83,7 +94,9 @@ export default function VentePage() {
           </div>
         </div>
         <div className="listing-actions">
-          <button className="action-btn">↗ Partager</button>
+          <button type="button" className="action-btn" onClick={handleShare}>
+            ↗ Partager
+          </button>
           <button className="action-btn">♡ Favoris</button>
         </div>
       </div>

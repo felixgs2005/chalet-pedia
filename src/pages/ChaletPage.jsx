@@ -9,11 +9,14 @@ import { useParams, Link } from "react-router-dom";
 import { useChaletBySlug } from "../hooks/useChaletBySlug";
 import { useChalets } from "../hooks/useChalets";
 import ChaletCard from "../components/ChaletCard";
+import { useSharePage } from "../hooks/useSharePage";
+import ShareToast from "../components/ShareToast";
 
 export default function ChaletPage() {
   const { slug } = useParams();
   const { chalet, loading, error } = useChaletBySlug(slug);
   const { chalets } = useChalets();
+  const { share, feedback: shareFeedback } = useSharePage();
   const [activeImg, setActiveImg] = useState(0);
   const [galleryOpen, setGalleryOpen] = useState(false);
 
@@ -62,8 +65,16 @@ export default function ChaletPage() {
     );
   }
 
+  const handleShare = () => {
+    share({
+      title: chalet.nom,
+      text: `${chalet.regionLabel || chalet.region} · ${chalet.localisation}`,
+    });
+  };
+
   return (
     <div>
+      <ShareToast message={shareFeedback} />
       {/* FIL D'ARIANE */}
       <nav className="breadcrumb">
         <Link to="/">Accueil</Link>
@@ -92,7 +103,9 @@ export default function ChaletPage() {
         </div>
         <div className="chalet-actions">
           <button className="action-btn">♡ Sauvegarder</button>
-          <button className="action-btn">↗ Partager</button>
+          <button type="button" className="action-btn" onClick={handleShare}>
+            ↗ Partager
+          </button>
         </div>
       </div>
 

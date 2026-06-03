@@ -203,12 +203,17 @@ function normalizeServiceDescription(listing) {
   return blocks;
 }
 
+function resolveServiceImagesForSeed(listing) {
+  const thumb = listing.image || "";
+  const gallery = Array.isArray(listing.images) ? listing.images.filter(Boolean) : [];
+  if (thumb) {
+    return [thumb, ...gallery.filter((url) => url !== thumb)];
+  }
+  return gallery;
+}
+
 export function mapServiceListingToFirestore(listing, createdAt) {
-  const images = listing.images?.length
-    ? listing.images
-    : listing.image
-      ? [listing.image]
-      : [];
+  const images = resolveServiceImagesForSeed(listing);
 
   return {
     titre: listing.titre,
@@ -218,6 +223,7 @@ export function mapServiceListingToFirestore(listing, createdAt) {
     carte: listing.carte || listing.localisation || "",
     datePublication: listing.date || "",
     statut: "Publié",
+    image: images[0] || "",
     images,
     description: normalizeServiceDescription(listing),
     dateCreation: createdAt,

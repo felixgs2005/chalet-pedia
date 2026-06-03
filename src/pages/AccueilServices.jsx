@@ -1,13 +1,13 @@
 // src/pages/AccueilServices.jsx
+// Données chargées depuis Firestore (categorieServices + annoncesService).
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import {
-  serviceCategories,
-  serviceCategorySlugs,
   categorySelectGroups,
   getTotalAnnonces,
   pluralizeAnnonce,
 } from "../data/services";
+import { useServiceCategories } from "../hooks/useServiceCategories";
 
 function useReveal() {
   const ref = useRef(null);
@@ -31,9 +31,15 @@ function useReveal() {
 }
 
 export default function AccueilServices() {
+  const { categories: serviceCategories, loading, error } = useServiceCategories();
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [ctaRef, ctaVisible] = useReveal();
+
+  const serviceCategorySlugs = useMemo(
+    () => new Set(serviceCategories.map((c) => c.slug)),
+    [serviceCategories]
+  );
 
   const filteredCategories = useMemo(() => {
     return serviceCategories.filter((cat) => {
@@ -54,9 +60,9 @@ export default function AccueilServices() {
 
       return true;
     });
-  }, [selectedCategory, searchQuery]);
+  }, [selectedCategory, searchQuery, serviceCategories, serviceCategorySlugs]);
 
-  const totalAnnonces = getTotalAnnonces();
+  const totalAnnonces = getTotalAnnonces(serviceCategories);
   const visibleAnnonces = getTotalAnnonces(filteredCategories);
   const isFiltering = selectedCategory !== "all" || searchQuery.trim() !== "";
   const isNonServiceCategory =
@@ -72,6 +78,27 @@ export default function AccueilServices() {
     setSelectedCategory("all");
     setSearchQuery("");
   };
+
+  if (loading) {
+    return (
+      <div className="services-page" style={{ padding: "80px 32px", textAlign: "center" }}>
+        <div className="kicker">SERVICES</div>
+        <p style={{ marginTop: 12, color: "#4A4A48" }}>Chargement des catégories…</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="services-page" style={{ padding: "80px 32px", textAlign: "center" }}>
+        <div className="kicker">ERREUR</div>
+        <h1 className="section-title" style={{ fontSize: 36, marginTop: 12, marginBottom: 16 }}>
+          Impossible de charger les services
+        </h1>
+        <p style={{ color: "#4A4A48" }}>{error.message || "Une erreur est survenue."}</p>
+      </div>
+    );
+  }
 
   return (
     <div className="services-page">
@@ -174,7 +201,7 @@ export default function AccueilServices() {
               {filteredCategories.map((cat, i) => (
                 <Link
                   key={cat.slug}
-                  to={cat.href || `/chalets/services/${cat.slug}/`}
+                  to={cat.href || `/chalets/${cat.slug}/`}
                   className="services-category-card"
                   style={{ "--card-index": i }}
                 >
