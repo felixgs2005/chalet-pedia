@@ -2,19 +2,43 @@
 // ============================================================
 // FICHE CHALET À VENDRE — DYNAMIQUE
 // S'adapte au slug de l'URL (/chalets/chalets-a-vendre/:slug)
-// à partir de src/data/ventes.js.
+// Données chargées depuis Firestore (collection ventes).
 // ============================================================
 
 import { useState } from "react";
 import { useParams, Link } from "react-router-dom";
-import { getVenteBySlug } from "../data/ventes";
+import { useVenteBySlug } from "../hooks/useVenteBySlug";
 import { PinIcon, CameraIcon } from "../components/Icons";
 
 export default function VentePage() {
   const { slug } = useParams();
-  const vente = getVenteBySlug(slug);
+  const { vente, loading, error } = useVenteBySlug(slug);
   const [galleryOpen, setGalleryOpen] = useState(false);
   const [activeImg, setActiveImg] = useState(0);
+
+  if (loading) {
+    return (
+      <div style={{ padding: "80px 32px", textAlign: "center" }}>
+        <div className="kicker">CHALET À VENDRE</div>
+        <p style={{ marginTop: 12, color: "#4A4A48" }}>Chargement de l'annonce…</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div style={{ padding: "80px 32px", textAlign: "center" }}>
+        <div className="kicker">ERREUR</div>
+        <h1 className="section-title" style={{ fontSize: 36, marginTop: 12, marginBottom: 16 }}>
+          Impossible de charger l'annonce
+        </h1>
+        <p style={{ color: "#4A4A48", marginBottom: 32 }}>{error.message || "Une erreur est survenue."}</p>
+        <Link to="/chalets/chalets-a-vendre/" className="btn-annoncer">
+          ← Retour aux chalets à vendre
+        </Link>
+      </div>
+    );
+  }
 
   if (!vente) {
     return (

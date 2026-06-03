@@ -1,21 +1,18 @@
 // src/pages/Vente.jsx
 // ============================================================
 // PAGE CHALETS À VENDRE — LISTE (DYNAMIQUE) + FILTRES
-// Générée à partir de src/data/ventes.js. Le panneau de filtres
-// reprend le design de la page "Chalets à louer" (recherche,
-// région, prix demandé, salles de bain, tri).
+// Données chargées depuis Firestore (collection ventes).
 // ============================================================
 
 import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
-import { ventes } from "../data/ventes";
+import { useVentes } from "../hooks/useVentes";
 import { PinIcon, BedIcon, BathIcon, GarageIcon } from "../components/Icons";
 
 const prixToNumber = (prix) => Number(String(prix).replace(/[^\d]/g, "")) || 0;
 
-const regionsDispo = Array.from(new Set(ventes.map((v) => v.region)));
-
 export default function Vente() {
+  const { ventes, loading, error } = useVentes();
   const [searchQuery, setSearchQuery] = useState("");
   const [locationQuery, setLocationQuery] = useState("");
   const [region, setRegion] = useState("all");
@@ -23,6 +20,11 @@ export default function Vente() {
   const [maxPrice, setMaxPrice] = useState("");
   const [sallesDeBain, setSallesDeBain] = useState("");
   const [sortOption, setSortOption] = useState("recent");
+
+  const regionsDispo = useMemo(
+    () => Array.from(new Set(ventes.map((v) => v.region).filter(Boolean))),
+    [ventes]
+  );
 
   const handleResetFilters = () => {
     setSearchQuery("");
@@ -71,7 +73,28 @@ export default function Vente() {
         if (sortOption === "price_desc") return prixToNumber(b.prix) - prixToNumber(a.prix);
         return 0;
       });
-  }, [searchQuery, locationQuery, region, minPrice, maxPrice, sallesDeBain, sortOption]);
+  }, [ventes, searchQuery, locationQuery, region, minPrice, maxPrice, sallesDeBain, sortOption]);
+
+  if (loading) {
+    return (
+      <div className="vente-page listing-page" style={{ padding: "80px 32px", textAlign: "center" }}>
+        <div className="kicker">CHALETS À VENDRE</div>
+        <p style={{ marginTop: 12, color: "#4A4A48" }}>Chargement des annonces…</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="vente-page listing-page" style={{ padding: "80px 32px", textAlign: "center" }}>
+        <div className="kicker">ERREUR</div>
+        <h1 className="section-title" style={{ fontSize: 36, marginTop: 12, marginBottom: 16 }}>
+          Impossible de charger les annonces
+        </h1>
+        <p style={{ color: "#4A4A48" }}>{error.message || "Une erreur est survenue."}</p>
+      </div>
+    );
+  }
 
   return (
     <div className="vente-page listing-page">
@@ -221,7 +244,7 @@ export default function Vente() {
               <div className="listings-grid">
                 {filteredVentes.map((v) => (
                   <Link
-                    key={v.id}
+                    key={v.slug}
                     to={`/chalets/chalets-a-vendre/${v.slug}`}
                     className="listing-card"
                   >
