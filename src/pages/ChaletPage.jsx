@@ -1,25 +1,51 @@
 // src/pages/ChaletPage.jsx
 // ============================================================
 // PAGE DYNAMIQUE CHALET
-// Cette page est créée UNE SEULE FOIS et s'adapte automatiquement
-// selon le slug dans l'URL (/chalet/:slug).
-// Pour ajouter un nouveau chalet, modifiez uniquement src/data/chalets.js
+// Données chargées depuis Firestore (collection chalets).
 // ============================================================
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useParams, Link } from "react-router-dom";
-import { getChaletBySlug, chalets } from "../data/chalets";
+import { useChaletBySlug } from "../hooks/useChaletBySlug";
+import { useChalets } from "../hooks/useChalets";
 import ChaletCard from "../components/ChaletCard";
 
 export default function ChaletPage() {
   const { slug } = useParams();
-  const chalet = getChaletBySlug(slug);
+  const { chalet, loading, error } = useChaletBySlug(slug);
+  const { chalets } = useChalets();
   const [activeImg, setActiveImg] = useState(0);
   const [galleryOpen, setGalleryOpen] = useState(false);
 
-  const similaires = chalet
-    ? chalets.filter((c) => c.id !== chalet.id && c.region === chalet.region).slice(0, 3)
-    : [];
+  const similaires = useMemo(
+    () =>
+      chalet
+        ? chalets.filter((c) => c.id !== chalet.id && c.region === chalet.region).slice(0, 3)
+        : [],
+    [chalet, chalets]
+  );
+
+  if (loading) {
+    return (
+      <div style={{ padding: "80px 32px", textAlign: "center" }}>
+        <div className="kicker">CHALET</div>
+        <p style={{ marginTop: 12, color: "#4A4A48" }}>Chargement de l'annonce…</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div style={{ padding: "80px 32px", textAlign: "center" }}>
+        <div className="kicker">ERREUR</div>
+        <h1 className="section-title" style={{ fontSize: 36, marginTop: 12, marginBottom: 16 }}>
+          Impossible de charger le chalet
+        </h1>
+        <p style={{ color: "#4A4A48", marginBottom: 32 }}>{error.message || "Une erreur est survenue."}</p>
+        <Link to="/chalets/chalet-a-louer/" className="btn-annoncer">← Retour aux chalets à louer</Link>
+      </div>
+    );
+  }
 
   if (!chalet) {
     return (
