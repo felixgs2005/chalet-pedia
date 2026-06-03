@@ -1,5 +1,6 @@
 // src/App.jsx
 import { BrowserRouter, Routes, Route, ScrollRestoration } from "react-router-dom";
+import { AuthProvider } from "./context/AuthContext";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 import HomePage from "./pages/HomePage";
@@ -42,53 +43,55 @@ function Layout({ children }) {
 
 export default function App() {
   return (
-    <BrowserRouter>
-      <Layout>
-        <Routes>
-          <Route path="/auth" element={<AuthPage />} />
-          <Route path="/" element={<HomePage />} />
-          <Route path="/chalet/:slug" element={<ChaletPage />} />
-          <Route path="/chalets/chalet-a-louer/" element={<ALouer />} />
-          <Route path="/chalets/chalets-a-vendre/" element={<Vente />} />
-          <Route path="/chalets/chalets-a-vendre/:slug" element={<VentePage />} />
-          {/* URLs type chaletpedia.com : /chalets/chalets-a-louer-laurentides/ */}
-          <Route path="/chalets/:pageSlug" element={<ALouer />} />
-          <Route path="/blogue/" element={<Blogue />} />
-          <Route path="/blogue/:slug" element={<ArticlePage />} />
-          <Route path="/academie/astuces/" element={<Astuces />} />
-          <Route path="/academie/astuces/Wikia" element={<Wikia />} />
-          <Route path="/academie/astuces/:slug" element={<ArticlePage />} />
-          <Route path="/chalets/services/" element={<AccueilServices />} />
-          <Route path="/chalets/construction/" element={<Construction />} />
-          <Route path="/chalets/decoration/" element={<Decoration />} />
-          <Route path="/chalets/entretien/" element={<Entretien />} />
-          <Route path="/chalets/multimedia/" element={<Multimedia />} />
-          {/* Détail d'une annonce de service : /chalets/construction/ova-chalet-design */}
-          <Route path="/chalets/:categorie/:slug" element={<ServiceDetail />} />
-          {/* Pages footer */}
-          <Route path="/faq/" element={<FAQ />} />
-          <Route path="/contact/" element={<Contact />} />
-          <Route path="/promotions/" element={<Promotions />} />
-          <Route path="/publicite/" element={<Publicite />} />
-          <Route path="/politique-de-confidentialite/" element={<PolitiqueConfidentialite />} />
-          <Route path="/conditions-utilisation/" element={<ConditionsUtilisation />} />
-          <Route path="/a-propos/" element={<APropos />} />
-          <Route
-            path="/inscrivez-votre-entreprise-dans-le-repertoire/"
-            element={<InscrireRepertoire />}
-          />
-          <Route path="/annoncez-votre-chalet/" element={<AnnoncezVotreChalet />} />
-          <Route
-            path="*"
-            element={
-              <div style={{ padding: "80px 32px", textAlign: "center" }}>
-                <div className="kicker">404</div>
-                <h1 className="section-title" style={{ fontSize: 48, marginTop: 12 }}>Page introuvable</h1>
-              </div>
-            }
-          />
-        </Routes>
-      </Layout>
-    </BrowserRouter>
+    <AuthProvider>
+      <BrowserRouter>
+        <Layout>
+          <Routes>
+            <Route path="/auth" element={<AuthPage />} />
+            <Route path="/" element={<HomePage />} />
+            <Route path="/chalet/:slug" element={<ChaletPage />} />
+            <Route path="/chalets/chalet-a-louer/" element={<ALouer />} />
+            <Route path="/chalets/chalets-a-vendre/" element={<Vente />} />
+            <Route path="/chalets/chalets-a-vendre/:slug" element={<VentePage />} />
+            {/* URLs type chaletpedia.com : /chalets/chalets-a-louer-laurentides/ */}
+            <Route path="/chalets/:pageSlug" element={<ALouer />} />
+            <Route path="/blogue/" element={<Blogue />} />
+            <Route path="/blogue/:slug" element={<ArticlePage />} />
+            <Route path="/academie/astuces/" element={<Astuces />} />
+            <Route path="/academie/astuces/Wikia" element={<Wikia />} />
+            <Route path="/academie/astuces/:slug" element={<ArticlePage />} />
+            <Route path="/chalets/services/" element={<AccueilServices />} />
+            <Route path="/chalets/construction/" element={<Construction />} />
+            <Route path="/chalets/decoration/" element={<Decoration />} />
+            <Route path="/chalets/entretien/" element={<Entretien />} />
+            <Route path="/chalets/multimedia/" element={<Multimedia />} />
+            {/* Détail d'une annonce de service : /chalets/construction/ova-chalet-design */}
+            <Route path="/chalets/:categorie/:slug" element={<ServiceDetail />} />
+            {/* Pages footer */}
+            <Route path="/faq/" element={<FAQ />} />
+            <Route path="/contact/" element={<Contact />} />
+            <Route path="/promotions/" element={<Promotions />} />
+            <Route path="/publicite/" element={<Publicite />} />
+            <Route path="/politique-de-confidentialite/" element={<PolitiqueConfidentialite />} />
+            <Route path="/conditions-utilisation/" element={<ConditionsUtilisation />} />
+            <Route path="/a-propos/" element={<APropos />} />
+            <Route
+              path="/inscrivez-votre-entreprise-dans-le-repertoire/"
+              element={<InscrireRepertoire />}
+            />
+            <Route path="/annoncez-votre-chalet/" element={<AnnoncezVotreChalet />} />
+            <Route
+              path="*"
+              element={
+                <div style={{ padding: "80px 32px", textAlign: "center" }}>
+                  <div className="kicker">404</div>
+                  <h1 className="section-title" style={{ fontSize: 48, marginTop: 12 }}>Page introuvable</h1>
+                </div>
+              }
+            />
+          </Routes>
+        </Layout>
+      </BrowserRouter>
+    </AuthProvider>
   );
 }
