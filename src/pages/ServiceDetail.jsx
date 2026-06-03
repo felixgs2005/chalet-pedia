@@ -1,30 +1,58 @@
 // src/pages/ServiceDetail.jsx
 // Page de détail d'une annonce de service (ex. OVA Chalet Design)
-// Reprend la disposition / le style de ChaletPage.jsx, avec une carte
-// de contact retravaillée + animations (classes "sd-*" maison).
+// Données : Firestore categorieServices / annoncesService
 // Générique : /chalets/:categorie/:slug
 import { useEffect, useRef, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import { getListing } from "../data/services";
+import { useServiceListingBySlug } from "../hooks/useServiceListingBySlug";
+import ServiceDescriptionContent from "../components/ServiceDescriptionContent";
+import { resolveServiceImages } from "../utils/serviceImages";
+import { useSharePage } from "../hooks/useSharePage";
+import ShareToast from "../components/ShareToast";
 
-function useReveal(threshold = 0.12) {
+/** Animation au scroll — se réactive quand le contenu Firestore est monté. */
+function useReveal(threshold = 0.12, ready = true) {
   const ref = useRef(null);
   const [visible, setVisible] = useState(false);
+
   useEffect(() => {
+    if (!ready) {
+      setVisible(false);
+      return undefined;
+    }
+
     const node = ref.current;
     if (!node) return undefined;
+
+    setVisible(false);
+
+    const show = () => setVisible(true);
     const obs = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
-          setVisible(true);
+          show();
           obs.disconnect();
         }
       },
-      { threshold }
+      { threshold, rootMargin: "48px 0px" }
     );
+
     obs.observe(node);
-    return () => obs.disconnect();
-  }, [threshold]);
+
+    const raf = requestAnimationFrame(() => {
+      const rect = node.getBoundingClientRect();
+      if (rect.top < window.innerHeight && rect.bottom > 0) {
+        show();
+        obs.disconnect();
+      }
+    });
+
+    return () => {
+      cancelAnimationFrame(raf);
+      obs.disconnect();
+    };
+  }, [threshold, ready]);
+
   return [ref, visible];
 }
 
@@ -32,12 +60,6 @@ const IconPencil = () => (
   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
     <path d="M12 20h9" />
     <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z" />
-  </svg>
-);
-const IconTag = () => (
-  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-    <path d="M20.59 13.41 13.42 20.6a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82Z" />
-    <circle cx="7" cy="7" r="1.2" />
   </svg>
 );
 const IconFlag = () => (
@@ -49,11 +71,32 @@ const IconFlag = () => (
 
 export default function ServiceDetail() {
   const { categorie, slug } = useParams();
-  const listing = getListing(categorie, slug);
+  const { listing, loading, error } = useServiceListingBySlug(categorie, slug);
+  const { share, feedback: shareFeedback } = useSharePage();
   const [activeImg, setActiveImg] = useState(0);
   const [galleryOpen, setGalleryOpen] = useState(false);
-  const [descRef, descVisible] = useReveal();
-  const [mapRef, mapVisible] = useReveal();
+  const contentReady = Boolean(listing);
+  const [mapRef, mapVisible] = useReveal(0.12, contentReady);
+
+  if (loading) {
+    return (
+      <div style={{ padding: "80px 32px", textAlign: "center", color: "#4A4A48" }}>
+        Chargement de l&apos;annonce…
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div style={{ padding: "80px 32px", textAlign: "center" }}>
+        <div className="kicker">ERREUR</div>
+        <h1 className="section-title" style={{ fontSize: 36, marginTop: 12, marginBottom: 16 }}>
+          Impossible de charger l&apos;annonce
+        </h1>
+        <p style={{ color: "#4A4A48" }}>{error.message || "Une erreur est survenue."}</p>
+      </div>
+    );
+  }
 
   if (!listing) {
     return (
@@ -72,14 +115,19 @@ export default function ServiceDetail() {
     );
   }
 
-  const images =
-    Array.isArray(listing.images) && listing.images.length > 0
-      ? listing.images
-      : [listing.image];
+  const images = resolveServiceImages(listing);
   const singleImage = images.length < 2;
+
+  const handleShare = () => {
+    share({
+      title: listing.titre,
+      text: `${listing.categorieNom} · ${listing.localisation}`,
+    });
+  };
 
   return (
     <div className="service-detail-page">
+      <ShareToast message={shareFeedback} />
       {/* FIL D'ARIANE */}
       <nav className="breadcrumb sd-reveal">
         <Link to="/">Accueil</Link>
@@ -105,26 +153,39 @@ export default function ServiceDetail() {
         </div>
         <div className="chalet-actions">
           <button className="action-btn">♡ Ajouter aux favoris</button>
-          <button className="action-btn">↗ Partager</button>
+          <button type="button" className="action-btn" onClick={handleShare}>
+            ↗ Partager
+          </button>
         </div>
       </div>
 
       {/* GALERIE */}
       <div
-        className="gallery sd-reveal sd-reveal--d2"
+        className={`gallery sd-reveal sd-reveal--d2${singleImage ? " service-gallery--hero" : " service-gallery--grid"}`}
         onClick={() => setGalleryOpen(true)}
-        style={
-          singleImage
-            ? { gridTemplateColumns: "1fr", gridTemplateRows: "420px", cursor: "pointer" }
-            : { cursor: "pointer" }
-        }
+        role="button"
+        tabIndex={0}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            setGalleryOpen(true);
+          }
+        }}
+        aria-label="Ouvrir la galerie photos"
       >
         {images.slice(0, 4).map((img, i) => (
           <div
             key={i}
             className={`gallery-img${i === 0 ? " main" : ""}`}
-            style={{ backgroundImage: `url('${img}')` }}
           >
+            <img
+              className="gallery-img__photo"
+              src={img}
+              alt={`${listing.titre} — photo ${i + 1}`}
+              loading={i === 0 ? "eager" : "lazy"}
+              decoding="async"
+              draggable={false}
+            />
             {i === 3 && images.length >= 4 && (
               <div className="gallery-more">📷 Voir toutes les photos</div>
             )}
@@ -181,71 +242,16 @@ export default function ServiceDetail() {
           <div className="info-block">
             <div className="info-label">À propos de cette annonce</div>
             <h2 className="info-title">{listing.titre}</h2>
-            {listing.numero != null && (
+            {listing.numero ? (
               <div style={{ fontFamily: "monospace", fontSize: 11, color: "#9A9A98", marginBottom: 4, padding: "6px 12px", background: "#FAFAF6", borderRadius: 6, display: "inline-block" }}>
                 Annonce <strong style={{ color: "#0F0F0F" }}>#{listing.numero}</strong>
               </div>
-            )}
+            ) : null}
           </div>
 
-          <div
-            ref={descRef}
-            className={`info-block sd-scroll-reveal${descVisible ? " is-visible" : ""}`}
-          >
+          <div className="info-block">
             <div className="info-label">Description</div>
-            {Array.isArray(listing.description) ? (
-              listing.description.map((block, i) => {
-                if (block.h) {
-                  return (
-                    <h3 className="sd-desc-h" key={i}>
-                      {block.h}
-                    </h3>
-                  );
-                }
-                if (block.ul) {
-                  return (
-                    <ul className="sd-desc-list" key={i}>
-                      {block.ul.map((item, j) => (
-                        <li key={j} style={{ "--j": j }}>
-                          {item}
-                        </li>
-                      ))}
-                    </ul>
-                  );
-                }
-                return (
-                  <p
-                    className="info-text"
-                    key={i}
-                    style={block.bold ? { fontWeight: 700, color: "#0F0F0F" } : undefined}
-                  >
-                    {block.p}
-                  </p>
-                );
-              })
-            ) : (
-              <>
-                {listing.accroche && (
-                  <p className="info-text" style={{ fontWeight: 700, color: "#0F0F0F" }}>
-                    {listing.accroche}
-                  </p>
-                )}
-                {listing.intro && <p className="info-text">{listing.intro}</p>}
-                {Array.isArray(listing.services) && listing.services.length > 0 && (
-                  <>
-                    <div className="info-label" style={{ marginTop: 18 }}>Services</div>
-                    <div className="sd-services">
-                      {listing.services.map((s, i) => (
-                        <div className="sd-service" key={i} style={{ "--i": i }}>
-                          <span className="sd-service__num">{i + 1}</span>
-                          <span className="sd-service__text">{s}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </>
-                )}
-              </>
-            )}
+            <ServiceDescriptionContent listing={listing} />
           </div>
         </div>
 
@@ -268,19 +274,13 @@ export default function ServiceDetail() {
                 Contact direct avec le prestataire
               </div>
 
-              <button className="sd-btn sd-btn--primary">
-                Magasiner le catalogue <span aria-hidden="true">→</span>
-              </button>
-              <button className="sd-btn sd-btn--ghost">Contacter l'annonceur</button>
+              <button className="sd-btn sd-btn--primary">Contacter l&apos;annonceur</button>
 
               <div className="sd-contact-card__divider" />
 
               <div className="sd-contact-card__links">
                 <button className="sd-link-action">
                   <IconPencil /> Rédiger un avis
-                </button>
-                <button className="sd-link-action">
-                  <IconTag /> Réclamer l'annonce
                 </button>
                 <button className="sd-link-action sd-link-action--danger">
                   <IconFlag /> Signaler l'annonce

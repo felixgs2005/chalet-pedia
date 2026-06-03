@@ -19,7 +19,10 @@ export const serviceCategories = [
         date: "16 mai 2025",
         numero: 2926,
         image: "/images/services/OvaChalet.webp",
-        images: ["/images/services/construction.webp"],
+        images: [
+          "/images/services/OvaChalet.webp",
+          "/images/services/construction.webp",
+        ],
         accroche: "Créons votre espace de rêve en pleine nature !",
         intro:
           "Notre équipe de designers d'intérieur conçoit des chalets personnalisés selon vos besoins et goûts.",
@@ -48,7 +51,10 @@ export const serviceCategories = [
         date: "3 octobre 2025",
         numero: 3887,
         image: "/images/services/MeubleDeChalet.webp",
-        images: ["/images/services/decoration.webp"],
+        images: [
+          "/images/services/MeubleDeChalet.webp",
+          "/images/services/decoration.webp",
+        ],
         carte: "Québec, Canada",
         description: [
           { h: "Lot complet de meubles pour chalet – prêt à l'emploi" },
@@ -117,7 +123,10 @@ export const serviceCategories = [
         date: "17 janvier 2025",
         numero: 2178,
         image: "/images/services/Verbois.webp",
-        images: ["/images/services/decoration.webp"],
+        images: [
+          "/images/services/Verbois.webp",
+          "/images/services/decoration.webp",
+        ],
         carte: "Rivière-du-Loup, Québec, Canada",
         description: [
           {
@@ -138,7 +147,10 @@ export const serviceCategories = [
         date: "28 octobre 2024",
         numero: 1281,
         image: "/images/services/Rustik.webp",
-        images: ["/images/services/decoration.webp"],
+        images: [
+          "/images/services/Rustik.webp",
+          "/images/services/decoration.webp",
+        ],
         carte: "Saint-Sauveur, Québec, Canada",
         description: [
           { h: "🪵 RUSTIK — Décorations en bois authentiques pour chalets locatifs" },
