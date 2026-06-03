@@ -597,4 +597,4 @@ export const getChaletsCoups = () => chalets.slice(0, 3);
 
 // Les articles du blogue sont désormais centralisés dans src/data/articles.js.
 // On réexporte ici pour préserver la compatibilité des imports existants.
-export { articles } from "./articles";
+export { articles } from "./articles.js";
