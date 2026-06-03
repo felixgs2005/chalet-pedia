@@ -1,7 +1,7 @@
 // src/pages/ALouer.jsx
 import { useState, useMemo, useEffect } from "react";
 import { Link, useParams, useNavigate } from "react-router-dom";
-import { chalets } from "../data/chalets";
+import { useChalets } from "../hooks/useChalets";
 import {
   getRegionConfig,
   REGION_NAV_ITEMS,
@@ -68,6 +68,7 @@ function featuresFromExperienceKey(experienceKey) {
 }
 
 export default function ALouer() {
+  const { chalets, loading, error } = useChalets();
   const { pageSlug } = useParams();
   const navigate = useNavigate();
 
@@ -314,6 +315,7 @@ export default function ALouer() {
         return parseDate(b.dateAjout) - parseDate(a.dateAjout);
       });
   }, [
+    chalets,
     regionCategory,
     experienceKey,
     searchQuery,
@@ -331,6 +333,27 @@ export default function ALouer() {
   ]);
 
   const mapChalets = filteredChalets.filter((c) => c.coordonnees?.lat && c.coordonnees?.lng);
+
+  if (loading) {
+    return (
+      <div className="listing-page" style={{ padding: "80px 32px", textAlign: "center" }}>
+        <div className="kicker">CHALETS À LOUER</div>
+        <p style={{ marginTop: 12, color: "#4A4A48" }}>Chargement des annonces…</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="listing-page" style={{ padding: "80px 32px", textAlign: "center" }}>
+        <div className="kicker">ERREUR</div>
+        <h1 className="section-title" style={{ fontSize: 36, marginTop: 12, marginBottom: 16 }}>
+          Impossible de charger les chalets
+        </h1>
+        <p style={{ color: "#4A4A48" }}>{error.message || "Une erreur est survenue."}</p>
+      </div>
+    );
+  }
 
   if (isInvalidSlug) {
     return (
