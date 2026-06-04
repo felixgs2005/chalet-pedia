@@ -99,7 +99,7 @@ export default function Header() {
         ) : null}
 
         <Link
-          to="/annoncez-votre-chalet/"
+          to="/submit-listing/details/"
           className="btn-annoncer"
           style={{ display: "none" }}
           onClick={() => setMenuOpen(false)}
@@ -116,7 +116,7 @@ export default function Header() {
         />
       ) : null}
 
-      <Link to="/annoncez-votre-chalet/" className="btn-annoncer">
+      <Link to="/submit-listing/details/" className="btn-annoncer">
         Annoncez →
       </Link>
 

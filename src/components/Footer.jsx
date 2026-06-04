@@ -23,7 +23,7 @@ export default function Footer() {
         {/* ── Colonne 2 : Propriétaires ── */}
         <div className="footer-nav-col">
           <div className="footer-col-title">Propriétaires</div>
-          <Link to="/annoncez-votre-chalet/" className="footer-link">
+          <Link to="/submit-listing/details/" className="footer-link">
             Annoncez votre chalet
           </Link>
           <Link to="/chalets/services/?inscrire=1" className="footer-link">
@@ -57,9 +57,9 @@ export default function Footer() {
           <Link to="/faq/" className="footer-link">
             F.A.Q
           </Link>
-          <Link to="/contact/" className="footer-link">
+          <a href="mailto:info@chaletpedia.com" className="footer-link">
             Contact
-          </Link>
+          </a>
         </div>
 
       </div>

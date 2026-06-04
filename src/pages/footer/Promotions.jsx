@@ -94,7 +94,7 @@ export default function Promotions() {
             exceptionnels — une transformation numérique complète et une
             visibilité multicanal pour augmenter vos réservations.
           </p>
-          <Link to="/contact/" className="promo-hero-cta">
+          <Link to="/submit-listing/details/" className="promo-hero-cta">
             Réservez nos services →
           </Link>
         </div>
@@ -169,7 +169,7 @@ export default function Promotions() {
                     <span className="promo-exemple-label">Exemple</span>
                     <p>{service.exemple}</p>
                   </div>
-                  <Link to="/contact/" className="promo-service-cta">
+                  <Link to="/promotions/" className="promo-service-cta">
                     {service.cta} →
                   </Link>
                 </div>
@@ -207,7 +207,7 @@ export default function Promotions() {
             Profitez de nos services pour attirer des clients qualifiés et
             générer des réservations facilement.
           </p>
-          <Link to="/contact/" className="promo-final-btn">
+          <Link to="/submit-listing/details/" className="promo-final-btn">
             Réservez nos services marketing →
           </Link>
         </div>

@@ -21,14 +21,12 @@ import Multimedia from "./pages/Multimedia";
 import ServiceDetail from "./pages/ServiceDetail";
 import Wikia from "./pages/Wikia";
 import FAQ from "./pages/footer/FAQ";
-import Contact from "./pages/footer/Contact";
+import SubmitListingDetails from "./pages/submit-listing/SubmitListingDetails";
 import Promotions from "./pages/footer/Promotions";
 import Publicite from "./pages/footer/Publicite";
 import PolitiqueConfidentialite from "./pages/footer/PolitiqueConfidentialite";
 import ConditionsUtilisation from "./pages/footer/ConditionsUtilisation";
 import APropos from "./pages/footer/APropos";
-import InscrireRepertoire from "./pages/footer/InscrireRepertoire";
-import AnnoncezVotreChalet from "./pages/footer/AnnoncezVotreChalet";
 import RequireAuth from "./components/RequireAuth";
 import Reglages from "./pages/compte/Reglages";
 import Favoris from "./pages/compte/Favoris";
@@ -36,6 +34,7 @@ import Messages from "./pages/compte/Messages";
 import MessageConversation from "./pages/compte/MessageConversation";
 import "./styles/global.css";
 import "./styles/compte.css";
+import "./styles/submit-listing.css";
 import "./styles/footer-pages.css";
 
 function Layout({ children }) {
@@ -77,17 +76,19 @@ export default function App() {
             <Route path="/chalets/:categorie/:slug" element={<ServiceDetail />} />
             {/* Pages footer */}
             <Route path="/faq/" element={<FAQ />} />
-            <Route path="/contact/" element={<Contact />} />
+            <Route
+              path="/submit-listing/details/"
+              element={
+                <RequireAuth>
+                  <SubmitListingDetails />
+                </RequireAuth>
+              }
+            />
             <Route path="/promotions/" element={<Promotions />} />
             <Route path="/publicite/" element={<Publicite />} />
             <Route path="/politique-de-confidentialite/" element={<PolitiqueConfidentialite />} />
             <Route path="/conditions-utilisation/" element={<ConditionsUtilisation />} />
             <Route path="/a-propos/" element={<APropos />} />
-            <Route
-              path="/inscrivez-votre-entreprise-dans-le-repertoire/"
-              element={<InscrireRepertoire />}
-            />
-            <Route path="/annoncez-votre-chalet/" element={<AnnoncezVotreChalet />} />
             <Route
               path="/compte/reglages/"
               element={

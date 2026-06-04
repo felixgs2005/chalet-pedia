@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import HomePage from "./HomePage";
 import { useAuth } from "../context/AuthContext";
 
@@ -15,7 +15,9 @@ export function AuthPage() {
 
 function Auth() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { login, signup } = useAuth();
+  const returnTo = location.state?.from;
 
   const [visible, setVisible] = useState(false);
   const [closing, setClosing] = useState(false);
@@ -36,8 +38,8 @@ function Auth() {
     if (closing) return;
     setClosing(true);
     setVisible(false);
-    window.setTimeout(() => navigate("/"), 280);
-  }, [closing, navigate]);
+    window.setTimeout(() => navigate(returnTo || "/"), 280);
+  }, [closing, navigate, returnTo]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -66,7 +68,9 @@ function Auth() {
       } else {
         await login(email, password);
       }
-      handleClose();
+      setClosing(true);
+      setVisible(false);
+      window.setTimeout(() => navigate(returnTo || "/", { replace: true }), 280);
     } catch (err) {
       console.error(err);
       switch (err.code) {

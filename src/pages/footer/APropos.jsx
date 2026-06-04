@@ -206,9 +206,9 @@ export default function APropos() {
             Que vous soyez propriétaire, locataire ou simplement curieux,
             contactez-nous. Nous aimerions vous connaître.
           </p>
-          <Link to="/contact/" className="apropos-contact-btn">
+          <a href="mailto:info@chaletpedia.com" className="apropos-contact-btn">
             Nous contacter →
-          </Link>
+          </a>
         </div>
       </section>
 

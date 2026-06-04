@@ -1,0 +1,346 @@
+/* Formulaire publication annonce chalet — /submit-listing/details/ */
+.submit-listing-page {
+  min-height: calc(100vh - 160px);
+  background: #2b2f2c;
+  padding: 40px 20px 72px;
+}
+
+.submit-listing-page__inner {
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+.submit-listing-page__title {
+  font-family: "Archivo Black", sans-serif;
+  font-size: clamp(28px, 5vw, 36px);
+  color: #fff;
+  margin-bottom: 8px;
+  letter-spacing: -0.02em;
+}
+
+.submit-listing-page__intro {
+  font-size: 14px;
+  line-height: 1.55;
+  color: rgba(255, 255, 255, 0.72);
+  margin-bottom: 32px;
+}
+
+.submit-listing-form {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.submit-listing-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.submit-listing-label {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #8fb9a3;
+}
+
+.submit-listing-label--muted {
+  color: rgba(143, 185, 163, 0.85);
+}
+
+.submit-listing-label span.req {
+  color: #c5e0d4;
+}
+
+.submit-listing-hint {
+  font-size: 13px;
+  line-height: 1.55;
+  color: rgba(255, 255, 255, 0.6);
+  margin: -2px 0 4px;
+}
+
+.submit-listing-input,
+.submit-listing-select,
+.submit-listing-textarea {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 6px;
+  background: rgba(0, 0, 0, 0.25);
+  color: #fff;
+  font-family: inherit;
+  font-size: 15px;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.submit-listing-input::placeholder,
+.submit-listing-textarea::placeholder {
+  color: rgba(255, 255, 255, 0.35);
+}
+
+.submit-listing-input:focus,
+.submit-listing-select:focus,
+.submit-listing-textarea:focus {
+  outline: none;
+  border-color: #8fb9a3;
+  box-shadow: 0 0 0 3px rgba(143, 185, 163, 0.2);
+}
+
+.submit-listing-select {
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%238fb9a3' d='M6 8L0 0h12z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  padding-right: 36px;
+}
+
+.submit-listing-textarea {
+  min-height: 120px;
+  resize: vertical;
+}
+
+.submit-listing-category-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  background: rgba(143, 185, 163, 0.2);
+  border: 1px solid rgba(143, 185, 163, 0.45);
+  color: #e8f3ec;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.submit-listing-file-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+}
+
+.submit-listing-file-btn {
+  display: inline-flex;
+  align-items: center;
+  padding: 10px 18px;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.submit-listing-file-btn:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.14);
+}
+
+.submit-listing-file-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.submit-listing-file-input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.submit-listing-file-count {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.submit-listing-gallery {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  list-style: none;
+  margin: 8px 0 0;
+  padding: 0;
+}
+
+.submit-listing-gallery__thumb {
+  position: relative;
+  width: 72px;
+  height: 72px;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.submit-listing-gallery__thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.submit-listing-gallery__remove {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 22px;
+  height: 22px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.65);
+  color: #fff;
+  font-size: 14px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.submit-listing-grid-3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+}
+
+.submit-listing-alert {
+  padding: 12px 14px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.submit-listing-alert--error {
+  background: rgba(179, 38, 30, 0.25);
+  border-left: 4px solid #e85d52;
+  color: #ffd6d3;
+}
+
+.submit-listing-alert--success {
+  background: rgba(31, 77, 58, 0.4);
+  border-left: 4px solid #8fb9a3;
+  color: #e8f3ec;
+}
+
+.submit-listing-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding-top: 8px;
+}
+
+.submit-listing-submit {
+  padding: 14px 28px;
+  border: none;
+  border-radius: 999px;
+  background: #c5e0d4;
+  color: #1a2e24;
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: transform 0.15s ease, background 0.15s ease;
+}
+
+.submit-listing-submit:hover:not(:disabled) {
+  background: #fff;
+  transform: translateY(-1px);
+}
+
+.submit-listing-submit:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.submit-listing-slug {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.45);
+  margin-top: 4px;
+}
+
+/* Éditeur tarification */
+.submit-listing-rich {
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 6px;
+  overflow: hidden;
+  background: #fff;
+}
+
+.submit-listing-rich__toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px;
+  padding: 6px 8px;
+  border-bottom: 1px solid #e0ddd6;
+  background: #f8f6f1;
+}
+
+.submit-listing-rich__btn {
+  min-width: 32px;
+  height: 32px;
+  padding: 0 8px;
+  border: none;
+  border-radius: 4px;
+  background: transparent;
+  color: #1a2e24;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.submit-listing-rich__btn:hover:not(:disabled) {
+  background: rgba(31, 77, 58, 0.12);
+}
+
+.submit-listing-rich__btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.submit-listing-rich__editor {
+  min-height: 140px;
+  padding: 12px 14px;
+  color: #1a1a18;
+  font-size: 15px;
+  line-height: 1.55;
+  outline: none;
+}
+
+.submit-listing-rich__editor:empty::before {
+  content: attr(data-placeholder);
+  color: #9a9a98;
+  pointer-events: none;
+}
+
+.submit-listing-rich__editor ul,
+.submit-listing-rich__editor ol {
+  margin: 0.5em 0;
+  padding-left: 1.4em;
+}
+
+.submit-listing-input--light {
+  background: #fff;
+  color: #1a1a18;
+  border-color: rgba(0, 0, 0, 0.15);
+}
+
+.submit-listing-input--light::placeholder {
+  color: #9a9a98;
+}
+
+.submit-listing-input--light:focus {
+  border-color: #1f4d3a;
+  box-shadow: 0 0 0 3px rgba(31, 77, 58, 0.15);
+}
+
+.submit-listing-textarea.submit-listing-input--light {
+  background: #fff;
+  color: #1a1a18;
+}
+
+@media (max-width: 640px) {
+  .submit-listing-grid-3 {
+    grid-template-columns: 1fr;
+  }
+}

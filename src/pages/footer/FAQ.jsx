@@ -186,7 +186,7 @@ export default function FAQ() {
               Si vous ne trouvez pas la réponse à votre question, n'hésitez pas
               à nous contacter directement. Notre équipe répond sous 24h.
             </p>
-            <a href="/contact/" className="faq-contact-btn">
+            <a href="mailto:info@chaletpedia.com" className="faq-contact-btn">
               Nous contacter →
             </a>
           </div>
