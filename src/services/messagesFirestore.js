@@ -8,6 +8,8 @@ import {
 } from "firebase/firestore";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { db, storage } from "../firebase";
+import { notifyAdvertiserByEmail } from "./notifyAdvertiserEmail";
+import { extractEmailFromDescription } from "../utils/extractEmailFromDescription";
 import { resolveUtilisateur, resolveUtilisateurByUid } from "../utils/resolveUtilisateur";
 
 export function buildConversationKey(typeEntite, entiteId, uidA, uidB) {
@@ -73,6 +75,10 @@ export function buildChaletMessageCible(chalet) {
 
 export function buildServiceMessageCible(listing) {
   if (!listing?.categorieSlug || !listing?.slug) return null;
+  const destinataireEmail =
+    listing.courrielContact ||
+    extractEmailFromDescription(listing.description) ||
+    "";
   return {
     typeEntite: "service",
     entiteId: listing.slug,
@@ -80,6 +86,7 @@ export function buildServiceMessageCible(listing) {
     entiteUrl: `/chalets/${listing.categorieSlug}/${listing.slug}`,
     destinataireUid: listing.proprietaireId || "",
     destinataireNom: listing.nomEntreprise || "Annonceur",
+    destinataireEmail,
   };
 }
 
@@ -120,12 +127,16 @@ export async function sendMessage(cible, { texte, utilisateur, fichier }) {
   const destinataire = cible.destinataireUid
     ? await resolveUtilisateurByUid(cible.destinataireUid)
     : {
-        uid: cible.destinataireUid || "",
+        uid: "",
         displayName: cible.destinataireNom || "Annonceur",
-        email: null,
+        email: cible.destinataireEmail || null,
         prenom: null,
         nom: null,
       };
+
+  if (!destinataire.email && cible.destinataireEmail) {
+    destinataire.email = cible.destinataireEmail;
+  }
 
   const participantUids = [expediteur.uid, destinataire.uid].filter(Boolean);
   const conversationKey = buildConversationKey(
@@ -157,7 +168,20 @@ export async function sendMessage(cible, { texte, utilisateur, fichier }) {
     dateEnvoi: serverTimestamp(),
   });
 
-  return { conversationKey };
+  const email = await notifyAdvertiserByEmail({
+    destinataire,
+    cible,
+    expediteur,
+    texte: trimmed,
+    pieceJointeUrl,
+    pieceJointeNom,
+  }).catch((err) => ({
+    sent: false,
+    reason: "send_failed",
+    error: err.message || "Courriel non envoyé.",
+  }));
+
+  return { conversationKey, email };
 }
 
 export async function fetchMessagesForUser(utilisateurUid) {

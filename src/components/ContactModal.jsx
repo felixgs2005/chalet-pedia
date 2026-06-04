@@ -13,6 +13,7 @@ export default function ContactModal({ open, onClose, cible, onSent }) {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
   const [sent, setSent] = useState(false);
+  const [emailNotice, setEmailNotice] = useState("");
 
   useEffect(() => {
     if (!open) {
@@ -22,6 +23,7 @@ export default function ContactModal({ open, onClose, cible, onSent }) {
       setSubmitting(false);
       setError("");
       setSent(false);
+      setEmailNotice("");
     }
   }, [open]);
 
@@ -62,8 +64,20 @@ export default function ContactModal({ open, onClose, cible, onSent }) {
                   fichier: file,
                 });
                 setSent(true);
+                const email = result.email;
+                let notice = "";
+                if (email?.emailJsSent && email?.toEmail) {
+                  notice = `Un courriel a été envoyé à ${email.toEmail}.`;
+                } else if (email?.queuedOnly && email?.toEmail) {
+                  notice = `Le courriel à ${email.toEmail} est en file (extension Firebase « Trigger Email » requise).`;
+                } else if (email?.toEmail && !email?.sent) {
+                  notice = `Courriel non envoyé à ${email.toEmail} : configurez EmailJS ou l'extension Firebase Trigger Email.`;
+                } else if (email?.reason === "no_advertiser_email") {
+                  notice = "Aucun courriel d'annonceur sur cette fiche.";
+                }
+                setEmailNotice(notice);
                 onSent?.(result);
-                window.setTimeout(() => requestClose(), 1600);
+                window.setTimeout(() => requestClose(), notice ? 4000 : 1600);
               } catch (err) {
                 setError(err.message || "Impossible d'envoyer le message.");
               } finally {
@@ -73,7 +87,8 @@ export default function ContactModal({ open, onClose, cible, onSent }) {
           >
             {sent && (
               <div className="sd-action-modal__success" role="status">
-                Votre message a été envoyé.
+                Votre message a été envoyé dans la messagerie ChaletPedia.
+                {emailNotice ? ` ${emailNotice}` : null}
               </div>
             )}
             {error && (

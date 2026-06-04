@@ -50,7 +50,7 @@ export async function resolveUtilisateurByUid(uid) {
 
   return {
     uid,
-    email: profile.email || null,
+    email: profile.email || profile.courriel || null,
     displayName,
     prenom: prenom || null,
     nom: nom || null,
