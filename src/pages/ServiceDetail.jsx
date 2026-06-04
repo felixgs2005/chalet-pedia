@@ -176,6 +176,7 @@ export default function ServiceDetail() {
         avisCible={avisCible}
         messageCible={messageCible}
         onAvisSubmitted={refreshAvis}
+        listing={listing}
       />
       {/* FIL D'ARIANE */}
       <nav className="breadcrumb sd-reveal">

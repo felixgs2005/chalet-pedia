@@ -59,6 +59,11 @@ service cloud.firestore {
         && resource.data.utilisateur.uid == request.auth.uid;
     }
 
+    match /signalements/{signalementId} {
+      allow create: if true;
+      allow read, update, delete: if false;
+    }
+
     match /{document=**} {
       allow read: if true;
     }

@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import ActionModal from "./ActionModal";
 import ContactModal from "./ContactModal";
 import ReviewModal from "./ReviewModal";
+import { useAuth } from "../context/AuthContext";
+import { creerSignalement } from "../services/signalementsFirestore";
 
 const CLAIM_PRICE = "87.00";
 
@@ -52,11 +54,20 @@ function ClaimModal({ open, onClose, claimPrice = CLAIM_PRICE }) {
   );
 }
 
-function ReportModal({ open, onClose }) {
+function ReportModal({ open, onClose, listing }) {
+  const { currentUser } = useAuth();
   const [details, setDetails] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState("");
+  const [sent, setSent] = useState(false);
 
   useEffect(() => {
-    if (!open) setDetails("");
+    if (!open) {
+      setDetails("");
+      setSubmitting(false);
+      setError("");
+      setSent(false);
+    }
   }, [open]);
 
   return (
@@ -72,11 +83,44 @@ function ReportModal({ open, onClose }) {
       </p>
       <form
         className="sd-action-modal__form"
-        onSubmit={(e) => {
+        onSubmit={async (e) => {
           e.preventDefault();
-          requestClose();
+          if (sent) {
+            requestClose();
+            return;
+          }
+          if (!listing) {
+            setError("Données de l'annonce introuvables.");
+            return;
+          }
+          if (!details.trim()) {
+            setError("Veuillez fournir des détails ou explications pour ce signalement.");
+            return;
+          }
+
+          setError("");
+          setSubmitting(true);
+          try {
+            await creerSignalement(listing, details, currentUser);
+            setSent(true);
+            window.setTimeout(() => requestClose(), 1600);
+          } catch (err) {
+            setError(err.message || "Impossible de soumettre le signalement. Veuillez réessayer.");
+          } finally {
+            setSubmitting(false);
+          }
         }}
       >
+        {sent && (
+          <div className="sd-action-modal__success" role="status" style={{ marginBottom: 16 }}>
+            Merci, votre signalement a été enregistré avec succès.
+          </div>
+        )}
+        {error && (
+          <div className="sd-action-modal__error" role="alert" style={{ marginBottom: 16 }}>
+            {error}
+          </div>
+        )}
         <div className="sd-action-modal__field">
           <label className="sd-action-modal__label" htmlFor="sd-report-details">
             Détails
@@ -87,10 +131,16 @@ function ReportModal({ open, onClose }) {
             value={details}
             onChange={(e) => setDetails(e.target.value)}
             rows={6}
+            disabled={sent || submitting}
+            placeholder="Décrivez pourquoi cette annonce pose problème..."
           />
         </div>
-        <button type="submit" className="sd-action-modal__submit">
-          Signaler l&apos;annonce
+        <button
+          type="submit"
+          className="sd-action-modal__submit"
+          disabled={sent || submitting}
+        >
+          {submitting ? "Signalement en cours..." : "Signaler l'annonce"}
         </button>
       </form>
       </>
@@ -107,6 +157,7 @@ export default function ServiceListingModals({
   avisCible,
   messageCible,
   onAvisSubmitted,
+  listing,
 }) {
   return (
     <>
@@ -118,7 +169,7 @@ export default function ServiceListingModals({
         onSubmitted={onAvisSubmitted}
       />
       <ClaimModal open={activeModal === "claim"} onClose={onClose} claimPrice={claimPrice} />
-      <ReportModal open={activeModal === "report"} onClose={onClose} />
+      <ReportModal open={activeModal === "report"} onClose={onClose} listing={listing} />
     </>
   );
 }
