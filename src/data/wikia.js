@@ -176,7 +176,7 @@ export const wikiaThemes = [
 ];
 
 export const wikiaStats = [
-  { num: "6", label: "catégories de connaissances" },
+  { num: "6", label: "grands thèmes" },
   { num: "50+", label: "articles et guides" },
-  { num: "100%", label: "contenu québécois" },
+  { num: "QC", label: "rédigé pour le Québec" },
 ];

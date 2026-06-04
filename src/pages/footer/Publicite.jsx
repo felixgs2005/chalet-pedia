@@ -1,254 +1,275 @@
-// src/pages/Publicite.jsx
-// ============================================================
-// PAGE PUBLICITÉ (/publicite/)
-// Espaces publicitaires pour entreprises et partenaires.
-// ============================================================
+import { useRevealOnScroll } from "../../hooks/useRevealOnScroll";
+import "../../styles/publicite.css";
+
+const MAIL = "publicite@chaletpedia.com";
+
+const STATS = [
+  { num: "50 000+", label: "visites mensuelles" },
+  { num: "70 %", label: "taux de retour" },
+  { num: "3 min", label: "temps moyen / session" },
+  { num: "25–55 ans", label: "cœur de cible" },
+];
+
+const AUDIENCE = [
+  { label: "Propriétaires de chalets", pct: 40 },
+  { label: "Locataires en recherche", pct: 35 },
+  { label: "Professionnels du secteur", pct: 15 },
+  { label: "Passionnés déco & aménagement", pct: 10 },
+];
+
+const FORMATS = [
+  {
+    id: "banniere",
+    tag: "Visibilité",
+    titre: "Bannières publicitaires",
+    description:
+      "Emplacements sur l’accueil, les résultats de recherche et les fiches chalets — là où les voyageurs décident.",
+    meta: ["970×250 · 728×90 · 300×600", "Tourisme, assurance, équipement"],
+    tarif: "À partir de 500 $ / mois",
+    featured: true,
+  },
+  {
+    id: "sponsor",
+    tag: "Thématique",
+    titre: "Sponsoring de catégorie",
+    description:
+      "Associez votre marque à une expérience : spa, bord de l’eau, A-frame, région précise.",
+    meta: ["Message sur la catégorie", "Marques premium, constructeurs"],
+    tarif: "À partir de 1 200 $ / mois",
+  },
+  {
+    id: "newsletter",
+    tag: "Courriel",
+    titre: "Newsletter & campagnes",
+    description:
+      "Présence dans nos envois mensuels et campagnes ciblées auprès d’abonnés engagés.",
+    meta: ["Bannière 600×200 · encart texte", "B2C et B2B"],
+    tarif: "À partir de 300 $ / envoi",
+  },
+  {
+    id: "contenu",
+    tag: "Éditorial",
+    titre: "Contenu sponsorisé",
+    description:
+      "Articles, guides ou vidéos co-créés, diffusés sur le blogue et les réseaux ChaletPedia.",
+    meta: ["Article 800+ mots · vidéo 2–3 min", "Expertise sectorielle"],
+    tarif: "Sur devis",
+  },
+];
+
+const AVANTAGES = [
+  {
+    num: "01",
+    titre: "Audience ciblée",
+    desc: "Des gens du Québec qui cherchent un chalet à louer ou qui gèrent le leur — pas une audience générique.",
+  },
+  {
+    num: "02",
+    titre: "Données transparentes",
+    desc: "Impressions, clics, temps passé : on partage les chiffres avec vous pendant la campagne.",
+  },
+  {
+    num: "03",
+    titre: "Accompagnement",
+    desc: "On vous aide à choisir le bon format et le bon moment — sans vous noyer dans le jargon pub.",
+  },
+  {
+    num: "04",
+    titre: "Objectifs clairs",
+    desc: "KPI définis ensemble et bilans réguliers pour ajuster la diffusion.",
+  },
+];
+
+const ETAPES = [
+  {
+    titre: "Analyse",
+    desc: "Objectifs, cible, budget et calendrier — nous cadrons la campagne avant toute création.",
+  },
+  {
+    titre: "Proposition",
+    desc: "Devis détaillé, emplacements recommandés et prévisions de portée.",
+  },
+  {
+    titre: "Création",
+    desc: "Visuels et textes validés avec vous avant mise en ligne.",
+  },
+  {
+    titre: "Suivi",
+    desc: "Performance en continu et optimisations selon les résultats.",
+  },
+];
+
+function RevealSection({ className = "", children, delay = 0 }) {
+  const [ref, visible] = useRevealOnScroll();
+  return (
+    <section
+      ref={ref}
+      className={`pub-reveal ${visible ? "is-visible" : ""} ${className}`.trim()}
+      style={delay ? { transitionDelay: `${delay}ms` } : undefined}
+    >
+      {children}
+    </section>
+  );
+}
 
 export default function Publicite() {
-  const formats = [
-    {
-      id: "banniere",
-      titre: "Bannières publicitaires",
-      description:
-        "Placements visibles sur toutes les pages stratégiques : accueil, résultats de recherche, fiches chalets.",
-      tailles: ["970×250", "728×90", "300×600"],
-      cible: "Entreprises touristiques, assurances, équipement",
-      tarif: "À partir de 500 $ / mois",
-      couleur: "#1f4d3a",
-    },
-    {
-      id: "sponsor",
-      titre: "Sponsoring thématique",
-      description:
-        "Votre marque associée à une catégorie spécifique : chalets avec spa, A-Frame, bord de mer, etc.",
-      tailles: ["Logo + texte dédié"],
-      cible: "Marques premium, constructeurs, décorateurs",
-      tarif: "À partir de 1 200 $ / mois",
-      couleur: "#2a6b50",
-    },
-    {
-      id: "newsletter",
-      titre: "Newsletter & emailing",
-      description:
-        "Votre message dans nos newsletters mensuelles (20 000+ abonnés) et campagnes ciblées.",
-      tailles: ["Bannière 600×200", "Encart texte"],
-      cible: "Toutes entreprises B2C et B2B",
-      tarif: "À partir de 300 $ / envoi",
-      couleur: "#0f0f0f",
-    },
-    {
-      id: "contenu",
-      titre: "Contenu sponsorisé",
-      description:
-        "Articles, guides ou vidéos créés en collaboration et diffusés sur notre blogue et réseaux.",
-      tailles: ["Article 800+ mots", "Vidéo 2-3 min"],
-      cible: "Entreprises avec expertise à valoriser",
-      tarif: "Sur devis personnalisé",
-      couleur: "#4a3a1f",
-    },
-  ];
-
-  const avantages = [
-    {
-      icon: "🎯",
-      titre: "Audience ciblée",
-      desc: "Propriétaires et locataires de chalets au Québec, passionnés de nature et de vacances.",
-    },
-    {
-      icon: "📊",
-      titre: "Statistiques détaillées",
-      desc: "Accès à nos dashboards avec impressions, clics, taux d'engagement en temps réel.",
-    },
-    {
-      icon: "🤝",
-      titre: "Approche collaborative",
-      desc: "Notre équipe vous accompagne pour optimiser vos campagnes et maximiser votre ROI.",
-    },
-    {
-      icon: "📈",
-      titre: "Performances garanties",
-      desc: "Objectifs clairs définis ensemble et suivi régulier pour atteindre vos KPI.",
-    },
-  ];
-
-  const stats = [
-    { num: "50 000+", label: "visites mensuelles" },
-    { num: "70%", label: "taux de retour" },
-    { num: "3 min", label: "temps moyen par session" },
-    { num: "25-55 ans", label: "cible principale" },
-  ];
-
-  const cibles = [
-    "Propriétaires de chalets (40%)",
-    "Locataires en recherche (35%)",
-    "Professionnels du secteur (15%)",
-    "Passionnés de décoration (10%)",
-  ];
+  const mailDevis = (sujet) =>
+    `mailto:${MAIL}?subject=${encodeURIComponent(sujet)}`;
 
   return (
-    <div className="publicite-page">
-      {/* ── HERO ── */}
-      <section className="publicite-hero">
-        <div className="publicite-hero-kicker">PARTENARIATS · CHALETPEDIA</div>
-        <h1 className="publicite-hero-title">
-          Votre publicité sur <span className="publicite-hero-accent">ChaletPedia</span>
-        </h1>
-        <p className="publicite-hero-sub">
-          Atteignez une audience engagée de propriétaires et locataires de
-          chalets au Québec avec nos solutions publicitaires sur mesure.
-        </p>
-      </section>
-
-      {/* ── STATS AUDIENCE ── */}
-      <section className="publicite-stats">
-        <div className="publicite-stats-inner">
-          <h2 className="publicite-stats-title">Notre audience en chiffres</h2>
-          <p className="publicite-stats-sub">
-            Des chiffres transparents pour vous aider à prendre la bonne
-            décision.
+    <div className="pub-page">
+      <header className="pub-hero">
+        <div className="pub-hero__glow" aria-hidden="true" />
+        <div className="pub-hero__inner">
+          <p className="pub-eyebrow">Publicité sur ChaletPedia</p>
+          <h1 className="pub-hero__title">
+            Touchez les gens qui
+            <br />
+            <span>cherchent un chalet</span> au Québec
+          </h1>
+          <p className="pub-hero__lead">
+            Bannières sur le site, infolettres, articles sponsorisés — des formats simples
+            pour les marques qui veulent parler à des propriétaires et des vacanciers d&apos;ici.
           </p>
-
-          <div className="publicite-stats-grid">
-            {stats.map((stat) => (
-              <div key={stat.label} className="publicite-stat">
-                <span className="publicite-stat-num">{stat.num}</span>
-                <span className="publicite-stat-label">{stat.label}</span>
-              </div>
-            ))}
+          <div className="pub-hero__actions">
+            <a href={mailDevis("Demande de devis publicité")} className="pub-btn pub-btn--primary">
+              Demander un devis
+            </a>
+            <a href="#pub-formats" className="pub-btn pub-btn--ghost">
+              Voir les formats
+            </a>
           </div>
+        </div>
+      </header>
 
-          <div className="publicite-cibles">
-            <h3 className="publicite-cibles-title">Notre cible démographique</h3>
-            <ul className="publicite-cibles-list">
-              {cibles.map((cible, idx) => (
-                <li key={idx} className="publicite-cible-item">
-                  <span className="publicite-cible-icon">✓</span>
-                  {cible}
+      <div className="pub-stats-band" aria-label="Chiffres clés">
+        {STATS.map((stat) => (
+          <div key={stat.label} className="pub-stats-band__item">
+            <span className="pub-stats-band__num">{stat.num}</span>
+            <span className="pub-stats-band__label">{stat.label}</span>
+          </div>
+        ))}
+      </div>
+
+      <RevealSection className="pub-audience">
+        <div className="pub-audience__inner">
+          <div className="pub-audience__copy">
+            <h2 className="pub-section-title">Une audience engagée</h2>
+            <p className="pub-section-lead">
+              Des visiteurs qui planifient des séjours, comparent des régions et entretiennent
+              leur propriété — le bon moment pour votre message.
+            </p>
+          </div>
+          <div className="pub-audience__chart">
+            <p className="pub-audience__chart-title">Répartition de notre trafic</p>
+            <ul className="pub-bars">
+              {AUDIENCE.map((row) => (
+                <li key={row.label} className="pub-bars__row">
+                  <div className="pub-bars__head">
+                    <span>{row.label}</span>
+                    <span className="pub-bars__pct">{row.pct} %</span>
+                  </div>
+                  <div className="pub-bars__track">
+                    <div
+                      className="pub-bars__fill"
+                      style={{ "--pct": `${row.pct}%` }}
+                    />
+                  </div>
                 </li>
               ))}
             </ul>
           </div>
         </div>
-      </section>
+      </RevealSection>
 
-      {/* ── FORMATS ── */}
-      <section className="publicite-formats">
-        <div className="publicite-formats-inner">
-          <h2 className="publicite-section-title">Nos formats publicitaires</h2>
-          <p className="publicite-section-sub">
-            Des solutions adaptées à vos objectifs et à votre budget.
-          </p>
+      <RevealSection className="pub-formats" delay={80}>
+        <div className="pub-formats__inner" id="pub-formats">
+          <div className="pub-formats__header">
+            <h2 className="pub-section-title">Formats publicitaires</h2>
+            <p className="pub-section-lead pub-section-lead--center">
+              Du bandeau haute visibilité au contenu éditorial — choisissez le levier adapté à
+              votre campagne.
+            </p>
+          </div>
 
-          <div className="publicite-formats-grid">
-            {formats.map((format) => (
-              <div
+          <div className="pub-formats__grid">
+            {FORMATS.map((format, index) => (
+              <article
                 key={format.id}
-                className="publicite-format-card"
-                style={{ borderTopColor: format.couleur }}
+                className={`pub-format${format.featured ? " pub-format--featured" : ""}`}
+                style={{ "--i": index }}
               >
-                <h3 className="publicite-format-titre">{format.titre}</h3>
-                <p className="publicite-format-desc">{format.description}</p>
-
-                <div className="publicite-format-details">
-                  <div className="publicite-detail">
-                    <strong>Tailles :</strong>
-                    <span>{format.tailles.join(", ")}</span>
-                  </div>
-                  <div className="publicite-detail">
-                    <strong>Cible idéale :</strong>
-                    <span>{format.cible}</span>
-                  </div>
-                  <div className="publicite-detail">
-                    <strong>Tarif :</strong>
-                    <span className="publicite-tarif">{format.tarif}</span>
-                  </div>
-                </div>
-
-                <button
-                  className="publicite-format-cta"
-                  type="button"
-                  style={{ background: format.couleur }}
+                <span className="pub-format__tag">{format.tag}</span>
+                <h3 className="pub-format__title">{format.titre}</h3>
+                <p className="pub-format__desc">{format.description}</p>
+                <ul className="pub-format__meta">
+                  {format.meta.map((line) => (
+                    <li key={line}>{line}</li>
+                  ))}
+                </ul>
+                <p className="pub-format__price">{format.tarif}</p>
+                <a
+                  href={mailDevis(`Devis — ${format.titre}`)}
+                  className="pub-format__link"
                 >
                   Demander un devis →
-                </button>
+                </a>
+              </article>
+            ))}
+          </div>
+        </div>
+      </RevealSection>
+
+      <RevealSection className="pub-why">
+        <div className="pub-why__inner">
+          <h2 className="pub-section-title pub-section-title--light">
+            Pourquoi annoncer ici
+          </h2>
+          <p className="pub-section-lead pub-section-lead--light pub-section-lead--center">
+            Une audience ciblée, des chiffres clairs et une équipe québécoise qui répond
+            vraiment à vos courriels.
+          </p>
+          <div className="pub-why__grid">
+            {AVANTAGES.map((item) => (
+              <div key={item.num} className="pub-why__card">
+                <span className="pub-why__num">{item.num}</span>
+                <h3 className="pub-why__card-title">{item.titre}</h3>
+                <p className="pub-why__card-desc">{item.desc}</p>
               </div>
             ))}
           </div>
         </div>
-      </section>
+      </RevealSection>
 
-      {/* ── AVANTAGES ── */}
-      <section className="publicite-avantages">
-        <div className="publicite-avantages-inner">
-          <h2 className="publicite-section-title">Pourquoi choisir ChaletPedia ?</h2>
-          <p className="publicite-section-sub">
-            Nous offrons bien plus qu'un simple espace publicitaire.
+      <RevealSection className="pub-process">
+        <div className="pub-process__inner">
+          <h2 className="pub-section-title">Notre processus</h2>
+          <p className="pub-section-lead pub-section-lead--center">
+            Quatre étapes, de la première discussion à l’optimisation en cours de campagne.
           </p>
-
-          <div className="publicite-avantages-grid">
-            {avantages.map((avantage) => (
-              <div key={avantage.titre} className="publicite-avantage-card">
-                <div className="publicite-avantage-icon">{avantage.icon}</div>
-                <h3 className="publicite-avantage-titre">{avantage.titre}</h3>
-                <p className="publicite-avantage-desc">{avantage.desc}</p>
-              </div>
+          <ol className="pub-timeline">
+            {ETAPES.map((etape, index) => (
+              <li key={etape.titre} className="pub-timeline__step">
+                <span className="pub-timeline__index">{String(index + 1).padStart(2, "0")}</span>
+                <div className="pub-timeline__body">
+                  <h3 className="pub-timeline__title">{etape.titre}</h3>
+                  <p className="pub-timeline__desc">{etape.desc}</p>
+                </div>
+              </li>
             ))}
-          </div>
+          </ol>
         </div>
-      </section>
+      </RevealSection>
 
-      {/* ── PROCESSUS ── */}
-      <section className="publicite-processus">
-        <div className="publicite-processus-inner">
-          <h2 className="publicite-section-title">Notre processus en 4 étapes</h2>
-
-          <div className="publicite-processus-etapes">
-            <div className="publicite-etape">
-              <div className="publicite-etape-num">1</div>
-              <h3 className="publicite-etape-titre">Analyse de vos besoins</h3>
-              <p className="publicite-etape-desc">
-                Nous étudions vos objectifs, votre cible et votre budget pour
-                vous proposer la solution optimale.
-              </p>
-            </div>
-            <div className="publicite-etape">
-              <div className="publicite-etape-num">2</div>
-              <h3 className="publicite-etape-titre">Proposition sur mesure</h3>
-              <p className="publicite-etape-desc">
-                Nous vous présentons un devis détaillé avec recommandations et
-                prévisions de performance.
-              </p>
-            </div>
-            <div className="publicite-etape">
-              <div className="publicite-etape-num">3</div>
-              <h3 className="publicite-etape-titre">Création & validation</h3>
-              <p className="publicite-etape-desc">
-                Nous créons vos visuels et contenus, et les validons avec vous
-                avant publication.
-              </p>
-            </div>
-            <div className="publicite-etape">
-              <div className="publicite-etape-num">4</div>
-              <h3 className="publicite-etape-titre">Suivi & optimisation</h3>
-              <p className="publicite-etape-desc">
-                Nous suivons les performances et optimisons en temps réel pour
-                maximiser votre ROI.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ── CTA CONTACT ── */}
-      <section className="publicite-contact-cta">
-        <div className="publicite-contact-cta-inner">
-          <h2 className="publicite-contact-title">Prêt à lancer votre campagne ?</h2>
-          <p className="publicite-contact-sub">
-            Contactez notre équipe partenariats pour discuter de vos objectifs
-            et obtenir un devis personnalisé.
+      <section className="pub-cta">
+        <div className="pub-cta__inner pub-reveal is-visible">
+          <h2 className="pub-cta__title">Une question, un devis ?</h2>
+          <p className="pub-cta__lead">
+            Écrivez-nous : on revient vers vous en général sous deux jours ouvrables avec une
+            proposition adaptée à votre budget.
           </p>
-          <a href="mailto:publicite@chaletpedia.com" className="publicite-contact-btn">
-            Contacter l'équipe publicité →
+          <a href={mailDevis("Campagne publicitaire ChaletPedia")} className="pub-btn pub-btn--cta">
+            {MAIL} →
           </a>
         </div>
       </section>
