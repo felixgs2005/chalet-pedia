@@ -28,7 +28,11 @@ import ConditionsUtilisation from "./pages/footer/ConditionsUtilisation";
 import APropos from "./pages/footer/APropos";
 import InscrireRepertoire from "./pages/footer/InscrireRepertoire";
 import AnnoncezVotreChalet from "./pages/footer/AnnoncezVotreChalet";
+import RequireAuth from "./components/RequireAuth";
+import Reglages from "./pages/compte/Reglages";
+import ComptePlaceholder from "./pages/compte/ComptePlaceholder";
 import "./styles/global.css";
+import "./styles/compte.css";
 import "./styles/footer-pages.css";
 
 function Layout({ children }) {
@@ -80,6 +84,30 @@ export default function App() {
               element={<InscrireRepertoire />}
             />
             <Route path="/annoncez-votre-chalet/" element={<AnnoncezVotreChalet />} />
+            <Route
+              path="/compte/reglages/"
+              element={
+                <RequireAuth>
+                  <Reglages />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/compte/favoris/"
+              element={
+                <RequireAuth>
+                  <ComptePlaceholder title="Favoris" />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/compte/messages/"
+              element={
+                <RequireAuth>
+                  <ComptePlaceholder title="Messages" />
+                </RequireAuth>
+              }
+            />
             <Route
               path="*"
               element={

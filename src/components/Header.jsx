@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import UserMenu from "./UserMenu";
 import { LISTING_EXPERIENCES } from "../data/listingExperiences";
 import { LISTING_PREFIX } from "../data/listingPageSlug";
 
@@ -91,24 +92,11 @@ export default function Header() {
         </div>
 
         <Link to="/blogue/">Blogue</Link>
-        {currentUser ? (
-          <div className="nav-user">
-            <span className="user-email">{currentUser.email}</span>
-            <button
-              onClick={() => {
-                logout();
-                setMenuOpen(false);
-              }}
-              className="nav-logout"
-            >
-              Déconnexion
-            </button>
-          </div>
-        ) : (
+        {!currentUser ? (
           <Link to="/auth" className="nav-login" onClick={() => setMenuOpen(false)}>
             Se connecter
           </Link>
-        )}
+        ) : null}
 
         <Link
           to="/annoncez-votre-chalet/"
@@ -119,6 +107,14 @@ export default function Header() {
           Annoncez →
         </Link>
       </nav>
+
+      {currentUser ? (
+        <UserMenu
+          user={currentUser}
+          onLogout={logout}
+          onNavigate={() => setMenuOpen(false)}
+        />
+      ) : null}
 
       <Link to="/annoncez-votre-chalet/" className="btn-annoncer">
         Annoncez →
