@@ -9,6 +9,7 @@ import ServiceDescriptionContent from "../components/ServiceDescriptionContent";
 import { resolveServiceImages } from "../utils/serviceImages";
 import { useSharePage } from "../hooks/useSharePage";
 import ShareToast from "../components/ShareToast";
+import ServiceListingModals from "../components/ServiceListingModals";
 
 /** Animation au scroll — se réactive quand le contenu Firestore est monté. */
 function useReveal(threshold = 0.12, ready = true) {
@@ -56,10 +57,23 @@ function useReveal(threshold = 0.12, ready = true) {
   return [ref, visible];
 }
 
+const IconBasket = () => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z" />
+    <line x1="3" y1="6" x2="21" y2="6" />
+    <path d="M16 10a4 4 0 0 1-8 0" />
+  </svg>
+);
 const IconPencil = () => (
   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
     <path d="M12 20h9" />
     <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z" />
+  </svg>
+);
+const IconClaim = () => (
+  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <circle cx="12" cy="12" r="10" />
+    <path d="m9 12 2 2 4-4" />
   </svg>
 );
 const IconFlag = () => (
@@ -75,6 +89,7 @@ export default function ServiceDetail() {
   const { share, feedback: shareFeedback } = useSharePage();
   const [activeImg, setActiveImg] = useState(0);
   const [galleryOpen, setGalleryOpen] = useState(false);
+  const [activeModal, setActiveModal] = useState(null);
   const contentReady = Boolean(listing);
   const [mapRef, mapVisible] = useReveal(0.12, contentReady);
 
@@ -125,9 +140,15 @@ export default function ServiceDetail() {
     });
   };
 
+  const openModal = (id) => setActiveModal(id);
+  const closeModal = () => setActiveModal(null);
+  const linkClass = (id) =>
+    `sd-link-action${activeModal === id ? " is-open" : ""}${id === "report" ? " sd-link-action--danger" : ""}`;
+
   return (
     <div className="service-detail-page">
       <ShareToast message={shareFeedback} />
+      <ServiceListingModals activeModal={activeModal} onClose={closeModal} />
       {/* FIL D'ARIANE */}
       <nav className="breadcrumb sd-reveal">
         <Link to="/">Accueil</Link>
@@ -274,16 +295,30 @@ export default function ServiceDetail() {
                 Contact direct avec le prestataire
               </div>
 
-              <button className="sd-btn sd-btn--primary">Contacter l&apos;annonceur</button>
+              <button type="button" className="sd-btn sd-btn--primary sd-btn--with-icon">
+                <IconBasket />
+                Magasiner le catalogue
+              </button>
+
+              <button
+                type="button"
+                className={`sd-btn sd-btn--primary${activeModal === "contact" ? " is-pressed" : ""}`}
+                onClick={() => openModal("contact")}
+              >
+                Contacter l&apos;annonceur
+              </button>
 
               <div className="sd-contact-card__divider" />
 
               <div className="sd-contact-card__links">
-                <button className="sd-link-action">
+                <button type="button" className={linkClass("review")} onClick={() => openModal("review")}>
                   <IconPencil /> Rédiger un avis
                 </button>
-                <button className="sd-link-action sd-link-action--danger">
-                  <IconFlag /> Signaler l'annonce
+                <button type="button" className={linkClass("claim")} onClick={() => openModal("claim")}>
+                  <IconClaim /> Réclamer l&apos;annonce
+                </button>
+                <button type="button" className={linkClass("report")} onClick={() => openModal("report")}>
+                  <IconFlag /> Signaler l&apos;annonce
                 </button>
               </div>
 

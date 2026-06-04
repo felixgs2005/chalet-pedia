@@ -37,6 +37,11 @@ export function mapFirestoreServiceListing(docSnap) {
     accroche: data.accroche || extracted.accroche || "",
     intro: data.intro || extracted.intro || "",
     services: data.services || extracted.services || null,
+    nomEntreprise: data.nomEntreprise || "",
+    courrielContact: data.courrielContact || "",
+    telephoneContact: data.telephoneContact || "",
+    adresseContact: data.adresseContact || "",
+    statut: data.statut || "",
   };
 }
 

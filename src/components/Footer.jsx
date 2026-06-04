@@ -26,7 +26,7 @@ export default function Footer() {
           <Link to="/annoncez-votre-chalet/" className="footer-link">
             Annoncez votre chalet
           </Link>
-          <Link to="/inscrivez-votre-entreprise-dans-le-repertoire/" className="footer-link">
+          <Link to="/chalets/services/?inscrire=1" className="footer-link">
             Inscrire ses services
           </Link>
           <Link to="/promotions/" className="footer-link">

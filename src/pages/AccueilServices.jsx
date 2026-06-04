@@ -1,40 +1,71 @@
 // src/pages/AccueilServices.jsx
 // Données chargées depuis Firestore (categorieServices + annoncesService).
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import {
   categorySelectGroups,
   getTotalAnnonces,
   pluralizeAnnonce,
 } from "../data/services";
 import { useServiceCategories } from "../hooks/useServiceCategories";
+import RegisterServiceModal from "../components/RegisterServiceModal";
 
 function useReveal() {
   const ref = useRef(null);
   const [visible, setVisible] = useState(false);
+
   useEffect(() => {
     const node = ref.current;
     if (!node) return undefined;
+
+    const show = () => setVisible(true);
     const obs = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
-          setVisible(true);
+          show();
           obs.disconnect();
         }
       },
-      { threshold: 0.2 }
+      { threshold: 0.08, rootMargin: "80px 0px" }
     );
+
     obs.observe(node);
-    return () => obs.disconnect();
+
+    const raf = requestAnimationFrame(() => {
+      const rect = node.getBoundingClientRect();
+      if (rect.top < window.innerHeight && rect.bottom > 0) {
+        show();
+        obs.disconnect();
+      }
+    });
+
+    return () => {
+      cancelAnimationFrame(raf);
+      obs.disconnect();
+    };
   }, []);
+
   return [ref, visible];
 }
 
 export default function AccueilServices() {
+  const [searchParams, setSearchParams] = useSearchParams();
   const { categories: serviceCategories, loading, error } = useServiceCategories();
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [ctaRef, ctaVisible] = useReveal();
+  const [registerOpen, setRegisterOpen] = useState(false);
+
+  const openRegisterFromUrl = searchParams.get("inscrire") === "1";
+
+  useEffect(() => {
+    if (!openRegisterFromUrl || loading || error) return;
+
+    setRegisterOpen(true);
+    const next = new URLSearchParams(searchParams);
+    next.delete("inscrire");
+    setSearchParams(next, { replace: true });
+  }, [openRegisterFromUrl, loading, error, searchParams, setSearchParams]);
 
   const serviceCategorySlugs = useMemo(
     () => new Set(serviceCategories.map((c) => c.slug)),
@@ -102,6 +133,7 @@ export default function AccueilServices() {
 
   return (
     <div className="services-page">
+      <RegisterServiceModal open={registerOpen} onClose={() => setRegisterOpen(false)} />
       <section className="header-hero listing-hero services-hero">
         <span className="services-hero__glow" aria-hidden="true" />
         <div className="header-hero__content">
@@ -246,12 +278,13 @@ export default function AccueilServices() {
               Rejoignez le plus grand répertoire de services pour chalets au Québec et
               gagnez en visibilité auprès des propriétaires.
             </p>
-            <Link
-              to="/inscrivez-votre-entreprise-dans-le-repertoire/"
-              className="services-cta__btn"
+            <button
+              type="button"
+              className={`services-cta__btn${registerOpen ? " is-pressed" : ""}`}
+              onClick={() => setRegisterOpen(true)}
             >
-              Inscrire mes services →
-            </Link>
+              Inscrivez vos services →
+            </button>
           </div>
         </section>
       </div>
