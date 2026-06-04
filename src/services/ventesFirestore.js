@@ -33,6 +33,7 @@ export function mapFirestoreVente(docSnap) {
       label: item.label,
       value: item.valeur ?? item.value ?? "",
     })),
+    proprietaireId: data.proprietaireId || "",
   };
 }
 

@@ -15,6 +15,10 @@ import ReviewModal from "../components/ReviewModal";
 import { useSharePage } from "../hooks/useSharePage";
 import ShareToast from "../components/ShareToast";
 import { buildChaletAvisCible } from "../services/avisFirestore";
+import { buildChaletFavoriCible } from "../services/favorisFirestore";
+import { buildChaletMessageCible } from "../services/messagesFirestore";
+import ContactModal from "../components/ContactModal";
+import FavoriteButton from "../components/FavoriteButton";
 
 export default function ChaletPage() {
   const { slug } = useParams();
@@ -25,6 +29,7 @@ export default function ChaletPage() {
   const [activeImg, setActiveImg] = useState(0);
   const [galleryOpen, setGalleryOpen] = useState(false);
   const [reviewOpen, setReviewOpen] = useState(false);
+  const [contactOpen, setContactOpen] = useState(false);
 
   const similaires = useMemo(
     () =>
@@ -79,6 +84,8 @@ export default function ChaletPage() {
   };
 
   const avisCible = buildChaletAvisCible(chalet);
+  const favoriCible = buildChaletFavoriCible(chalet);
+  const messageCible = buildChaletMessageCible(chalet);
   const noteMoyenne =
     avis.length > 0
       ? Math.round((avis.reduce((s, a) => s + a.note, 0) / avis.length) * 10) / 10
@@ -93,6 +100,11 @@ export default function ChaletPage() {
         onClose={() => setReviewOpen(false)}
         cible={avisCible}
         onSubmitted={refreshAvis}
+      />
+      <ContactModal
+        open={contactOpen}
+        onClose={() => setContactOpen(false)}
+        cible={messageCible}
       />
       {/* FIL D'ARIANE */}
       <nav className="breadcrumb">
@@ -121,7 +133,7 @@ export default function ChaletPage() {
           )}
         </div>
         <div className="chalet-actions">
-          <button className="action-btn">♡ Sauvegarder</button>
+          <FavoriteButton cible={favoriCible} className="action-btn" />
           <button type="button" className="action-btn" onClick={handleShare}>
             ↗ Partager
           </button>
@@ -292,7 +304,13 @@ export default function ChaletPage() {
               ))}
             </div>
 
-            <button className="booking-cta">Contacter le propriétaire</button>
+            <button
+              type="button"
+              className="booking-cta"
+              onClick={() => setContactOpen(true)}
+            >
+              Contacter le propriétaire
+            </button>
             <button className="booking-secondary">Vérifier les disponibilités</button>
             <button
               type="button"

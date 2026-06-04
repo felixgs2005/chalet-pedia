@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import ActionModal from "./ActionModal";
+import ContactModal from "./ContactModal";
 import ReviewModal from "./ReviewModal";
 
 const CLAIM_PRICE = "87.00";
@@ -46,82 +47,6 @@ function ClaimModal({ open, onClose, claimPrice = CLAIM_PRICE }) {
         </button>
       </form>
       </>
-      )}
-    />
-  );
-}
-
-function ContactModal({ open, onClose }) {
-  const [message, setMessage] = useState("");
-  const [fileName, setFileName] = useState("");
-  const [sent, setSent] = useState(false);
-
-  useEffect(() => {
-    if (!open) {
-      setMessage("");
-      setFileName("");
-      setSent(false);
-    }
-  }, [open]);
-
-  return (
-    <ActionModal
-      open={open}
-      onClose={onClose}
-      title="Contacter l'annonceur"
-      titleId="sd-modal-contact-title"
-      renderBody={({ requestClose }) => (
-        <form
-          className="sd-action-modal__form"
-          onSubmit={(e) => {
-            e.preventDefault();
-            if (sent) {
-              requestClose();
-              return;
-            }
-            setSent(true);
-            window.setTimeout(() => requestClose(), 1600);
-          }}
-        >
-          {sent && (
-            <div className="sd-action-modal__success" role="status">
-              Votre message a été envoyé.
-            </div>
-          )}
-
-          <div className="sd-action-modal__field">
-            <label className="sd-action-modal__label" htmlFor="sd-contact-message">
-              Message
-            </label>
-            <textarea
-              id="sd-contact-message"
-              className="sd-action-modal__textarea"
-              value={message}
-              onChange={(e) => setMessage(e.target.value)}
-              rows={6}
-              disabled={sent}
-            />
-          </div>
-
-          <div className="sd-action-modal__field">
-            <span className="sd-action-modal__label sd-action-modal__label--muted">
-              Fichier joint (facultatif)
-            </span>
-            <label className="sd-action-modal__file-btn">
-              <input
-                type="file"
-                className="sd-action-modal__file-input"
-                disabled={sent}
-                onChange={(e) => setFileName(e.target.files?.[0]?.name || "")}
-              />
-              {fileName || "Choisissez un fichier"}
-            </label>
-          </div>
-
-          <button type="submit" className="sd-action-modal__submit" disabled={sent}>
-            Contacter l&apos;annonceur
-          </button>
-        </form>
       )}
     />
   );
@@ -175,10 +100,17 @@ function ReportModal({ open, onClose }) {
 }
 
 /** Modales fiche service : contact, avis, réclamation, signalement. */
-export default function ServiceListingModals({ activeModal, onClose, claimPrice, avisCible, onAvisSubmitted }) {
+export default function ServiceListingModals({
+  activeModal,
+  onClose,
+  claimPrice,
+  avisCible,
+  messageCible,
+  onAvisSubmitted,
+}) {
   return (
     <>
-      <ContactModal open={activeModal === "contact"} onClose={onClose} />
+      <ContactModal open={activeModal === "contact"} onClose={onClose} cible={messageCible} />
       <ReviewModal
         open={activeModal === "review"}
         onClose={onClose}

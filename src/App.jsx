@@ -1,6 +1,7 @@
 // src/App.jsx
 import { BrowserRouter, Routes, Route, ScrollRestoration } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
+import { FavorisCountProvider } from "./context/FavorisCountContext";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 import HomePage from "./pages/HomePage";
@@ -30,7 +31,9 @@ import InscrireRepertoire from "./pages/footer/InscrireRepertoire";
 import AnnoncezVotreChalet from "./pages/footer/AnnoncezVotreChalet";
 import RequireAuth from "./components/RequireAuth";
 import Reglages from "./pages/compte/Reglages";
-import ComptePlaceholder from "./pages/compte/ComptePlaceholder";
+import Favoris from "./pages/compte/Favoris";
+import Messages from "./pages/compte/Messages";
+import MessageConversation from "./pages/compte/MessageConversation";
 import "./styles/global.css";
 import "./styles/compte.css";
 import "./styles/footer-pages.css";
@@ -48,6 +51,7 @@ function Layout({ children }) {
 export default function App() {
   return (
     <AuthProvider>
+      <FavorisCountProvider>
       <BrowserRouter>
         <Layout>
           <Routes>
@@ -96,7 +100,7 @@ export default function App() {
               path="/compte/favoris/"
               element={
                 <RequireAuth>
-                  <ComptePlaceholder title="Favoris" />
+                  <Favoris />
                 </RequireAuth>
               }
             />
@@ -104,7 +108,15 @@ export default function App() {
               path="/compte/messages/"
               element={
                 <RequireAuth>
-                  <ComptePlaceholder title="Messages" />
+                  <Messages />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/compte/messages/:conversationKey/"
+              element={
+                <RequireAuth>
+                  <MessageConversation />
                 </RequireAuth>
               }
             />
@@ -120,6 +132,7 @@ export default function App() {
           </Routes>
         </Layout>
       </BrowserRouter>
+      </FavorisCountProvider>
     </AuthProvider>
   );
 }

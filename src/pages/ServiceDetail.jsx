@@ -13,6 +13,9 @@ import ServiceListingModals from "../components/ServiceListingModals";
 import AvisList from "../components/AvisList";
 import { useAvis } from "../hooks/useAvis";
 import { buildServiceAvisCible } from "../services/avisFirestore";
+import { buildServiceFavoriCible } from "../services/favorisFirestore";
+import { buildServiceMessageCible } from "../services/messagesFirestore";
+import FavoriteButton from "../components/FavoriteButton";
 
 /** Animation au scroll — se réactive quand le contenu Firestore est monté. */
 function useReveal(threshold = 0.12, ready = true) {
@@ -145,6 +148,8 @@ export default function ServiceDetail() {
   };
 
   const avisCible = buildServiceAvisCible(listing);
+  const favoriCible = buildServiceFavoriCible(listing);
+  const messageCible = buildServiceMessageCible(listing);
   const noteMoyenne =
     avis.length > 0
       ? Math.round((avis.reduce((s, a) => s + a.note, 0) / avis.length) * 10) / 10
@@ -163,6 +168,7 @@ export default function ServiceDetail() {
         activeModal={activeModal}
         onClose={closeModal}
         avisCible={avisCible}
+        messageCible={messageCible}
         onAvisSubmitted={refreshAvis}
       />
       {/* FIL D'ARIANE */}
@@ -194,7 +200,7 @@ export default function ServiceDetail() {
           )}
         </div>
         <div className="chalet-actions">
-          <button className="action-btn">♡ Ajouter aux favoris</button>
+          <FavoriteButton cible={favoriCible} className="action-btn" />
           <button type="button" className="action-btn" onClick={handleShare}>
             ↗ Partager
           </button>

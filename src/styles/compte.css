@@ -17,6 +17,10 @@
   margin: 0 auto;
 }
 
+.compte-reglages__inner--wide {
+  max-width: 920px;
+}
+
 .compte-reglages__title {
   font-family: "Archivo Black", sans-serif;
   font-size: clamp(32px, 6vw, 42px);
@@ -195,6 +199,372 @@
 
 .compte-reglages__back:hover {
   color: #cfe3d7;
+}
+
+/* Favoris */
+.compte-favoris-head {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 12px 16px;
+  margin-bottom: 28px;
+}
+
+.compte-favoris-head .compte-reglages__title {
+  margin-bottom: 0;
+}
+
+.compte-favoris-count {
+  font-size: 14px;
+  font-weight: 600;
+  color: #8fb9a3;
+  letter-spacing: 0.02em;
+}
+
+.compte-favoris-list {
+  list-style: none;
+  margin: 0 0 24px;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.compte-favoris-card {
+  display: flex;
+  gap: 16px;
+  background: rgba(0, 0, 0, 0.22);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.compte-favoris-card__img {
+  width: 120px;
+  min-height: 100px;
+  flex-shrink: 0;
+  background-size: cover;
+  background-position: center;
+}
+
+.compte-favoris-card__body {
+  padding: 14px 16px 14px 0;
+  flex: 1;
+  min-width: 0;
+}
+
+.compte-favoris-card__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  margin-bottom: 6px;
+  font-size: 12px;
+}
+
+.compte-favoris-card__type {
+  color: #8fb9a3;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.compte-favoris-card__user {
+  color: rgba(255, 255, 255, 0.65);
+}
+
+.compte-favoris-card__title {
+  display: block;
+  font-size: 17px;
+  font-weight: 700;
+  color: #fff;
+  text-decoration: none;
+  margin-bottom: 4px;
+}
+
+.compte-favoris-card__title:hover {
+  color: #cfe3d7;
+}
+
+.compte-favoris-card__loc {
+  margin: 0;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+/* Messages — liste */
+.compte-messages-list {
+  list-style: none;
+  margin: 0 0 24px;
+  padding: 0;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.compte-messages-row {
+  display: grid;
+  grid-template-columns: auto 1fr 1.4fr auto;
+  align-items: center;
+  gap: 12px 16px;
+  padding: 14px 18px;
+  text-decoration: none;
+  color: inherit;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  transition: background 0.15s ease;
+}
+
+.compte-messages-list li:last-child .compte-messages-row {
+  border-bottom: none;
+}
+
+.compte-messages-row:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.compte-messages-row__icon {
+  color: #8fb9a3;
+  font-size: 16px;
+}
+
+.compte-messages-row__name {
+  font-weight: 700;
+  color: #7fa890;
+  font-size: 15px;
+}
+
+.compte-messages-row__listing {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.85);
+  min-width: 0;
+}
+
+.compte-messages-row__listing-icon {
+  flex-shrink: 0;
+  opacity: 0.7;
+}
+
+.compte-messages-row__date {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.55);
+  white-space: nowrap;
+}
+
+/* Conversation */
+.compte-reglages__back--top {
+  margin-top: 0;
+  margin-bottom: 20px;
+}
+
+.compte-conversation__thread {
+  list-style: none;
+  margin: 0 0 32px;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Carte message — style chaletpedia.com (fond gris clair, pleine largeur) */
+.compte-conversation__card {
+  position: relative;
+  background: #e8eae6;
+  color: #0f0f0f;
+  border-radius: 6px;
+  padding: 22px 24px 20px;
+  max-width: 100%;
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.06);
+}
+
+.compte-conversation__card-check {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  color: #b0b0ac;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 18px;
+  min-height: 18px;
+}
+
+.compte-conversation__card-listing {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 15px;
+  font-weight: 600;
+  color: #0f0f0f;
+  margin-bottom: 14px;
+  padding-right: 28px;
+}
+
+.compte-conversation__card-listing svg {
+  flex-shrink: 0;
+  color: #4a4a48;
+}
+
+.compte-conversation__card-author {
+  font-weight: 700;
+  font-size: 15px;
+  color: #0f0f0f;
+  margin-bottom: 4px;
+}
+
+.compte-conversation__card-date {
+  display: block;
+  font-size: 12px;
+  font-weight: 400;
+  color: #9a9a98;
+  margin-bottom: 14px;
+  text-transform: none;
+  letter-spacing: normal;
+}
+
+.compte-conversation__card-text {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.55;
+  color: #0f0f0f;
+}
+
+.compte-conversation__card-attachment {
+  display: inline-block;
+  margin-top: 12px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #1f4d3a;
+}
+
+/* Formulaire de réponse — comme la modale « Contacter l'annonceur » */
+.compte-conversation__compose {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  max-width: 100%;
+}
+
+.compte-conversation__compose-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.compte-conversation__compose-label {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #8fb9a3;
+}
+
+.compte-conversation__compose-label--muted {
+  color: rgba(255, 255, 255, 0.45);
+  font-weight: 700;
+}
+
+.compte-conversation__compose-textarea {
+  width: 100%;
+  min-height: 200px;
+  padding: 14px 16px;
+  border: none;
+  border-radius: 4px;
+  background: #fff;
+  color: #0f0f0f;
+  font-family: inherit;
+  font-size: 15px;
+  line-height: 1.5;
+  resize: vertical;
+}
+
+.compte-conversation__compose-textarea:focus {
+  outline: 2px solid #7fa890;
+  outline-offset: 2px;
+}
+
+.compte-conversation__compose-textarea:disabled {
+  opacity: 0.7;
+}
+
+.compte-conversation__file-input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.compte-conversation__file-btn {
+  display: inline-block;
+  align-self: flex-start;
+  padding: 10px 20px;
+  background: #e6e6e4;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #4a4a48;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.compte-conversation__file-btn:hover {
+  background: #dcdcd8;
+}
+
+.compte-conversation__compose-submit {
+  align-self: flex-start;
+  min-width: 220px;
+  padding: 14px 28px;
+  border: none;
+  border-radius: 8px;
+  background: linear-gradient(180deg, #3d6b58 0%, #1f4d3a 100%);
+  color: #fff;
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.compte-conversation__compose-submit:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 24px rgba(31, 77, 58, 0.35);
+}
+
+.compte-conversation__compose-submit:disabled {
+  opacity: 0.65;
+  cursor: wait;
+}
+
+@media (max-width: 768px) {
+  .compte-messages-row {
+    grid-template-columns: auto 1fr;
+    grid-template-rows: auto auto;
+  }
+
+  .compte-messages-row__listing {
+    grid-column: 1 / -1;
+  }
+
+  .compte-messages-row__date {
+    grid-column: 2;
+    justify-self: end;
+  }
+
+  .compte-favoris-card {
+    flex-direction: column;
+  }
+
+  .compte-favoris-card__img {
+    width: 100%;
+    height: 140px;
+  }
+
+  .compte-favoris-card__body {
+    padding: 14px 16px;
+  }
 }
 
 @media (max-width: 640px) {

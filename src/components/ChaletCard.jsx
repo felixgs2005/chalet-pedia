@@ -1,7 +1,10 @@
 // src/components/ChaletCard.jsx
 import { Link } from "react-router-dom";
+import FavoriteButton from "./FavoriteButton";
+import { buildChaletFavoriCible } from "../services/favorisFirestore";
 
 export default function ChaletCard({ chalet, variant = "default" }) {
+  const favoriCible = buildChaletFavoriCible(chalet);
   const isListing = variant === "listing";
   const displayName =
     isListing && chalet.sousTitre
@@ -19,9 +22,11 @@ export default function ChaletCard({ chalet, variant = "default" }) {
         style={{ backgroundImage: `url('${chalet.images[0]}')` }}
       >
         <div className="chalet-badge">{chalet.badge}</div>
-        <button className="chalet-heart" type="button" onClick={(e) => e.preventDefault()}>
-          {chalet.isFavori ? "♥" : "♡"}
-        </button>
+        <FavoriteButton
+          cible={favoriCible}
+          className="chalet-heart"
+          variant="heart"
+        />
       </div>
       <div className="chalet-info">
         <div className="chalet-name">{displayName}</div>

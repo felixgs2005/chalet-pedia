@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
+import { useFavorisCount } from "../context/FavorisCountContext";
 
 const IconUser = () => (
   <svg
@@ -26,6 +27,7 @@ function displayNameFromUser(user) {
 }
 
 export default function UserMenu({ user, onLogout, onNavigate }) {
+  const { count: favorisCount } = useFavorisCount();
   const [open, setOpen] = useState(false);
   const rootRef = useRef(null);
 
@@ -84,6 +86,11 @@ export default function UserMenu({ user, onLogout, onNavigate }) {
       <div className="nav-user-dropdown" role="menu">
         <Link to="/compte/favoris/" className="nav-user-dropdown__item" role="menuitem" onClick={handleNav}>
           Favoris
+          {favorisCount > 0 && (
+            <span className="nav-user-dropdown__badge" aria-label={`${favorisCount} favoris`}>
+              {favorisCount}
+            </span>
+          )}
         </Link>
         <Link to="/compte/messages/" className="nav-user-dropdown__item" role="menuitem" onClick={handleNav}>
           Messages

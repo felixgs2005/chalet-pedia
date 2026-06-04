@@ -3306,7 +3306,10 @@ a.region-cell {
 }
 
 .nav-user-dropdown__item {
-  display: block;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
   width: 100%;
   padding: 12px 18px;
   border: none;
@@ -3326,6 +3329,22 @@ a.region-cell {
   background: rgba(255, 255, 255, 0.08);
   color: #fff;
   outline: none;
+}
+
+.nav-user-dropdown__badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 7px;
+  border-radius: 999px;
+  background: #1f4d3a;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 800;
+  line-height: 1;
+  flex-shrink: 0;
 }
 
 @media (max-width: 768px) {
