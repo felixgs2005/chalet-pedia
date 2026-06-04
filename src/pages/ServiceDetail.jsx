@@ -4,6 +4,10 @@
 // Générique : /chalets/:categorie/:slug
 import { useEffect, useRef, useState } from "react";
 import { Link, useParams } from "react-router-dom";
+import {
+  hasCatalogueLink,
+  resolveLienCatalogue,
+} from "../utils/serviceCatalogue";
 import { useServiceListingBySlug } from "../hooks/useServiceListingBySlug";
 import ServiceDescriptionContent from "../components/ServiceDescriptionContent";
 import { resolveServiceImages } from "../utils/serviceImages";
@@ -155,6 +159,8 @@ export default function ServiceDetail() {
       ? Math.round((avis.reduce((s, a) => s + a.note, 0) / avis.length) * 10) / 10
       : listing.note;
   const nbAvis = avis.length > 0 ? avis.length : (listing.nbAvis ?? 0);
+  const showCatalogue = hasCatalogueLink(listing);
+  const catalogueHref = resolveLienCatalogue(listing);
 
   const openModal = (id) => setActiveModal(id);
   const closeModal = () => setActiveModal(null);
@@ -328,10 +334,17 @@ export default function ServiceDetail() {
                 Contact direct avec le prestataire
               </div>
 
-              <button type="button" className="sd-btn sd-btn--primary sd-btn--with-icon">
-                <IconBasket />
-                Magasiner le catalogue
-              </button>
+              {showCatalogue && (
+                <a
+                  href={catalogueHref}
+                  className="sd-btn sd-btn--primary sd-btn--with-icon"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <IconBasket />
+                  Magasiner le catalogue
+                </a>
+              )}
 
               <button
                 type="button"

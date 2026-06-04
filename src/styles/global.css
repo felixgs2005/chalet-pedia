@@ -5798,6 +5798,8 @@ button:hover .cp-icon {
   font-weight: 700;
   cursor: pointer;
   border: none;
+  text-decoration: none;
+  box-sizing: border-box;
   transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
 }
 

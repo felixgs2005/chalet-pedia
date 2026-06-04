@@ -31,6 +31,7 @@ export const serviceCategories = [
           "Construction Neuve de Chalet : conception, plan, matériaux…",
         ],
         carte: "Québec, Québec, Canada",
+        lienCatalogue: "https://www.ovachaletdesign.com/",
       },
     ],
   },
@@ -139,6 +140,7 @@ export const serviceCategories = [
             p: "Nous nous distinguons par l'utilisation du noyer massif, par l'innovation stratégique dans tous nos procédés, par notre étroite collaboration avec tous nos détaillants et par notre flexibilité. Nos créations sont disponibles en une variété de dimensions, configurations, en dimensions sur mesure, et dans un choix de noyer ou de merisier, dans un éventail de plus de 22 teintes de couleur.",
           },
         ],
+        lienCatalogue: "https://verbois.com/produits/",
       },
       {
         slug: "rustik-decorations-en-bois-pour-chalets",
@@ -172,6 +174,7 @@ export const serviceCategories = [
           { h: "📩 Intéressé par nos décorations en bois ?" },
           { p: "Contactez l'équipe RUSTIK pour découvrir la collection ou commander vos pièces." },
         ],
+        lienCatalogue: "https://rustikstore.bigcartel.com/",
       },
     ],
   },

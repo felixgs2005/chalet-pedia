@@ -76,5 +76,6 @@ export function buildServiceListingPayload(form, { imageUrls = [] } = {}) {
     courrielContact: form.courriel?.trim() || "",
     telephoneContact: form.telephone?.trim() || "",
     adresseContact: form.adresse?.trim() || "",
+    ...(form.lienCatalogue?.trim() ? { lienCatalogue: form.lienCatalogue.trim() } : {}),
   };
 }

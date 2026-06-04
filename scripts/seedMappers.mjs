@@ -226,6 +226,7 @@ export function mapServiceListingToFirestore(listing, createdAt) {
     image: images[0] || "",
     images,
     description: normalizeServiceDescription(listing),
+    ...(listing.lienCatalogue ? { lienCatalogue: listing.lienCatalogue } : {}),
     dateCreation: createdAt,
   };
 }

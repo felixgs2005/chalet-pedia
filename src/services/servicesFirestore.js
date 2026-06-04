@@ -44,6 +44,7 @@ export function mapFirestoreServiceListing(docSnap) {
     statut: data.statut || "",
     note: data.note > 0 ? data.note : null,
     nbAvis: data.nombreAvis ?? 0,
+    lienCatalogue: data.lienCatalogue || "",
   };
 }
 
