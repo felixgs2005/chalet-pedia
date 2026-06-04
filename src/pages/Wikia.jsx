@@ -107,26 +107,6 @@ export default function Wikia() {
             </div>
           </div>
         </div>
-
-        <div className="wk-hero__visual" aria-hidden="true">
-          <div className="wk-stack">
-            <div className="wk-stack__card">
-              <span className="wk-stack__label">Location</span>
-              <span className="wk-stack__line" />
-              <span className="wk-stack__line wk-stack__line--short" />
-            </div>
-            <div className="wk-stack__card">
-              <span className="wk-stack__label">Construction</span>
-              <span className="wk-stack__line" />
-              <span className="wk-stack__line" />
-            </div>
-            <div className="wk-stack__card">
-              <span className="wk-stack__label">Déco</span>
-              <span className="wk-stack__line wk-stack__line--short" />
-              <span className="wk-stack__line" />
-            </div>
-          </div>
-        </div>
       </header>
 
       <div className="wk-stats-band" aria-label="Statistiques du wiki">
