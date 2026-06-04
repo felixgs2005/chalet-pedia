@@ -10,6 +10,9 @@ import { resolveServiceImages } from "../utils/serviceImages";
 import { useSharePage } from "../hooks/useSharePage";
 import ShareToast from "../components/ShareToast";
 import ServiceListingModals from "../components/ServiceListingModals";
+import AvisList from "../components/AvisList";
+import { useAvis } from "../hooks/useAvis";
+import { buildServiceAvisCible } from "../services/avisFirestore";
 
 /** Animation au scroll — se réactive quand le contenu Firestore est monté. */
 function useReveal(threshold = 0.12, ready = true) {
@@ -86,6 +89,7 @@ const IconFlag = () => (
 export default function ServiceDetail() {
   const { categorie, slug } = useParams();
   const { listing, loading, error } = useServiceListingBySlug(categorie, slug);
+  const { avis, loading: avisLoading, refresh: refreshAvis } = useAvis("service", listing?.slug);
   const { share, feedback: shareFeedback } = useSharePage();
   const [activeImg, setActiveImg] = useState(0);
   const [galleryOpen, setGalleryOpen] = useState(false);
@@ -140,6 +144,13 @@ export default function ServiceDetail() {
     });
   };
 
+  const avisCible = buildServiceAvisCible(listing);
+  const noteMoyenne =
+    avis.length > 0
+      ? Math.round((avis.reduce((s, a) => s + a.note, 0) / avis.length) * 10) / 10
+      : listing.note;
+  const nbAvis = avis.length > 0 ? avis.length : (listing.nbAvis ?? 0);
+
   const openModal = (id) => setActiveModal(id);
   const closeModal = () => setActiveModal(null);
   const linkClass = (id) =>
@@ -148,7 +159,12 @@ export default function ServiceDetail() {
   return (
     <div className="service-detail-page">
       <ShareToast message={shareFeedback} />
-      <ServiceListingModals activeModal={activeModal} onClose={closeModal} />
+      <ServiceListingModals
+        activeModal={activeModal}
+        onClose={closeModal}
+        avisCible={avisCible}
+        onAvisSubmitted={refreshAvis}
+      />
       {/* FIL D'ARIANE */}
       <nav className="breadcrumb sd-reveal">
         <Link to="/">Accueil</Link>
@@ -166,6 +182,11 @@ export default function ServiceDetail() {
           <div className="badge-region">{listing.categorieNom}</div>
           <h1 className="chalet-title">{listing.titre}</h1>
           <div className="chalet-location-big">📍 {listing.localisation}</div>
+          {nbAvis > 0 && noteMoyenne && (
+            <div style={{ marginTop: 8, fontSize: 13, color: "#4A4A48", display: "flex", alignItems: "center", gap: 6 }}>
+              ⭐ {noteMoyenne.toFixed(1)} ({nbAvis} avis)
+            </div>
+          )}
           {listing.date && (
             <div style={{ marginTop: 8, fontSize: 13, color: "#4A4A48" }}>
               Ajouté le {listing.date}
@@ -274,6 +295,12 @@ export default function ServiceDetail() {
             <div className="info-label">Description</div>
             <ServiceDescriptionContent listing={listing} />
           </div>
+
+          <AvisList
+            avis={avis}
+            loading={avisLoading}
+            onWriteReview={() => openModal("review")}
+          />
         </div>
 
         {/* COLONNE DROITE — CARTE CONTACT */}

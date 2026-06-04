@@ -1,85 +1,8 @@
 import { useEffect, useState } from "react";
 import ActionModal from "./ActionModal";
+import ReviewModal from "./ReviewModal";
 
 const CLAIM_PRICE = "87.00";
-
-function StarRating({ value, onChange }) {
-  const [hover, setHover] = useState(0);
-
-  return (
-    <div
-      className="sd-action-modal__stars"
-      role="radiogroup"
-      aria-label="Évaluation"
-      onMouseLeave={() => setHover(0)}
-    >
-      {[1, 2, 3, 4, 5].map((star) => (
-        <button
-          key={star}
-          type="button"
-          role="radio"
-          aria-checked={value === star}
-          aria-label={`${star} étoile${star > 1 ? "s" : ""}`}
-          className={`sd-action-modal__star${star <= (hover || value) ? " is-active" : ""}`}
-          onMouseEnter={() => setHover(star)}
-          onClick={() => onChange(star)}
-        >
-          ★
-        </button>
-      ))}
-    </div>
-  );
-}
-
-function ReviewModal({ open, onClose }) {
-  const [rating, setRating] = useState(0);
-  const [review, setReview] = useState("");
-
-  useEffect(() => {
-    if (!open) {
-      setRating(0);
-      setReview("");
-    }
-  }, [open]);
-
-  return (
-    <ActionModal
-      open={open}
-      onClose={onClose}
-      title="Rédiger un avis"
-      titleId="sd-modal-review-title"
-      renderBody={({ requestClose }) => (
-      <form
-        className="sd-action-modal__form"
-        onSubmit={(e) => {
-          e.preventDefault();
-          requestClose();
-        }}
-      >
-        <div className="sd-action-modal__field">
-          <span className="sd-action-modal__label">Évaluation</span>
-          <StarRating value={rating} onChange={setRating} />
-        </div>
-        <div className="sd-action-modal__field">
-          <label className="sd-action-modal__label" htmlFor="sd-review-text">
-            Avis
-          </label>
-          <textarea
-            id="sd-review-text"
-            className="sd-action-modal__textarea"
-            value={review}
-            onChange={(e) => setReview(e.target.value)}
-            rows={6}
-          />
-        </div>
-        <button type="submit" className="sd-action-modal__submit">
-          Envoyer un avis
-        </button>
-      </form>
-      )}
-    />
-  );
-}
 
 function ClaimModal({ open, onClose, claimPrice = CLAIM_PRICE }) {
   const [details, setDetails] = useState("");
@@ -252,11 +175,16 @@ function ReportModal({ open, onClose }) {
 }
 
 /** Modales fiche service : contact, avis, réclamation, signalement. */
-export default function ServiceListingModals({ activeModal, onClose, claimPrice }) {
+export default function ServiceListingModals({ activeModal, onClose, claimPrice, avisCible, onAvisSubmitted }) {
   return (
     <>
       <ContactModal open={activeModal === "contact"} onClose={onClose} />
-      <ReviewModal open={activeModal === "review"} onClose={onClose} />
+      <ReviewModal
+        open={activeModal === "review"}
+        onClose={onClose}
+        cible={avisCible}
+        onSubmitted={onAvisSubmitted}
+      />
       <ClaimModal open={activeModal === "claim"} onClose={onClose} claimPrice={claimPrice} />
       <ReportModal open={activeModal === "report"} onClose={onClose} />
     </>

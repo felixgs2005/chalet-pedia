@@ -8,17 +8,23 @@ import { useMemo, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { useChaletBySlug } from "../hooks/useChaletBySlug";
 import { useChalets } from "../hooks/useChalets";
+import { useAvis } from "../hooks/useAvis";
 import ChaletCard from "../components/ChaletCard";
+import AvisList from "../components/AvisList";
+import ReviewModal from "../components/ReviewModal";
 import { useSharePage } from "../hooks/useSharePage";
 import ShareToast from "../components/ShareToast";
+import { buildChaletAvisCible } from "../services/avisFirestore";
 
 export default function ChaletPage() {
   const { slug } = useParams();
   const { chalet, loading, error } = useChaletBySlug(slug);
   const { chalets } = useChalets();
+  const { avis, loading: avisLoading, refresh: refreshAvis } = useAvis("chalet", chalet?.slug);
   const { share, feedback: shareFeedback } = useSharePage();
   const [activeImg, setActiveImg] = useState(0);
   const [galleryOpen, setGalleryOpen] = useState(false);
+  const [reviewOpen, setReviewOpen] = useState(false);
 
   const similaires = useMemo(
     () =>
@@ -72,9 +78,22 @@ export default function ChaletPage() {
     });
   };
 
+  const avisCible = buildChaletAvisCible(chalet);
+  const noteMoyenne =
+    avis.length > 0
+      ? Math.round((avis.reduce((s, a) => s + a.note, 0) / avis.length) * 10) / 10
+      : chalet.note;
+  const nbAvis = avis.length > 0 ? avis.length : (chalet.nbAvis ?? 0);
+
   return (
     <div>
       <ShareToast message={shareFeedback} />
+      <ReviewModal
+        open={reviewOpen}
+        onClose={() => setReviewOpen(false)}
+        cible={avisCible}
+        onSubmitted={refreshAvis}
+      />
       {/* FIL D'ARIANE */}
       <nav className="breadcrumb">
         <Link to="/">Accueil</Link>
@@ -95,9 +114,9 @@ export default function ChaletPage() {
             <p style={{ fontSize: 16, color: "#4A4A48", marginBottom: 8 }}>{chalet.sousTitre}</p>
           )}
           <div className="chalet-location-big">📍 {chalet.localisation}</div>
-          {chalet.note && (
+          {nbAvis > 0 && noteMoyenne && (
             <div style={{ marginTop: 8, fontSize: 13, color: "#4A4A48", display: "flex", alignItems: "center", gap: 6 }}>
-              ⭐ {chalet.note.toFixed(1)} ({chalet.nbAvis} avis)
+              ⭐ {noteMoyenne.toFixed(1)} ({nbAvis} avis)
             </div>
           )}
         </div>
@@ -231,6 +250,12 @@ export default function ChaletPage() {
               </div>
             </div>
           )}
+
+          <AvisList
+            avis={avis}
+            loading={avisLoading}
+            onWriteReview={() => setReviewOpen(true)}
+          />
         </div>
 
         {/* COLONNE DROITE — RÉSERVATION */}
@@ -269,6 +294,13 @@ export default function ChaletPage() {
 
             <button className="booking-cta">Contacter le propriétaire</button>
             <button className="booking-secondary">Vérifier les disponibilités</button>
+            <button
+              type="button"
+              className="booking-secondary"
+              onClick={() => setReviewOpen(true)}
+            >
+              Rédiger un avis
+            </button>
 
             <div className="booking-divider" />
 
