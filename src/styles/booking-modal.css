@@ -1,0 +1,85 @@
+/* Booking Modal Styles - Premium Look */
+.booking-modal {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(6px);
+  z-index: 1000;
+}
+
+.booking-modal-content {
+  background: rgba(31, 77, 58, 0.85);
+  border-radius: 12px;
+  padding: 24px 32px;
+  max-width: 420px;
+  width: 100%;
+  color: #fff;
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(8px);
+}
+
+.booking-modal-content h3 {
+  margin-top: 0;
+  margin-bottom: 16px;
+  font-family: "Archivo Black", sans-serif;
+  font-size: 1.5rem;
+  color: #e0f2e9;
+}
+
+.booking-modal-content label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 0.9rem;
+  color: #cfe3d7;
+}
+
+.booking-modal-content input[type="date"],
+.booking-modal-content input[type="number"] {
+  width: 100%;
+  padding: 10px 12px;
+  margin-bottom: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  font-size: 0.95rem;
+}
+
+.booking-modal-content input::placeholder {
+  color: rgba(255,255,255,0.6);
+}
+
+.booking-modal-cta {
+  display: inline-block;
+  padding: 12px 20px;
+  background: linear-gradient(180deg, #3d6b58 0%, #1f4d3a 100%);
+  border: none;
+  border-radius: 8px;
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  margin-right: 8px;
+}
+
+.booking-modal-cta:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 16px rgba(31, 77, 58, 0.35);
+}
+
+.booking-modal-cancel {
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.4);
+  color: #fff;
+  padding: 10px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.booking-modal-cancel:hover {
+  background: rgba(255,255,255,0.1);
+}

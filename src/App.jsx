@@ -1,5 +1,5 @@
 // src/App.jsx
-import { BrowserRouter, Routes, Route, ScrollRestoration } from "react-router-dom";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
 import { FavorisCountProvider } from "./context/FavorisCountContext";
 import Header from "./components/Header";
@@ -13,6 +13,7 @@ import Blogue from "./pages/Blogue";
 import Astuces from "./pages/Astuces";
 import ArticlePage from "./pages/ArticlePage";
 import AuthPage from "./pages/auth";
+import ConfirmBooking from "./pages/ConfirmBooking";
 import AccueilServices from "./pages/AccueilServices";
 import Construction from "./pages/Construction";
 import Decoration from "./pages/Decoration";
@@ -36,6 +37,7 @@ import "./styles/global.css";
 import "./styles/compte.css";
 import "./styles/submit-listing.css";
 import "./styles/footer-pages.css";
+import "./styles/booking-modal.css";
 
 function Layout({ children }) {
   return (
@@ -51,88 +53,88 @@ export default function App() {
   return (
     <AuthProvider>
       <FavorisCountProvider>
-      <BrowserRouter>
-        <Layout>
-          <Routes>
-            <Route path="/auth" element={<AuthPage />} />
-            <Route path="/" element={<HomePage />} />
-            <Route path="/chalet/:slug" element={<ChaletPage />} />
-            <Route path="/chalets/chalet-a-louer/" element={<ALouer />} />
-            <Route path="/chalets/chalets-a-vendre/" element={<Vente />} />
-            <Route path="/chalets/chalets-a-vendre/:slug" element={<VentePage />} />
-            {/* URLs type chaletpedia.com : /chalets/chalets-a-louer-laurentides/ */}
-            <Route path="/chalets/:pageSlug" element={<ALouer />} />
-            <Route path="/blogue/" element={<Blogue />} />
-            <Route path="/blogue/:slug" element={<ArticlePage />} />
-            <Route path="/academie/astuces/" element={<Astuces />} />
-            <Route path="/academie/astuces/Wikia" element={<Wikia />} />
-            <Route path="/academie/astuces/:slug" element={<ArticlePage />} />
-            <Route path="/chalets/services/" element={<AccueilServices />} />
-            <Route path="/chalets/construction/" element={<Construction />} />
-            <Route path="/chalets/decoration/" element={<Decoration />} />
-            <Route path="/chalets/entretien/" element={<Entretien />} />
-            <Route path="/chalets/multimedia/" element={<Multimedia />} />
-            {/* Détail d'une annonce de service : /chalets/construction/ova-chalet-design */}
-            <Route path="/chalets/:categorie/:slug" element={<ServiceDetail />} />
-            {/* Pages footer */}
-            <Route path="/faq/" element={<FAQ />} />
-            <Route
-              path="/submit-listing/details/"
-              element={
-                <RequireAuth>
-                  <SubmitListingDetails />
-                </RequireAuth>
-              }
-            />
-            <Route path="/promotions/" element={<Promotions />} />
-            <Route path="/publicite/" element={<Publicite />} />
-            <Route path="/politique-de-confidentialite/" element={<PolitiqueConfidentialite />} />
-            <Route path="/conditions-utilisation/" element={<ConditionsUtilisation />} />
-            <Route path="/a-propos/" element={<APropos />} />
-            <Route
-              path="/compte/reglages/"
-              element={
-                <RequireAuth>
-                  <Reglages />
-                </RequireAuth>
-              }
-            />
-            <Route
-              path="/compte/favoris/"
-              element={
-                <RequireAuth>
-                  <Favoris />
-                </RequireAuth>
-              }
-            />
-            <Route
-              path="/compte/messages/"
-              element={
-                <RequireAuth>
-                  <Messages />
-                </RequireAuth>
-              }
-            />
-            <Route
-              path="/compte/messages/:conversationKey/"
-              element={
-                <RequireAuth>
-                  <MessageConversation />
-                </RequireAuth>
-              }
-            />
-            <Route
-              path="*"
-              element={
-                <div style={{ padding: "80px 32px", textAlign: "center" }}>
-                  <div className="kicker">404</div>
-                  <h1 className="section-title" style={{ fontSize: 48, marginTop: 12 }}>Page introuvable</h1>
-                </div>
-              }
-            />
-          </Routes>
-        </Layout>
-      </BrowserRouter>
+        <BrowserRouter>
+          <Layout>
+            <Routes>
+              <Route path="/auth" element={<AuthPage />} />
+              <Route path="/" element={<HomePage />} />
+              <Route path="/chalet/:slug" element={<ChaletPage />} />
+              <Route path="/chalets/chalet-a-louer/" element={<ALouer />} />
+              <Route path="/chalets/chalets-a-vendre/" element={<Vente />} />
+              <Route path="/chalets/chalets-a-vendre/:slug" element={<VentePage />} />
+              <Route path="/chalets/:pageSlug" element={<ALouer />} />
+              <Route path="/blogue/" element={<Blogue />} />
+              <Route path="/blogue/:slug" element={<ArticlePage />} />
+              <Route path="/academie/astuces/" element={<Astuces />} />
+              <Route path="/academie/astuces/Wikia" element={<Wikia />} />
+              <Route path="/academie/astuces/:slug" element={<ArticlePage />} />
+              <Route path="/chalets/services/" element={<AccueilServices />} />
+              <Route path="/chalets/construction/" element={<Construction />} />
+              <Route path="/chalets/decoration/" element={<Decoration />} />
+              <Route path="/chalets/entretien/" element={<Entretien />} />
+              <Route path="/chalets/multimedia/" element={<Multimedia />} />
+              <Route path="/chalets/:categorie/:slug" element={<ServiceDetail />} />
+              <Route path="/faq/" element={<FAQ />} />
+              <Route
+                path="/submit-listing/details/"
+                element={
+                  <RequireAuth>
+                    <SubmitListingDetails />
+                  </RequireAuth>
+                }
+              />
+              <Route path="/promotions/" element={<Promotions />} />
+              <Route path="/publicite/" element={<Publicite />} />
+              <Route path="/politique-de-confidentialite/" element={<PolitiqueConfidentialite />} />
+              <Route path="/conditions-utilisation/" element={<ConditionsUtilisation />} />
+              <Route path="/a-propos/" element={<APropos />} />
+              <Route
+                path="/compte/reglages/"
+                element={
+                  <RequireAuth>
+                    <Reglages />
+                  </RequireAuth>
+                }
+              />
+              <Route
+                path="/compte/favoris/"
+                element={
+                  <RequireAuth>
+                    <Favoris />
+                  </RequireAuth>
+                }
+              />
+              <Route
+                path="/compte/messages/"
+                element={
+                  <RequireAuth>
+                    <Messages />
+                  </RequireAuth>
+                }
+              />
+              <Route
+                path="/compte/messages/:conversationKey/"
+                element={
+                  <RequireAuth>
+                    <MessageConversation />
+                  </RequireAuth>
+                }
+              />
+              <Route path="/reservation/confirmer" element={<RequireAuth><ConfirmBooking /></RequireAuth>} />
+              <Route
+                path="*"
+                element={
+                  <div style={{ padding: "80px 32px", textAlign: "center" }}>
+                    <div className="kicker">404</div>
+                    <h1 className="section-title" style={{ fontSize: 48, marginTop: 12 }}>
+                      Page introuvable
+                    </h1>
+                  </div>
+                }
+              />
+            </Routes>
+          </Layout>
+        </BrowserRouter>
       </FavorisCountProvider>
     </AuthProvider>
   );
