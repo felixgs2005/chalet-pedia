@@ -57,9 +57,9 @@ export default function Footer() {
           <Link to="/faq/" className="footer-link">
             F.A.Q
           </Link>
-          <a href="mailto:info@chaletpedia.com" className="footer-link">
+          <Link to="/contact/" className="footer-link">
             Contact
-          </a>
+          </Link>
         </div>
 
       </div>

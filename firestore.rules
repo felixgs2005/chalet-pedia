@@ -64,9 +64,14 @@ service cloud.firestore {
       allow read, update, delete: if false;
     }
 
-    // Extension Firebase « Trigger Email from Firestore »
-    match /mail/{docId} {
-      allow create: if request.auth != null;
+    // Formulaire contact — création publique ; envoi courriel via Cloud Function
+    match /contactMessages/{messageId} {
+      allow create: if request.resource.data.nom is string
+        && request.resource.data.nom.size() > 0
+        && request.resource.data.email is string
+        && request.resource.data.message is string
+        && request.resource.data.message.size() > 0
+        && request.resource.data.consentement == true;
       allow read, update, delete: if false;
     }
 

@@ -27,6 +27,7 @@ import Publicite from "./pages/footer/Publicite";
 import PolitiqueConfidentialite from "./pages/footer/PolitiqueConfidentialite";
 import ConditionsUtilisation from "./pages/footer/ConditionsUtilisation";
 import APropos from "./pages/footer/APropos";
+import Contact from "./pages/footer/Contact";
 import RequireAuth from "./components/RequireAuth";
 import Reglages from "./pages/compte/Reglages";
 import Favoris from "./pages/compte/Favoris";
@@ -76,6 +77,7 @@ export default function App() {
             <Route path="/chalets/:categorie/:slug" element={<ServiceDetail />} />
             {/* Pages footer */}
             <Route path="/faq/" element={<FAQ />} />
+            <Route path="/contact/" element={<Contact />} />
             <Route
               path="/submit-listing/details/"
               element={

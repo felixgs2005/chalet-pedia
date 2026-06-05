@@ -8,7 +8,7 @@ import {
 } from "firebase/firestore";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { db, storage } from "../firebase";
-import { notifyAdvertiserByEmail } from "./notifyAdvertiserEmail";
+import { describeAdvertiserEmailNotification } from "./notifyAdvertiserEmail";
 import { extractEmailFromDescription } from "../utils/extractEmailFromDescription";
 import { resolveUtilisateur, resolveUtilisateurByUid } from "../utils/resolveUtilisateur";
 
@@ -168,18 +168,7 @@ export async function sendMessage(cible, { texte, utilisateur, fichier }) {
     dateEnvoi: serverTimestamp(),
   });
 
-  const email = await notifyAdvertiserByEmail({
-    destinataire,
-    cible,
-    expediteur,
-    texte: trimmed,
-    pieceJointeUrl,
-    pieceJointeNom,
-  }).catch((err) => ({
-    sent: false,
-    reason: "send_failed",
-    error: err.message || "Courriel non envoyé.",
-  }));
+  const email = describeAdvertiserEmailNotification(destinataire, cible);
 
   return { conversationKey, email };
 }

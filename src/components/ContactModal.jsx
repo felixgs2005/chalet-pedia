@@ -66,12 +66,8 @@ export default function ContactModal({ open, onClose, cible, onSent }) {
                 setSent(true);
                 const email = result.email;
                 let notice = "";
-                if (email?.emailJsSent && email?.toEmail) {
-                  notice = `Un courriel a été envoyé à ${email.toEmail}.`;
-                } else if (email?.queuedOnly && email?.toEmail) {
-                  notice = `Le courriel à ${email.toEmail} est en file (extension Firebase « Trigger Email » requise).`;
-                } else if (email?.toEmail && !email?.sent) {
-                  notice = `Courriel non envoyé à ${email.toEmail} : configurez EmailJS ou l'extension Firebase Trigger Email.`;
+                if (email?.willNotify && email?.toEmail) {
+                  notice = `Un courriel sera envoyé à ${email.toEmail}.`;
                 } else if (email?.reason === "no_advertiser_email") {
                   notice = "Aucun courriel d'annonceur sur cette fiche.";
                 }

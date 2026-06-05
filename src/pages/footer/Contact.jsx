@@ -5,6 +5,7 @@
 // ============================================================
 
 import { useState } from "react";
+import { submitContactForm } from "../../services/submitContactForm";
 
 export default function Contact() {
   const [formData, setFormData] = useState({
@@ -16,6 +17,7 @@ export default function Contact() {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState(null);
+  const [submitError, setSubmitError] = useState("");
 
   const sujetOptions = [
     { value: "support", label: "Support technique" },
@@ -37,10 +39,11 @@ export default function Contact() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
-    
-    // Simulation d'envoi
-    setTimeout(() => {
-      setIsSubmitting(false);
+    setSubmitError("");
+    setSubmitStatus(null);
+
+    try {
+      await submitContactForm(formData);
       setSubmitStatus("success");
       setFormData({
         nom: "",
@@ -49,10 +52,14 @@ export default function Contact() {
         message: "",
         consentement: false,
       });
-      
-      // Réinitialiser après 5 secondes
       setTimeout(() => setSubmitStatus(null), 5000);
-    }, 1500);
+    } catch (err) {
+      setSubmitError(
+        err.message || "Impossible d'envoyer le message. Réessayez plus tard."
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const contactInfo = [
@@ -154,6 +161,15 @@ export default function Contact() {
                 Remplissez le formulaire ci-dessous et nous vous répondrons
                 rapidement.
               </p>
+
+              {submitError && (
+                <div className="contact-success" style={{ borderColor: "#c0392b", background: "#fdecea" }}>
+                  <div className="contact-success-text">
+                    <strong>Erreur</strong>
+                    <p>{submitError}</p>
+                  </div>
+                </div>
+              )}
 
               {submitStatus === "success" && (
                 <div className="contact-success">
