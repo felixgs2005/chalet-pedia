@@ -33,6 +33,7 @@ import Reglages from "./pages/compte/Reglages";
 import Favoris from "./pages/compte/Favoris";
 import Messages from "./pages/compte/Messages";
 import MessageConversation from "./pages/compte/MessageConversation";
+import Reservations from "./pages/compte/Reservations";
 import "./styles/global.css";
 import "./styles/compte.css";
 import "./styles/submit-listing.css";
@@ -117,6 +118,14 @@ export default function App() {
                 element={
                   <RequireAuth>
                     <MessageConversation />
+                  </RequireAuth>
+                }
+              />
+              <Route
+                path="/compte/reservations/"
+                element={
+                  <RequireAuth>
+                    <Reservations />
                   </RequireAuth>
                 }
               />
