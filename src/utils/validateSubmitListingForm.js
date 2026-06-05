@@ -6,6 +6,11 @@ export function parseTagsInput(value) {
     .filter(Boolean);
 }
 
+/** Parse une liste simple (équipements location : une entrée par ligne ou virgule). */
+export function parseEquipementsInput(value) {
+  return parseTagsInput(value);
+}
+
 function isValidUrl(value) {
   try {
     const url = new URL(value);
@@ -20,6 +25,20 @@ function stripHtml(html) {
     .replace(/<[^>]*>/g, " ")
     .replace(/&nbsp;/gi, " ")
     .trim();
+}
+
+/** Parse les blocs caractéristiques (titre + items multiligne). */
+export function parseCaracteristiquesInput(blocks) {
+  if (!Array.isArray(blocks)) return [];
+  return blocks
+    .map((block) => ({
+      titre: String(block.titre || "").trim(),
+      items: String(block.items || "")
+        .split(/\n+/)
+        .map((line) => line.trim())
+        .filter(Boolean),
+    }))
+    .filter((block) => block.titre && block.items.length > 0);
 }
 
 /**
@@ -43,29 +62,52 @@ export function validateSubmitListingForm(form, { photoCount = 0 } = {}) {
   if (!form.localisation?.trim()) {
     return { ok: false, message: "La localisation est obligatoire (ville et région)." };
   }
-  if (tags.length === 0) {
-    return { ok: false, message: "Au moins un tag est obligatoire." };
-  }
-  if (!form.description?.trim()) {
-    return { ok: false, message: "La description est obligatoire." };
-  }
-  if (!stripHtml(form.tarification)) {
-    return { ok: false, message: "La tarification est obligatoire." };
-  }
-  if (!form.citq?.trim()) {
-    return { ok: false, message: "Le numéro CITQ est obligatoire." };
-  }
   if (photoCount < 1) {
     return { ok: false, message: "Au moins une photo de la galerie est obligatoire." };
   }
 
   if (isVente) {
+    if (!form.descriptionTitre?.trim()) {
+      return { ok: false, message: "L'accroche de la description est obligatoire." };
+    }
+    if (!stripHtml(form.description)) {
+      return { ok: false, message: "La description est obligatoire." };
+    }
     if (!form.prix?.trim()) {
       return { ok: false, message: "Le prix demandé est obligatoire." };
     }
+    const caracteristiques = parseCaracteristiquesInput(form.caracteristiques);
+    if (caracteristiques.length === 0) {
+      return {
+        ok: false,
+        message: "Ajoutez au moins une section de caractéristiques (titre + un point).",
+      };
+    }
   } else {
+    if (!form.sousTitre?.trim()) {
+      return { ok: false, message: "Le sous-titre est obligatoire." };
+    }
+    if (tags.length === 0) {
+      return { ok: false, message: "Au moins un tag est obligatoire." };
+    }
+    if (!form.description?.trim()) {
+      return { ok: false, message: "La description est obligatoire." };
+    }
+    if (!form.citq?.trim()) {
+      return { ok: false, message: "Le numéro CITQ est obligatoire." };
+    }
     if (form.prixParNuit === "" || form.prixParNuit == null) {
       return { ok: false, message: "Le prix par nuit est obligatoire." };
+    }
+    if (Number(form.prixParNuit) < 1) {
+      return { ok: false, message: "Le prix par nuit doit être d'au moins 1 $." };
+    }
+    const equipements = parseEquipementsInput(form.equipements);
+    if (equipements.length === 0) {
+      return {
+        ok: false,
+        message: "Ajoutez au moins un équipement ou une caractéristique (ex. : Spa, Foyer, Bord de l'eau).",
+      };
     }
     if (!form.nombrePersonnes || Number(form.nombrePersonnes) < 1) {
       return { ok: false, message: "Le nombre de personnes est obligatoire." };
@@ -77,6 +119,11 @@ export function validateSubmitListingForm(form, { photoCount = 0 } = {}) {
   }
   if (form.nombreSallesBain === "" || form.nombreSallesBain == null) {
     return { ok: false, message: "Le nombre de salles de bain est obligatoire." };
+  }
+
+  const siteWeb = form.siteWeb?.trim() || "";
+  if (siteWeb && !isValidUrl(siteWeb)) {
+    return { ok: false, message: "Le lien du site web doit être une URL valide (http ou https)." };
   }
 
   const videoUrl = form.videoUrl?.trim() || "";
