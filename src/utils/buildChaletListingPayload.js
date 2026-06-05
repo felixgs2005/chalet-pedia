@@ -1,5 +1,9 @@
 import { slugifyServiceTitle } from "./buildServiceListingPayload";
-import { parseTagsInput } from "./validateSubmitListingForm";
+import {
+  parseCaracteristiquesInput,
+  parseEquipementsInput,
+  parseTagsInput,
+} from "./validateSubmitListingForm";
 
 export { slugifyServiceTitle as slugifyChaletTitle };
 
@@ -24,6 +28,14 @@ function toNumberOrNull(value) {
   return Number.isFinite(n) ? n : null;
 }
 
+function stripTextFromHtml(html) {
+  return String(html || "")
+    .replace(/<[^>]*>/g, " ")
+    .replace(/&nbsp;/gi, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
 /**
  * Convertit le formulaire « Affichez une annonce » → document Firestore chalets/ ou ventes/.
  */
@@ -42,34 +54,47 @@ export function buildChaletListingPayload(form, { imageUrls = [], proprietaireId
     tags,
     tarification,
     citq,
+    siteWeb: form.siteWeb?.trim() || "",
     videoUrl: form.videoUrl?.trim() || "",
     lienBlog: form.lienBlog?.trim() || "",
     dateCreation: null,
   };
 
   if (form.categorie === "chalets-vendre") {
+    const caracteristiques = parseCaracteristiquesInput(form.caracteristiques);
+    const descriptionHtml = form.description?.trim() || "";
+
     return {
       ...base,
       titre: form.titre.trim(),
       nom: form.titre.trim(),
       localisation: adresse,
       region,
-      description: form.description?.trim() || "",
-      descriptionHtml: form.description?.trim() || "",
-      descriptionTitre: form.titre.trim(),
+      regionBadge: region ? region.toUpperCase() : "",
+      description: stripTextFromHtml(descriptionHtml),
+      descriptionHtml,
+      descriptionTitre: form.descriptionTitre?.trim() || form.titre.trim(),
       prix: form.prix?.trim() || "",
       nombreChambres: toNumberOrNull(form.nombreChambres),
       nombreSallesBain: toNumberOrNull(form.nombreSallesBain),
+      garages: toNumberOrNull(form.nombreGarages),
+      etages: toNumberOrNull(form.nombreEtages),
       note: 0,
       nombreAvis: 0,
-      caracteristiques: [],
+      caracteristiques,
       descriptionPrix: [],
+      tags: tags.length ? tags : [],
+      tarification: "",
+      citq: "",
     };
   }
+
+  const equipements = parseEquipementsInput(form.equipements);
 
   return {
     ...base,
     nom: form.titre.trim(),
+    sousTitre: form.sousTitre?.trim() || "",
     description: form.description?.trim() || "",
     adresse,
     region,
@@ -81,10 +106,9 @@ export function buildChaletListingPayload(form, { imageUrls = [], proprietaireId
     nombreAvis: 0,
     telephoneContact: "",
     courrielContact: "",
-    equipements: [],
+    equipements,
     coordonnees: null,
-    sousTitre: "",
-    badge: region,
+    badge: region ? region.toUpperCase() : "",
     dateAjout: "",
     isFavori: false,
   };

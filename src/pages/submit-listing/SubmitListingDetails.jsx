@@ -20,19 +20,37 @@ import { promiseWithTimeout } from "../../utils/promiseWithTimeout";
 import "../../styles/submit-listing.css";
 
 const CATEGORIES = [
-  { value: "chalets-louer", label: "Chalets à louer" },
-  { value: "chalets-vendre", label: "Chalets à vendre" },
+  { value: "chalets-louer", label: "Chalets à louer", short: "À louer" },
+  { value: "chalets-vendre", label: "Chalets à vendre", short: "À vendre" },
 ];
 
+const CATEGORY_HINTS = {
+  "chalets-louer":
+    "Location courte durée — CITQ, prix par nuit, équipements et capacité d'accueil.",
+  "chalets-vendre":
+    "Vente immobilière — prix demandé, caractéristiques détaillées et description enrichie.",
+};
+
 const MAX_PHOTOS = 30;
+
+function createCaracteristiqueBlock() {
+  return {
+    id: `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`,
+    titre: "",
+    items: "",
+  };
+}
 
 const EMPTY_FORM = {
   categorie: "chalets-louer",
   titre: "",
+  sousTitre: "",
   slug: "",
   localisation: "",
   tags: "",
+  equipements: "",
   description: "",
+  descriptionTitre: "",
   tarification: "",
   citq: "",
   prixParNuit: "",
@@ -40,13 +58,17 @@ const EMPTY_FORM = {
   nombrePersonnes: "",
   nombreChambres: "",
   nombreSallesBain: "",
+  nombreGarages: "",
+  nombreEtages: "",
+  caracteristiques: [createCaracteristiqueBlock()],
+  siteWeb: "",
   videoUrl: "",
   lienBlog: "",
 };
 
-function createPhotoEntry(file) {
+function createPhotoEntry(file, index = 0) {
   return {
-    id: `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`,
+    id: `${Date.now()}-${index}-${Math.random().toString(36).slice(2, 9)}`,
     file,
     preview: URL.createObjectURL(file),
     name: file.name,
@@ -76,8 +98,6 @@ export default function SubmitListingDetails() {
   }, [photos]);
 
   const isVente = form.categorie === "chalets-vendre";
-  const categoryLabel =
-    CATEGORIES.find((c) => c.value === form.categorie)?.label || "";
 
   const update = (field) => (e) => {
     const value = e.target.value;
@@ -87,6 +107,32 @@ export default function SubmitListingDetails() {
         next.slug = slugifyChaletTitle(value);
       }
       return next;
+    });
+  };
+
+  const updateCaracteristique = (id, field, value) => {
+    setForm((prev) => ({
+      ...prev,
+      caracteristiques: prev.caracteristiques.map((block) =>
+        block.id === id ? { ...block, [field]: value } : block
+      ),
+    }));
+  };
+
+  const addCaracteristique = () => {
+    setForm((prev) => ({
+      ...prev,
+      caracteristiques: [...prev.caracteristiques, createCaracteristiqueBlock()],
+    }));
+  };
+
+  const removeCaracteristique = (id) => {
+    setForm((prev) => {
+      if (prev.caracteristiques.length <= 1) return prev;
+      return {
+        ...prev,
+        caracteristiques: prev.caracteristiques.filter((block) => block.id !== id),
+      };
     });
   };
 
@@ -101,17 +147,46 @@ export default function SubmitListingDetails() {
       return;
     }
 
-    const toAdd = files.slice(0, remaining);
-    for (const file of toAdd) {
+    const validFiles = [];
+    let firstInvalidMessage = "";
+
+    for (const file of files) {
+      if (validFiles.length >= remaining) break;
       const err = validateChaletImageFile(file);
       if (err) {
-        setError(err);
-        return;
+        if (!firstInvalidMessage) firstInvalidMessage = err;
+        continue;
       }
+      validFiles.push(file);
     }
 
-    setPhotos((prev) => [...prev, ...toAdd.map(createPhotoEntry)]);
-    setError("");
+    if (!validFiles.length) {
+      setError(firstInvalidMessage || "Aucune photo valide n'a pu être ajoutée.");
+      return;
+    }
+
+    setPhotos((prev) => [
+      ...prev,
+      ...validFiles.map((file, index) => createPhotoEntry(file, index)),
+    ]);
+
+    const truncated = files.length > remaining;
+
+    if (truncated && firstInvalidMessage) {
+      setError(
+        `${validFiles.length} photo(s) ajoutée(s). Limite de ${MAX_PHOTOS} atteinte ; certaines photos ont été ignorées (${firstInvalidMessage}).`
+      );
+    } else if (truncated) {
+      setError(
+        `${validFiles.length} photo(s) ajoutée(s). Seules les ${MAX_PHOTOS} premières photos sont conservées.`
+      );
+    } else if (firstInvalidMessage) {
+      setError(
+        `${validFiles.length} photo(s) ajoutée(s). Certaines photos ont été ignorées : ${firstInvalidMessage}`
+      );
+    } else {
+      setError("");
+    }
   };
 
   const removePhoto = (id) => {
@@ -219,74 +294,98 @@ export default function SubmitListingDetails() {
         ) : null}
 
         <form className="submit-listing-form" onSubmit={handleSubmit} noValidate>
-          <div className="submit-listing-field">
-            <span className="submit-listing-label">
+          <fieldset className="submit-listing-field submit-listing-category">
+            <legend className="submit-listing-label">
               Catégorie<Req />
-            </span>
-            {categoryLabel ? (
-              <span className="submit-listing-category-tag">{categoryLabel}</span>
-            ) : null}
-            <select
-              id="listing-categorie"
-              className="submit-listing-select"
-              value={form.categorie}
-              onChange={update("categorie")}
-              disabled={sent || submitting}
-              required
-            >
-              {CATEGORIES.map((c) => (
-                <option key={c.value} value={c.value}>
-                  {c.label}
-                </option>
-              ))}
-            </select>
-          </div>
+            </legend>
+            <div className="submit-listing-category__options" role="presentation">
+              {CATEGORIES.map((c) => {
+                const isActive = form.categorie === c.value;
+                return (
+                  <label
+                    key={c.value}
+                    className={`submit-listing-category__option${isActive ? " is-active" : ""}`}
+                  >
+                    <input
+                      type="radio"
+                      name="listing-categorie"
+                      className="submit-listing-category__input"
+                      value={c.value}
+                      checked={isActive}
+                      onChange={update("categorie")}
+                      disabled={sent || submitting}
+                    />
+                    <span className="submit-listing-category__short">{c.short}</span>
+                    <span className="submit-listing-category__full">{c.label}</span>
+                  </label>
+                );
+              })}
+            </div>
+            <p className="submit-listing-hint submit-listing-category__hint">
+              {CATEGORY_HINTS[form.categorie]}
+            </p>
+          </fieldset>
 
           <div className="submit-listing-field">
             <span className="submit-listing-label">
               Galerie<Req />
             </span>
+            <p className="submit-listing-hint">
+              Ajoutez plusieurs photos de votre chalet en une seule fois ou par lots. La première
+              photo servira de couverture sur la fiche.
+            </p>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/jpeg,image/png,image/webp,image/gif"
+              multiple
+              className="submit-listing-file-input"
+              onChange={pickPhotos}
+              disabled={sent || submitting || photos.length >= MAX_PHOTOS}
+              aria-hidden="true"
+              tabIndex={-1}
+            />
             <div className="submit-listing-file-row">
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept="image/jpeg,image/png,image/webp,image/gif"
-                multiple
-                className="submit-listing-file-input"
-                onChange={pickPhotos}
-                disabled={sent || submitting || photos.length >= MAX_PHOTOS}
-                aria-hidden="true"
-                tabIndex={-1}
-              />
               <button
                 type="button"
                 className="submit-listing-file-btn"
                 onClick={() => fileInputRef.current?.click()}
                 disabled={sent || submitting || photos.length >= MAX_PHOTOS}
               >
-                Choisissez des fichiers
+                {photos.length > 0 ? "Ajouter d'autres photos" : "Choisir des photos"}
               </button>
               <span className="submit-listing-file-count">
-                JPG, PNG, WebP ou GIF — 5 Mo max. ({photos.length}/{MAX_PHOTOS})
+                JPG, PNG, WebP ou GIF — 5 Mo max. — sélection multiple ({photos.length}/{MAX_PHOTOS})
               </span>
             </div>
             {photos.length > 0 ? (
-              <ul className="submit-listing-gallery">
-                {photos.map((photo) => (
-                  <li key={photo.id} className="submit-listing-gallery__thumb">
-                    <img src={photo.preview} alt="" />
-                    <button
-                      type="button"
-                      className="submit-listing-gallery__remove"
-                      onClick={() => removePhoto(photo.id)}
-                      disabled={sent || submitting}
-                      aria-label={`Retirer ${photo.name}`}
-                    >
-                      ×
-                    </button>
-                  </li>
-                ))}
-              </ul>
+              <>
+                <p className="submit-listing-gallery__meta">
+                  {photos.length} photo{photos.length > 1 ? "s" : ""}{" "}
+                  {photos.length > 1 ? "sélectionnées" : "sélectionnée"}
+                </p>
+                <ul className="submit-listing-gallery">
+                  {photos.map((photo, index) => (
+                    <li key={photo.id} className="submit-listing-gallery__thumb">
+                      <img src={photo.preview} alt="" />
+                      {index === 0 ? (
+                        <span className="submit-listing-gallery__cover">Couverture</span>
+                      ) : (
+                        <span className="submit-listing-gallery__index">{index + 1}</span>
+                      )}
+                      <button
+                        type="button"
+                        className="submit-listing-gallery__remove"
+                        onClick={() => removePhoto(photo.id)}
+                        disabled={sent || submitting}
+                        aria-label={`Retirer ${photo.name}`}
+                      >
+                        ×
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              </>
             ) : null}
           </div>
 
@@ -306,10 +405,35 @@ export default function SubmitListingDetails() {
             />
             {form.slug ? (
               <p className="submit-listing-slug">
-                Adresse web : /chalet/{form.slug}
+                Adresse web :{" "}
+                {isVente
+                  ? `/chalets/chalets-a-vendre/${form.slug}`
+                  : `/chalet/${form.slug}`}
               </p>
             ) : null}
           </div>
+
+          {!isVente ? (
+            <div className="submit-listing-field">
+              <label className="submit-listing-label" htmlFor="listing-sous-titre">
+                Sous-titre<Req />
+              </label>
+              <p className="submit-listing-hint">
+                Phrase d&apos;accroche affichée sous le nom (ex. : « Cabane vitrée avec spa et
+                vue spectaculaire »).
+              </p>
+              <input
+                id="listing-sous-titre"
+                type="text"
+                className="submit-listing-input submit-listing-input--light"
+                value={form.sousTitre}
+                onChange={update("sousTitre")}
+                disabled={sent || submitting}
+                required
+                placeholder="Courte accroche de votre annonce"
+              />
+            </div>
+          ) : null}
 
           <div className="submit-listing-field">
             <label className="submit-listing-label" htmlFor="listing-slug">
@@ -349,73 +473,137 @@ export default function SubmitListingDetails() {
             />
           </div>
 
-          <div className="submit-listing-field">
-            <label className="submit-listing-label" htmlFor="listing-tags">
-              Tags<Req />
-            </label>
-            <p className="submit-listing-hint">
-              Séparez les tags par des virgules (ex. : spa, bord de l&apos;eau, animaux).
-            </p>
-            <input
-              id="listing-tags"
-              type="text"
-              className="submit-listing-input submit-listing-input--light"
-              value={form.tags}
-              onChange={update("tags")}
-              disabled={sent || submitting}
-              required
-              placeholder="spa, ski, familial"
-            />
-          </div>
+          {!isVente ? (
+            <>
+              <div className="submit-listing-field">
+                <label className="submit-listing-label" htmlFor="listing-tags">
+                  Tags<Req />
+                </label>
+                <p className="submit-listing-hint">
+                  Séparez les tags par des virgules (ex. : spa, bord de l&apos;eau, animaux).
+                </p>
+                <input
+                  id="listing-tags"
+                  type="text"
+                  className="submit-listing-input submit-listing-input--light"
+                  value={form.tags}
+                  onChange={update("tags")}
+                  disabled={sent || submitting}
+                  required
+                  placeholder="spa, ski, familial"
+                />
+              </div>
+
+              <div className="submit-listing-field">
+                <label className="submit-listing-label" htmlFor="listing-equipements">
+                  Équipements et caractéristiques<Req />
+                </label>
+                <p className="submit-listing-hint">
+                  Une entrée par ligne ou séparées par des virgules. Affichées sur la fiche avec une
+                  coche (ex. : Spa extérieur, Foyer intérieur, Bord de l&apos;eau).
+                </p>
+                <textarea
+                  id="listing-equipements"
+                  className="submit-listing-textarea submit-listing-input--light"
+                  value={form.equipements}
+                  onChange={update("equipements")}
+                  disabled={sent || submitting}
+                  required
+                  rows={5}
+                  placeholder={"Spa extérieur\nFoyer intérieur\nBord de l'eau\nAnimaux permis"}
+                />
+              </div>
+            </>
+          ) : null}
+
+          {isVente ? (
+            <div className="submit-listing-field">
+              <label className="submit-listing-label" htmlFor="listing-description-titre">
+                Accroche de la description<Req />
+              </label>
+              <p className="submit-listing-hint">
+                Une phrase d&apos;accroche affichée sous le titre sur la fiche (ex. : « Vivez le
+                summum du confort moderne… »).
+              </p>
+              <input
+                id="listing-description-titre"
+                type="text"
+                className="submit-listing-input submit-listing-input--light"
+                value={form.descriptionTitre}
+                onChange={update("descriptionTitre")}
+                disabled={sent || submitting}
+                required
+                placeholder="Phrase d'accroche de votre annonce"
+              />
+            </div>
+          ) : null}
 
           <div className="submit-listing-field">
             <label className="submit-listing-label" htmlFor="listing-description">
               Description<Req />
             </label>
-            <textarea
-              id="listing-description"
-              className="submit-listing-textarea submit-listing-input--light"
-              value={form.description}
-              onChange={update("description")}
-              disabled={sent || submitting}
-              required
-              placeholder="Rédigez une description"
-            />
+            {isVente ? (
+              <SubmitListingRichText
+                id="listing-description"
+                value={form.description}
+                onChange={(html) => setForm((prev) => ({ ...prev, description: html }))}
+                disabled={sent || submitting}
+                placeholder="Décrivez votre propriété, son emplacement, ses atouts…"
+                aria-label="Description"
+              />
+            ) : (
+              <textarea
+                id="listing-description"
+                className="submit-listing-textarea submit-listing-input--light"
+                value={form.description}
+                onChange={update("description")}
+                disabled={sent || submitting}
+                required
+                placeholder="Rédigez une description"
+              />
+            )}
           </div>
 
-          <div className="submit-listing-field">
-            <label className="submit-listing-label" htmlFor="listing-tarification">
-              Tarification<Req />
-            </label>
-            <SubmitListingRichText
-              id="listing-tarification"
-              value={form.tarification}
-              onChange={(html) => setForm((prev) => ({ ...prev, tarification: html }))}
-              disabled={sent || submitting}
-              placeholder="Décrivez vos tarifs, saisons, promotions…"
-              aria-label="Tarification"
-            />
-          </div>
+          {!isVente ? (
+            <>
+              <div className="submit-listing-field">
+                <label
+                  className="submit-listing-label submit-listing-label--muted"
+                  htmlFor="listing-tarification"
+                >
+                  Tarification (facultatif)
+                </label>
+                <SubmitListingRichText
+                  id="listing-tarification"
+                  value={form.tarification}
+                  onChange={(html) => setForm((prev) => ({ ...prev, tarification: html }))}
+                  disabled={sent || submitting}
+                  placeholder="Décrivez vos tarifs, saisons, promotions…"
+                  aria-label="Tarification"
+                />
+              </div>
 
-          <div className="submit-listing-field">
-            <label className="submit-listing-label" htmlFor="listing-citq">
-              Numéro CITQ<Req />
-            </label>
-            <p className="submit-listing-hint">
-              Entrez le numéro d&apos;enregistrement délivré par la Corporation de
-              l&apos;industrie touristique du Québec (CITQ).
-            </p>
-            <input
-              id="listing-citq"
-              type="text"
-              className="submit-listing-input submit-listing-input--light"
-              value={form.citq}
-              onChange={update("citq")}
-              disabled={sent || submitting}
-              required
-              placeholder="Numéro d'enregistrement CITQ"
-            />
-          </div>
+              <div className="submit-listing-field">
+                <label className="submit-listing-label" htmlFor="listing-citq">
+                  Numéro CITQ<Req />
+                </label>
+                <p className="submit-listing-hint">
+                  Entrez le numéro d&apos;enregistrement délivré par la Corporation de
+                  l&apos;industrie touristique du Québec (CITQ).
+                </p>
+                <input
+                  id="listing-citq"
+                  type="text"
+                  className="submit-listing-input submit-listing-input--light"
+                  value={form.citq}
+                  onChange={update("citq")}
+                  disabled={sent || submitting}
+                  required
+                  placeholder="Numéro d'enregistrement CITQ"
+                />
+              </div>
+            </>
+          ) : null}
 
           {isVente ? (
             <div className="submit-listing-field">
@@ -430,7 +618,7 @@ export default function SubmitListingDetails() {
                 onChange={update("prix")}
                 disabled={sent || submitting}
                 required
-                placeholder="Ex. : 450 000 $"
+                placeholder="Ex. : 1 389 900 $"
               />
             </div>
           ) : (
@@ -453,7 +641,7 @@ export default function SubmitListingDetails() {
             </div>
           )}
 
-          <div className="submit-listing-grid-3">
+          <div className={`submit-listing-grid-3${isVente ? " submit-listing-grid-4" : ""}`}>
             {!isVente ? (
               <div className="submit-listing-field">
                 <label className="submit-listing-label" htmlFor="listing-personnes">
@@ -501,6 +689,119 @@ export default function SubmitListingDetails() {
                 required
               />
             </div>
+            {isVente ? (
+              <>
+                <div className="submit-listing-field">
+                  <label className="submit-listing-label" htmlFor="listing-garages">
+                    Garages
+                  </label>
+                  <input
+                    id="listing-garages"
+                    type="number"
+                    min="0"
+                    className="submit-listing-input"
+                    value={form.nombreGarages}
+                    onChange={update("nombreGarages")}
+                    disabled={sent || submitting}
+                    placeholder="0"
+                  />
+                </div>
+                <div className="submit-listing-field">
+                  <label className="submit-listing-label" htmlFor="listing-etages">
+                    Étages
+                  </label>
+                  <input
+                    id="listing-etages"
+                    type="number"
+                    min="0"
+                    className="submit-listing-input"
+                    value={form.nombreEtages}
+                    onChange={update("nombreEtages")}
+                    disabled={sent || submitting}
+                    placeholder="0"
+                  />
+                </div>
+              </>
+            ) : null}
+          </div>
+
+          {isVente ? (
+            <div className="submit-listing-field">
+              <span className="submit-listing-label">
+                Caractéristiques<Req />
+              </span>
+              <p className="submit-listing-hint">
+                Ajoutez des sections comme sur la fiche vente (ex. : « Une vue à couper le
+                souffle »). Une ligne = un point dans la liste.
+              </p>
+              <div className="submit-listing-carac-list">
+                {form.caracteristiques.map((block, index) => (
+                  <div key={block.id} className="submit-listing-carac">
+                    <div className="submit-listing-carac__head">
+                      <span className="submit-listing-carac__num">
+                        Section {String(index + 1).padStart(2, "0")}
+                      </span>
+                      {form.caracteristiques.length > 1 ? (
+                        <button
+                          type="button"
+                          className="submit-listing-carac__remove"
+                          onClick={() => removeCaracteristique(block.id)}
+                          disabled={sent || submitting}
+                        >
+                          Retirer
+                        </button>
+                      ) : null}
+                    </div>
+                    <input
+                      type="text"
+                      className="submit-listing-input"
+                      value={block.titre}
+                      onChange={(e) =>
+                        updateCaracteristique(block.id, "titre", e.target.value)
+                      }
+                      disabled={sent || submitting}
+                      placeholder="Titre de la section (ex. : Cuisine digne d'un chef)"
+                    />
+                    <textarea
+                      className="submit-listing-textarea submit-listing-input--light"
+                      value={block.items}
+                      onChange={(e) =>
+                        updateCaracteristique(block.id, "items", e.target.value)
+                      }
+                      disabled={sent || submitting}
+                      rows={4}
+                      placeholder={"Un point par ligne\nComptoir en quartz\nCuisine sur mesure"}
+                    />
+                  </div>
+                ))}
+              </div>
+              <button
+                type="button"
+                className="submit-listing-carac__add"
+                onClick={addCaracteristique}
+                disabled={sent || submitting}
+              >
+                + Ajouter une section
+              </button>
+            </div>
+          ) : null}
+
+          <div className="submit-listing-field">
+            <label className="submit-listing-label submit-listing-label--muted" htmlFor="listing-site-web">
+              Site web (facultatif)
+            </label>
+            <p className="submit-listing-hint">
+              Lien vers votre site personnel, page de réservation ou vitrine du chalet.
+            </p>
+            <input
+              id="listing-site-web"
+              type="url"
+              className="submit-listing-input"
+              value={form.siteWeb}
+              onChange={update("siteWeb")}
+              disabled={sent || submitting}
+              placeholder="https://www.monchalet.ca"
+            />
           </div>
 
           <div className="submit-listing-field">
