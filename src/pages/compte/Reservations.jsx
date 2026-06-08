@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
-import { fetchBookingsForUser } from "../../services/bookingsFirestore";
+import { fetchBookingsForUser, deleteBooking } from "../../services/bookingsFirestore";
 
 const STATUT_LABELS = {
   en_attente: "En attente",
@@ -162,6 +162,31 @@ export default function Reservations() {
                     <p className="compte-reservations-card__notes-text">{b.notes}</p>
                   </div>
                 )}
+                <div style={{ marginTop: 12, display: "flex", gap: 8 }}>
+                  {/* Cancel reservation button: only show when allowed (24h avant visite) */}
+                  {(() => {
+                    const visitTs = b.dateVisiteTs ? (b.dateVisiteTs.toDate ? b.dateVisiteTs.toDate() : new Date(b.dateVisiteTs)) : (b.dateVisite ? new Date(b.dateVisite + 'T00:00:00') : null);
+                    const canCancel = visitTs ? (Date.now() < (visitTs.getTime() - 24 * 60 * 60 * 1000) && b.statut !== 'annulé') : false;
+                    return canCancel ? (
+                      <button
+                        type="button"
+                        className="btn-plain"
+                        onClick={async () => {
+                          if (!window.confirm('Voulez-vous vraiment supprimer cette réservation ?')) return;
+                          try {
+                            await deleteBooking(b.id);
+                            setBookings((prev) => prev.filter((x) => x.id !== b.id));
+                          } catch (err) {
+                            console.error(err);
+                            alert('Impossible de supprimer la réservation.');
+                          }
+                        }}
+                      >
+                        Supprimer la réservation
+                      </button>
+                    ) : null;
+                  })()}
+                </div>
               </li>
             ))}
           </ul>
