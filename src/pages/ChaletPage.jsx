@@ -5,7 +5,8 @@
 // ============================================================
 
 import { useMemo, useState } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate, useLocation } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 import { useChaletBySlug } from "../hooks/useChaletBySlug";
 import { useChalets } from "../hooks/useChalets";
 import { useAvis } from "../hooks/useAvis";
@@ -26,10 +27,44 @@ export default function ChaletPage() {
   const { chalets } = useChalets();
   const { avis, loading: avisLoading, refresh: refreshAvis } = useAvis("chalet", chalet?.slug);
   const { share, feedback: shareFeedback } = useSharePage();
+  const { currentUser } = useAuth();
+  const navigate = useNavigate();
+  const location = useLocation();
   const [activeImg, setActiveImg] = useState(0);
   const [galleryOpen, setGalleryOpen] = useState(false);
   const [reviewOpen, setReviewOpen] = useState(false);
   const [contactOpen, setContactOpen] = useState(false);
+  const [bookingOpen, setBookingOpen] = useState(false);
+  const [bookingDate, setBookingDate] = useState("");
+  const [bookingInvites, setBookingInvites] = useState(1);
+
+  const handleOrganizeClick = () => {
+    if (!currentUser) {
+      navigate("/auth", { state: { from: location } });
+    } else {
+      setBookingOpen(true);
+    }
+  };
+
+  const handleBookingSubmit = () => {
+    if (!bookingDate) {
+      alert("Veuillez sélectionner une date de visite.");
+      return;
+    }
+    if (bookingInvites < 1) {
+      alert("Le nombre d'invités doit être au moins 1.");
+      return;
+    }
+    navigate("/reservation/confirmer", {
+      state: {
+        chaletSlug: chalet.slug,
+        chaletId: chalet.id,
+        dateVisite: bookingDate,
+        nbInvites: bookingInvites,
+      },
+    });
+    setBookingOpen(false);
+  };
 
   const similaires = useMemo(
     () =>
@@ -304,6 +339,33 @@ export default function ChaletPage() {
               ))}
             </div>
 
+            {bookingOpen && (
+              <div className="booking-modal">
+                <div className="booking-modal-content">
+                  <h3>Organiser une visite privée</h3>
+                  <label>
+                    Date de visite:
+                    <input type="date" value={bookingDate} onChange={(e) => setBookingDate(e.target.value)} />
+                  </label>
+                  <label>
+                    Nombre d&apos;invités:
+                    <input
+                      type="number"
+                      min="1"
+                      value={bookingInvites}
+                      onChange={(e) => setBookingInvites(parseInt(e.target.value) || 1)}
+                    />
+                  </label>
+                  <button type="button" className="booking-modal-cta" onClick={handleBookingSubmit}>
+                    Faire la réservation
+                  </button>
+                  <button type="button" className="booking-modal-cancel" onClick={() => setBookingOpen(false)}>
+                    Annuler
+                  </button>
+                </div>
+              </div>
+            )}
+
             <button
               type="button"
               className="booking-cta"
@@ -312,6 +374,13 @@ export default function ChaletPage() {
               Contacter le propriétaire
             </button>
             <button type="button" className="booking-secondary">Vérifier les disponibilités</button>
+            <button
+              type="button"
+              className="booking-secondary"
+              onClick={handleOrganizeClick}
+            >
+              Organiser une visite privée
+            </button>
             <button
               type="button"
               className="booking-secondary"
