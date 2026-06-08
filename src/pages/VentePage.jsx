@@ -52,6 +52,7 @@ export default function VentePage() {
       state: {
         chaletSlug: vente.slug || slug,
         chaletId: vente.id,
+        returnPath: `/chalets/chalets-a-vendre/${vente.slug || slug}`,
         dateVisite: bookingDate,
         nbInvites: bookingInvites,
       },

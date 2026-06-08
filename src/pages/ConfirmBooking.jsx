@@ -8,7 +8,7 @@ export default function ConfirmBooking() {
   const navigate = useNavigate();
   const { currentUser } = useAuth();
 
-  const { chaletSlug, chaletId, dateVisite, nbInvites } = location.state || {};
+  const { chaletSlug, chaletId, dateVisite, nbInvites, returnPath } = location.state || {};
 
   const [notes, setNotes] = useState("");
   const [termsAccepted, setTermsAccepted] = useState(false);
@@ -31,7 +31,15 @@ export default function ConfirmBooking() {
         notes,
       });
       alert("Réservation envoyée avec succès !");
-      navigate(`/chalet/${chaletSlug}`);
+      // If a returnPath was provided (ex: vente page), use it; otherwise fall back to rental chalet route.
+      if (returnPath) {
+        navigate(returnPath);
+      } else if (chaletSlug) {
+        navigate(`/chalet/${chaletSlug}`);
+      } else {
+        // Safe fallback to reservations page if no slug provided
+        navigate(`/compte/reservations/`);
+      }
     } catch (e) {
       console.error(e);
       alert(e.message || "Erreur lors de l'envoi de la réservation.");
