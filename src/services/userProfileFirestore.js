@@ -20,6 +20,14 @@ export async function saveUserProfile(uid, data) {
   );
 }
 
+/** Enregistre le courriel du compte Auth dans users/{uid} (création ou mise à jour). */
+export async function syncUserCourriel(uid, email) {
+  const courriel = String(email || "").trim();
+  if (!uid || !courriel) return;
+
+  await saveUserProfile(uid, { courriel });
+}
+
 export async function uploadUserProfilePhoto(uid, file) {
   if (!uid || !file) throw new Error("Fichier ou utilisateur invalide.");
   const storageRef = ref(storage, `users/${uid}/profile-${Date.now()}-${file.name}`);
