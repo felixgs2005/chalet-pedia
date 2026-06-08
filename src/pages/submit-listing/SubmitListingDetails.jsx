@@ -17,6 +17,7 @@ import {
 } from "../../services/uploadChaletListingImages";
 import { mapFirebaseError } from "../../utils/firebaseErrors";
 import { promiseWithTimeout } from "../../utils/promiseWithTimeout";
+import { syncUserCourriel } from "../../services/userProfileFirestore";
 import "../../styles/submit-listing.css";
 
 const CATEGORIES = [
@@ -218,6 +219,8 @@ export default function SubmitListingDetails() {
     setError("");
 
     try {
+      await syncUserCourriel(currentUser.uid, currentUser.email);
+
       const payload = buildChaletListingPayload(form, {
         imageUrls: [],
         proprietaireId: currentUser.uid,

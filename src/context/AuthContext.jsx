@@ -7,6 +7,7 @@ import {
   onAuthStateChanged,
   sendPasswordResetEmail,
 } from "firebase/auth";
+import { syncUserCourriel } from "../services/userProfileFirestore";
 
 const AuthContext = createContext();
 
@@ -38,6 +39,12 @@ export function AuthProvider({ children }) {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       setCurrentUser(user);
       setLoading(false);
+
+      if (user?.uid && user.email) {
+        syncUserCourriel(user.uid, user.email).catch((err) => {
+          console.error("syncUserCourriel:", err);
+        });
+      }
     });
 
     return unsubscribe;
