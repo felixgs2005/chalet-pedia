@@ -350,22 +350,36 @@ export default function ChaletPage() {
               <input type="date" value={bookingDate} onChange={e => setBookingDate(e.target.value)} />
             </label>
             <label>
-              Nombre d'invités:
+              Nombre d&apos;invités:
               <input type="number" min="1" value={bookingInvites} onChange={e => setBookingInvites(parseInt(e.target.value) || 1)} />
             </label>
-            <button className="booking-modal-cta" onClick={handleBookingSubmit}>Faire la réservation</button>
-            <button className="booking-modal-cancel" onClick={() => setBookingOpen(false)}>Annuler</button>
+            <button type="button" className="booking-modal-cta" onClick={handleBookingSubmit}>Faire la réservation</button>
+            <button type="button" className="booking-modal-cancel" onClick={() => setBookingOpen(false)}>Annuler</button>
           </div>
         </div>
       )}
 
-            <button className="booking-secondary">Vérifier les disponibilités</button>
-                        <button
+            <button
+              type="button"
+              className="booking-cta"
+              onClick={() => setContactOpen(true)}
+            >
+              Contacter le propriétaire
+            </button>
+            <button type="button" className="booking-secondary">Vérifier les disponibilités</button>
+            <button
               type="button"
               className="booking-secondary"
               onClick={handleOrganizeClick}
             >
               Organiser une visite privée
+            </button>
+            <button
+              type="button"
+              className="booking-secondary"
+              onClick={() => setReviewOpen(true)}
+            >
+              Rédiger un avis
             </button>
 
             <div className="booking-divider" />
