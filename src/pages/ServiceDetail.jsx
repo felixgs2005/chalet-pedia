@@ -80,12 +80,6 @@ const IconPencil = () => (
     <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z" />
   </svg>
 );
-const IconClaim = () => (
-  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-    <circle cx="12" cy="12" r="10" />
-    <path d="m9 12 2 2 4-4" />
-  </svg>
-);
 const IconFlag = () => (
   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
     <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1Z" />
@@ -360,9 +354,6 @@ export default function ServiceDetail() {
               <div className="sd-contact-card__links">
                 <button type="button" className={linkClass("review")} onClick={() => openModal("review")}>
                   <IconPencil /> Rédiger un avis
-                </button>
-                <button type="button" className={linkClass("claim")} onClick={() => openModal("claim")}>
-                  <IconClaim /> Réclamer l&apos;annonce
                 </button>
                 <button type="button" className={linkClass("report")} onClick={() => openModal("report")}>
                   <IconFlag /> Signaler l&apos;annonce

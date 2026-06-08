@@ -3,7 +3,6 @@ import { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import ChaletCard from "../components/ChaletCard";
 import { useChalets } from "../hooks/useChalets";
-import { chalets as localChalets } from "../data/chalets";
 import { articles } from "../data/articles";
 import { countChaletsByRegion, getPageSlugFromRegionKey } from "../data/listingRegions";
 
@@ -85,8 +84,8 @@ function AnimatedNumber({ target, suffix = "" }) {
 
 export default function HomePage() {
   const [faqTab, setFaqTab] = useState("locataires");
-  const { chalets: fetchedChalets, loading: chaletsLoading, error: chaletsError } = useChalets();
-  const sourceChalets = fetchedChalets && fetchedChalets.length ? fetchedChalets : localChalets;
+  const { chalets: fetchedChalets } = useChalets();
+  const sourceChalets = fetchedChalets ?? [];
   const coupsDeCoeur = sourceChalets.slice(0, 3);
   const favoris = sourceChalets.filter((c) => !c.isFavori).slice(0, 6);
 
