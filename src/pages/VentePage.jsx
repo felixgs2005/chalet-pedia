@@ -6,13 +6,14 @@
 // ============================================================
 
 import { useState } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate, useLocation } from "react-router-dom";
 import { useVenteBySlug } from "../hooks/useVenteBySlug";
 import { PinIcon, CameraIcon } from "../components/Icons";
 import { useSharePage } from "../hooks/useSharePage";
 import ShareToast from "../components/ShareToast";
 import FavoriteButton from "../components/FavoriteButton";
 import ContactModal from "../components/ContactModal";
+import { useAuth } from "../context/AuthContext";
 import { buildVenteFavoriCible } from "../services/favorisFirestore";
 import { buildVenteMessageCible } from "../services/messagesFirestore";
 
@@ -20,9 +21,43 @@ export default function VentePage() {
   const { slug } = useParams();
   const { vente, loading, error } = useVenteBySlug(slug);
   const { share, feedback: shareFeedback } = useSharePage();
+  const { currentUser } = useAuth();
+  const navigate = useNavigate();
+  const location = useLocation();
   const [galleryOpen, setGalleryOpen] = useState(false);
   const [activeImg, setActiveImg] = useState(0);
   const [contactOpen, setContactOpen] = useState(false);
+  const [bookingOpen, setBookingOpen] = useState(false);
+  const [bookingDate, setBookingDate] = useState('');
+  const [bookingInvites, setBookingInvites] = useState(1);
+
+  const handleOrganizeClick = () => {
+    if (!currentUser) {
+      navigate('/auth', { state: { from: location } });
+    } else {
+      setBookingOpen(true);
+    }
+  };
+
+  const handleBookingSubmit = () => {
+    if (!bookingDate) {
+      alert('Veuillez sélectionner une date de visite.');
+      return;
+    }
+    if (bookingInvites < 1) {
+      alert('Le nombre d\'invités doit être au moins 1.');
+      return;
+    }
+    navigate('/reservation/confirmer', {
+      state: {
+        chaletSlug: vente.slug || slug,
+        chaletId: vente.id,
+        dateVisite: bookingDate,
+        nbInvites: bookingInvites,
+      },
+    });
+    setBookingOpen(false);
+  };
 
   if (loading) {
     return (
@@ -231,15 +266,53 @@ export default function VentePage() {
             <button
               type="button"
               className="price-cta"
+              onClick={handleOrganizeClick}
+            >
+              Organiser une visite privée →
+            </button>
+            <button
+              type="button"
+              className="price-secondary"
               onClick={() => setContactOpen(true)}
             >
               Contacter l&apos;annonceur
             </button>
-            <button className="price-secondary">Organiser une visite privée →</button>
             <button className="price-secondary">Demander la brochure</button>
           </div>
         </div>
       </div>
+
+      {/* MODAL DE RÉSERVATION */}
+      {bookingOpen && (
+        <div className="booking-modal">
+          <div className="booking-modal-content">
+            <h3>Organiser une visite privée</h3>
+            <label>
+              Date de visite :
+              <input
+                type="date"
+                value={bookingDate}
+                onChange={e => setBookingDate(e.target.value)}
+              />
+            </label>
+            <label>
+              Nombre d&apos;invités :
+              <input
+                type="number"
+                min="1"
+                value={bookingInvites}
+                onChange={e => setBookingInvites(parseInt(e.target.value) || 1)}
+              />
+            </label>
+            <button className="booking-modal-cta" onClick={handleBookingSubmit}>
+              Faire la réservation
+            </button>
+            <button className="booking-modal-cancel" onClick={() => setBookingOpen(false)}>
+              Annuler
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
