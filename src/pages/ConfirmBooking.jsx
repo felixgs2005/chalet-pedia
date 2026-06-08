@@ -44,7 +44,11 @@ export default function ConfirmBooking() {
   const chaletName = formatChaletName(chaletSlug);
   const visitDate = formatVisitDate(dateVisite);
   const guestsLabel = formatGuests(nbInvites);
-  const backPath = returnPath || `/chalet/${chaletSlug}`;
+  const listingPath =
+    returnPath || (typeEntite === "vente"
+      ? `/chalets/chalets-a-vendre/${chaletSlug}`
+      : `/chalets/chalets-a-louer/${chaletSlug}`);
+  const backPath = listingPath;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -138,7 +142,7 @@ export default function ConfirmBooking() {
               <div className="confirm-booking-recap__item">
                 <dt>Chalet</dt>
                 <dd>
-                  <Link to={`/chalet/${chaletSlug}`}>{chaletName}</Link>
+                  <Link to={listingPath}>{chaletName}</Link>
                 </dd>
               </div>
               <div className="confirm-booking-recap__item">
