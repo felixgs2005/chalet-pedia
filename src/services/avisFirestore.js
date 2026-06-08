@@ -125,6 +125,20 @@ async function syncEntiteAvisStats(cible) {
     return;
   }
 
+  if (cible.typeEntite === "vente") {
+    const venteRef = doc(db, "ventes", cible.entiteId);
+    if ((await getDoc(venteRef)).exists()) {
+      await updateDoc(venteRef, { nombreAvis, note });
+      return;
+    }
+    const snapshot = await getDocs(collection(db, "ventes"));
+    const found = snapshot.docs.find((d) => d.data().slug === cible.entiteId);
+    if (found) {
+      await updateDoc(found.ref, { nombreAvis, note });
+    }
+    return;
+  }
+
   if (cible.typeEntite === "service" && cible.categorySlug && cible.listingSlug) {
     const listingRef = doc(
       db,
@@ -168,7 +182,11 @@ export async function submitAvis(cible, { note, texte, utilisateur }) {
     dateCreation: serverTimestamp(),
   });
 
-  await syncEntiteAvisStats(cible);
+  try {
+    await syncEntiteAvisStats(cible);
+  } catch (err) {
+    console.warn("syncEntiteAvisStats:", err);
+  }
 }
 
 /** Liste les avis publiés pour une entité (chalet ou service). */
@@ -199,6 +217,16 @@ export function buildChaletAvisCible(chalet) {
     entiteId: chalet.slug,
     entiteTitre: chalet.nom,
     chaletId: chalet.id,
+  };
+}
+
+/** Construit la cible avis pour une fiche chalet à vendre. */
+export function buildVenteAvisCible(vente) {
+  if (!vente?.slug) return null;
+  return {
+    typeEntite: "vente",
+    entiteId: vente.slug,
+    entiteTitre: vente.titre || vente.nom || "",
   };
 }
 

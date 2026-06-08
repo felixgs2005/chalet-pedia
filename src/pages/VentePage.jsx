@@ -13,13 +13,19 @@ import { useSharePage } from "../hooks/useSharePage";
 import ShareToast from "../components/ShareToast";
 import FavoriteButton from "../components/FavoriteButton";
 import ContactModal from "../components/ContactModal";
+import ReviewModal from "../components/ReviewModal";
+import ListingActionLinks from "../components/ListingActionLinks";
+import AvisList from "../components/AvisList";
 import { useAuth } from "../context/AuthContext";
+import { useAvis } from "../hooks/useAvis";
+import { buildVenteAvisCible } from "../services/avisFirestore";
 import { buildVenteFavoriCible } from "../services/favorisFirestore";
 import { buildVenteMessageCible } from "../services/messagesFirestore";
 
 export default function VentePage() {
   const { slug } = useParams();
   const { vente, loading, error } = useVenteBySlug(slug);
+  const { avis, loading: avisLoading, refresh: refreshAvis } = useAvis("vente", slug);
   const { share, feedback: shareFeedback } = useSharePage();
   const { currentUser } = useAuth();
   const navigate = useNavigate();
@@ -27,6 +33,7 @@ export default function VentePage() {
   const [galleryOpen, setGalleryOpen] = useState(false);
   const [activeImg, setActiveImg] = useState(0);
   const [contactOpen, setContactOpen] = useState(false);
+  const [reviewOpen, setReviewOpen] = useState(false);
   const [bookingOpen, setBookingOpen] = useState(false);
   const [bookingDate, setBookingDate] = useState('');
   const [bookingInvites, setBookingInvites] = useState(1);
@@ -118,6 +125,7 @@ export default function VentePage() {
 
   const favoriCible = buildVenteFavoriCible(vente);
   const messageCible = buildVenteMessageCible(vente);
+  const avisCible = buildVenteAvisCible(vente);
 
   return (
     <div className="vente-detail">
@@ -126,6 +134,12 @@ export default function VentePage() {
         open={contactOpen}
         onClose={() => setContactOpen(false)}
         cible={messageCible}
+      />
+      <ReviewModal
+        open={reviewOpen}
+        onClose={() => setReviewOpen(false)}
+        cible={avisCible}
+        onSubmitted={refreshAvis}
       />
       <nav className="breadcrumb">
         <Link to="/">Accueil</Link>
@@ -248,6 +262,12 @@ export default function VentePage() {
               </div>
             ))}
           </div>
+
+          <AvisList
+            avis={avis}
+            loading={avisLoading}
+            onWriteReview={() => setReviewOpen(true)}
+          />
         </div>
 
         <div>
@@ -279,7 +299,17 @@ export default function VentePage() {
             >
               Contacter l&apos;annonceur
             </button>
-            <button className="price-secondary">Demander la brochure</button>
+
+            <div className="booking-divider" />
+
+            <ListingActionLinks
+              listing={{
+                slug: vente.slug || slug,
+                titre: vente.titre || vente.nom,
+                categorieSlug: "chalets-a-vendre",
+              }}
+              onWriteReview={() => setReviewOpen(true)}
+            />
           </div>
         </div>
       </div>
