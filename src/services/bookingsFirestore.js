@@ -1,4 +1,4 @@
-import { collection, addDoc, serverTimestamp, query, where, getDocs, deleteDoc, doc } from "firebase/firestore";
+import { collection, addDoc, serverTimestamp, query, where, getDocs, deleteDoc, doc, getDoc } from "firebase/firestore";
 import { db } from "../firebase";
 
 /**
@@ -49,6 +49,59 @@ export async function createBooking(bookingData) {
     statut: "en_attente",
     createdAt: serverTimestamp(),
   });
+  // After creating the booking, also create a listingContactMessages document
+  // so a Cloud Function can email the owner with the booking details.
+  // We attempt to enrich with user profile (name, telephone) if available.
+  async function _notifyOwner() {
+    try {
+      let nom = "Utilisateur";
+      let telephone = "Non fourni";
+
+      if (userUid) {
+        try {
+          const userSnap = await getDoc(doc(db, "users", userUid));
+          if (userSnap.exists()) {
+            const data = userSnap.data() || {};
+            if (data.prenom || data.nom) nom = `${data.prenom || ""} ${data.nom || ""}`.trim();
+            if (data.telephone) telephone = String(data.telephone);
+            if (data.displayName) nom = data.displayName;
+          }
+        } catch (err) {
+          // ignore profile fetch errors
+        }
+      }
+
+      const message = [
+        `Demande de visite pour l'annonce: ${chaletSlug}`,
+        `Date: ${dateVisite}`,
+        `Invités: ${nbInvites}`,
+        notes ? `Notes: ${notes}` : null,
+      ]
+        .filter(Boolean)
+        .join("\n");
+
+      const payload = {
+        nom,
+        email: userEmail || "",
+        telephone,
+        message,
+        consentement: true,
+        typeEntite: "chalet",
+        entiteId: chaletId || chaletSlug,
+        entiteTitre: chaletSlug,
+        entiteUrl: `/chalet/${chaletSlug}`,
+      };
+
+      await addDoc(collection(db, "listingContactMessages"), payload);
+    } catch (err) {
+      // don't fail booking creation if notify fails
+      console.error("notifyOwner error:", err);
+    }
+  }
+
+  // Trigger notification asynchronously (don't block booking creation)
+  _notifyOwner().catch((e) => console.error(e));
+
   return docRef.id;
 }
 
