@@ -1,65 +1,8 @@
-import {
-  addDoc,
-  collection,
-  getDocs,
-  query,
-  serverTimestamp,
-  where,
-} from "firebase/firestore";
-import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
-import { db, storage } from "../firebase";
-import { notifyAdvertiserByEmail } from "./notifyAdvertiserEmail";
+import { addDoc, collection, serverTimestamp } from "firebase/firestore";
+import { db } from "../firebase";
 import { extractEmailFromDescription } from "../utils/extractEmailFromDescription";
-import { resolveUtilisateur, resolveUtilisateurByUid } from "../utils/resolveUtilisateur";
-
-export function buildConversationKey(typeEntite, entiteId, uidA, uidB) {
-  const ids = [uidA, uidB].filter(Boolean).sort();
-  return `${typeEntite}_${entiteId}_${ids.join("_")}`;
-}
-
-export function formatMessageDate(timestamp) {
-  if (!timestamp) return "";
-  const date =
-    typeof timestamp.toDate === "function" ? timestamp.toDate() : new Date(timestamp);
-  if (Number.isNaN(date.getTime())) return "";
-  return date.toLocaleString("fr-CA", {
-    month: "long",
-    day: "numeric",
-    year: "numeric",
-    hour: "numeric",
-    minute: "2-digit",
-    hour12: true,
-  });
-}
-
-export function mapFirestoreMessage(docSnap) {
-  const data = docSnap.data();
-  const expediteur = data.expediteur || {};
-  const destinataire = data.destinataire || {};
-
-  return {
-    id: docSnap.id,
-    conversationKey: data.conversationKey,
-    typeEntite: data.typeEntite,
-    entiteId: data.entiteId,
-    entiteTitre: data.entiteTitre || "",
-    entiteUrl: data.entiteUrl || "",
-    texte: data.texte || "",
-    pieceJointeUrl: data.pieceJointeUrl || null,
-    pieceJointeNom: data.pieceJointeNom || null,
-    expediteur: {
-      uid: expediteur.uid || "",
-      displayName: expediteur.displayName || "Utilisateur",
-    },
-    destinataire: {
-      uid: destinataire.uid || "",
-      displayName: destinataire.displayName || "Annonceur",
-    },
-    participantUids: data.participantUids || [],
-    dateEnvoi: data.dateEnvoi,
-    dateLabel: formatMessageDate(data.dateEnvoi),
-  };
-}
+import { normalizeEmail } from "../utils/normalizeEmail";
+import { resolveUtilisateurByUid } from "../utils/resolveUtilisateur";
 
 export function buildChaletMessageCible(chalet) {
   if (!chalet) return null;
@@ -70,6 +13,20 @@ export function buildChaletMessageCible(chalet) {
     entiteUrl: `/chalet/${chalet.slug}`,
     destinataireUid: chalet.proprietaireId || "",
     destinataireNom: chalet.proprietaire?.nom || "Propriétaire",
+    courrielContact: chalet.courrielContact || "",
+  };
+}
+
+export function buildVenteMessageCible(vente) {
+  if (!vente?.slug) return null;
+  return {
+    typeEntite: "vente",
+    entiteId: vente.slug,
+    entiteTitre: vente.titre || vente.nom,
+    entiteUrl: `/chalets/chalets-a-vendre/${vente.slug}`,
+    destinataireUid: vente.proprietaireId || "",
+    destinataireNom: "Propriétaire",
+    courrielContact: vente.courrielContact || "",
   };
 }
 
@@ -84,161 +41,68 @@ export function buildServiceMessageCible(listing) {
     entiteId: listing.slug,
     entiteTitre: listing.titre,
     entiteUrl: `/chalets/${listing.categorieSlug}/${listing.slug}`,
+    categorieSlug: listing.categorieSlug,
     destinataireUid: listing.proprietaireId || "",
     destinataireNom: listing.nomEntreprise || "Annonceur",
     destinataireEmail,
+    courrielContact: listing.courrielContact || "",
   };
 }
 
-export function buildVenteMessageCible(vente) {
-  if (!vente?.slug) return null;
-  return {
-    typeEntite: "vente",
-    entiteId: vente.slug,
-    entiteTitre: vente.titre || vente.nom,
-    entiteUrl: `/chalets/chalets-a-vendre/${vente.slug}`,
-    destinataireUid: vente.proprietaireId || "",
-    destinataireNom: "Propriétaire",
-  };
+/** Résout le courriel du propriétaire/annonceur (validation côté client). */
+export async function resolveDestinataireEmail(cible) {
+  if (!cible) return null;
+  const fromCible =
+    normalizeEmail(cible.destinataireEmail) ||
+    normalizeEmail(cible.courrielContact);
+  if (fromCible) return fromCible;
+  if (cible.destinataireUid) {
+    const user = await resolveUtilisateurByUid(cible.destinataireUid);
+    return normalizeEmail(user.email);
+  }
+  return null;
 }
 
-async function uploadMessageAttachment(uid, file) {
-  const storageRef = ref(storage, `messages/${uid}/${Date.now()}-${file.name}`);
-  await uploadBytes(storageRef, file);
-  return getDownloadURL(storageRef);
-}
-
-/** Enregistre un message dans la collection `messages`. */
-export async function sendMessage(cible, { texte, utilisateur, fichier }) {
+/**
+ * Crée un document Firestore — la Cloud Function onListingContactCreated envoie
+ * le courriel au propriétaire via Nodemailer.
+ */
+export async function submitListingContactForm(
+  cible,
+  { nom, email, telephone, message, consentement }
+) {
   if (!cible?.typeEntite || !cible?.entiteId) {
     throw new Error("Annonce introuvable.");
   }
-  const trimmed = texte?.trim();
-  if (!trimmed) {
+
+  const trimmedMessage = String(message || "").trim();
+  if (!trimmedMessage) {
     throw new Error("Veuillez écrire un message.");
   }
 
-  const expediteur = await resolveUtilisateur(utilisateur);
-
-  if (cible.destinataireUid && cible.destinataireUid === expediteur.uid) {
-    throw new Error("Vous ne pouvez pas vous envoyer un message à vous-même.");
+  const ownerEmail = await resolveDestinataireEmail(cible);
+  if (!ownerEmail) {
+    throw new Error("Aucun courriel de propriétaire n'est disponible pour cette annonce.");
   }
 
-  const destinataire = cible.destinataireUid
-    ? await resolveUtilisateurByUid(cible.destinataireUid)
-    : {
-        uid: "",
-        displayName: cible.destinataireNom || "Annonceur",
-        email: cible.destinataireEmail || null,
-        prenom: null,
-        nom: null,
-      };
-
-  if (!destinataire.email && cible.destinataireEmail) {
-    destinataire.email = cible.destinataireEmail;
-  }
-
-  const participantUids = [expediteur.uid, destinataire.uid].filter(Boolean);
-  const conversationKey = buildConversationKey(
-    cible.typeEntite,
-    cible.entiteId,
-    expediteur.uid,
-    destinataire.uid
-  );
-
-  let pieceJointeUrl = null;
-  let pieceJointeNom = null;
-  if (fichier) {
-    pieceJointeUrl = await uploadMessageAttachment(expediteur.uid, fichier);
-    pieceJointeNom = fichier.name;
-  }
-
-  await addDoc(collection(db, "messages"), {
-    conversationKey,
+  const payload = {
     typeEntite: cible.typeEntite,
     entiteId: cible.entiteId,
     entiteTitre: cible.entiteTitre || "",
     entiteUrl: cible.entiteUrl || "",
-    texte: trimmed,
-    expediteur,
-    destinataire,
-    participantUids,
-    pieceJointeUrl,
-    pieceJointeNom,
-    dateEnvoi: serverTimestamp(),
-  });
+    nom: String(nom || "").trim(),
+    email: String(email || "").trim(),
+    telephone: String(telephone || "").trim(),
+    message: trimmedMessage,
+    consentement: Boolean(consentement),
+    statut: "en_attente",
+    dateCreation: serverTimestamp(),
+  };
 
-  const email = await notifyAdvertiserByEmail({
-    destinataire,
-    cible,
-    expediteur,
-    texte: trimmed,
-    pieceJointeUrl,
-    pieceJointeNom,
-  }).catch((err) => ({
-    sent: false,
-    reason: "send_failed",
-    error: err.message || "Courriel non envoyé.",
-  }));
+  if (cible.categorieSlug) {
+    payload.categorieSlug = cible.categorieSlug;
+  }
 
-  return { conversationKey, email };
-}
-
-export async function fetchMessagesForUser(utilisateurUid) {
-  if (!utilisateurUid) return [];
-
-  const q = query(
-    collection(db, "messages"),
-    where("participantUids", "array-contains", utilisateurUid)
-  );
-  const snapshot = await getDocs(q);
-  return snapshot.docs.map(mapFirestoreMessage);
-}
-
-export function groupMessageThreads(messages, currentUid) {
-  const byKey = new Map();
-
-  messages.forEach((msg) => {
-    const key = msg.conversationKey;
-    const existing = byKey.get(key);
-    const msgTime = msg.dateEnvoi?.toMillis?.() ?? 0;
-
-    const other =
-      msg.expediteur.uid === currentUid ? msg.destinataire : msg.expediteur;
-
-    if (!existing || msgTime > (existing.lastMessage?.dateEnvoi?.toMillis?.() ?? 0)) {
-      byKey.set(key, {
-        conversationKey: key,
-        otherName: other.displayName,
-        entiteTitre: msg.entiteTitre,
-        entiteUrl: msg.entiteUrl,
-        lastMessage: msg,
-        dateLabel: msg.dateLabel,
-      });
-    }
-  });
-
-  return Array.from(byKey.values()).sort((a, b) => {
-    const ta = a.lastMessage?.dateEnvoi?.toMillis?.() ?? 0;
-    const tb = b.lastMessage?.dateEnvoi?.toMillis?.() ?? 0;
-    return tb - ta;
-  });
-}
-
-export async function fetchMessagesForConversation(conversationKey, utilisateurUid) {
-  if (!conversationKey || !utilisateurUid) return [];
-
-  const q = query(
-    collection(db, "messages"),
-    where("conversationKey", "==", conversationKey),
-    where("participantUids", "array-contains", utilisateurUid)
-  );
-  const snapshot = await getDocs(q);
-  const list = snapshot.docs.map(mapFirestoreMessage);
-  list.sort((a, b) => {
-    const ta = a.dateEnvoi?.toMillis?.() ?? 0;
-    const tb = b.dateEnvoi?.toMillis?.() ?? 0;
-    return ta - tb;
-  });
-  return list;
+  const ref = await addDoc(collection(db, "listingContactMessages"), payload);
+  return { id: ref.id, toEmail: ownerEmail };
 }

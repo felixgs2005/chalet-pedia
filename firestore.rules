@@ -78,6 +78,34 @@ service cloud.firestore {
       allow read, update, delete: if false;
     }
 
+    // Formulaire contact — création publique ; envoi courriel via Cloud Function
+    match /contactMessages/{messageId} {
+      allow create: if request.resource.data.nom is string
+        && request.resource.data.nom.size() > 0
+        && request.resource.data.email is string
+        && request.resource.data.message is string
+        && request.resource.data.message.size() > 0
+        && request.resource.data.consentement == true
+        && (!('telephone' in request.resource.data) || request.resource.data.telephone is string);
+      allow read, update, delete: if false;
+    }
+
+    // Modale « Contacter l'annonceur » — envoi courriel propriétaire via Cloud Function
+    match /listingContactMessages/{messageId} {
+      allow create: if request.resource.data.nom is string
+        && request.resource.data.nom.size() > 0
+        && request.resource.data.email is string
+        && request.resource.data.telephone is string
+        && request.resource.data.telephone.size() > 0
+        && request.resource.data.message is string
+        && request.resource.data.message.size() > 0
+        && request.resource.data.consentement == true
+        && request.resource.data.typeEntite is string
+        && request.resource.data.entiteId is string
+        && (!('categorieSlug' in request.resource.data) || request.resource.data.categorieSlug is string);
+      allow read, update, delete: if false;
+    }
+
     match /{document=**} {
       allow read: if true;
     }

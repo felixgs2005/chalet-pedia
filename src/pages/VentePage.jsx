@@ -228,7 +228,14 @@ export default function VentePage() {
               ))}
             </div>
 
-            <button className="price-cta">Organiser une visite privée →</button>
+            <button
+              type="button"
+              className="price-cta"
+              onClick={() => setContactOpen(true)}
+            >
+              Contacter l&apos;annonceur
+            </button>
+            <button className="price-secondary">Organiser une visite privée →</button>
             <button className="price-secondary">Demander la brochure</button>
           </div>
         </div>

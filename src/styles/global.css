@@ -1,4 +1,4 @@
-﻿/* src/styles/global.css */
+/* src/styles/global.css */
 /* ============ BASE ============ */
 * {
   box-sizing: border-box;
@@ -5982,6 +5982,24 @@ button:hover .cp-icon {
 
 .sd-action-modal--form {
   max-width: 620px;
+}
+
+.sd-action-modal--contact-form {
+  max-width: 640px;
+  padding: 40px 36px 36px;
+}
+
+.sd-action-modal--contact-form .sd-action-modal__title:empty {
+  display: none;
+  margin: 0;
+}
+
+.sd-action-modal--contact-form .contact-form-title {
+  margin-right: 36px;
+}
+
+.sd-action-modal--contact-form .form-submit {
+  width: 100%;
 }
 
 .sd-register-form {

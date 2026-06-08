@@ -28,11 +28,10 @@ import Publicite from "./pages/footer/Publicite";
 import PolitiqueConfidentialite from "./pages/footer/PolitiqueConfidentialite";
 import ConditionsUtilisation from "./pages/footer/ConditionsUtilisation";
 import APropos from "./pages/footer/APropos";
+import Contact from "./pages/footer/Contact";
 import RequireAuth from "./components/RequireAuth";
 import Reglages from "./pages/compte/Reglages";
 import Favoris from "./pages/compte/Favoris";
-import Messages from "./pages/compte/Messages";
-import MessageConversation from "./pages/compte/MessageConversation";
 import Reservations from "./pages/compte/Reservations";
 import "./styles/global.css";
 import "./styles/compte.css";
@@ -76,6 +75,7 @@ export default function App() {
               <Route path="/chalets/multimedia/" element={<Multimedia />} />
               <Route path="/chalets/:categorie/:slug" element={<ServiceDetail />} />
               <Route path="/faq/" element={<FAQ />} />
+              <Route path="/contact/" element={<Contact />} />
               <Route
                 path="/submit-listing/details/"
                 element={
@@ -106,22 +106,6 @@ export default function App() {
                 }
               />
               <Route
-                path="/compte/messages/"
-                element={
-                  <RequireAuth>
-                    <Messages />
-                  </RequireAuth>
-                }
-              />
-              <Route
-                path="/compte/messages/:conversationKey/"
-                element={
-                  <RequireAuth>
-                    <MessageConversation />
-                  </RequireAuth>
-                }
-              />
-              <Route
                 path="/compte/reservations/"
                 element={
                   <RequireAuth>
@@ -129,7 +113,14 @@ export default function App() {
                   </RequireAuth>
                 }
               />
-              <Route path="/reservation/confirmer" element={<RequireAuth><ConfirmBooking /></RequireAuth>} />
+              <Route
+                path="/reservation/confirmer"
+                element={
+                  <RequireAuth>
+                    <ConfirmBooking />
+                  </RequireAuth>
+                }
+              />
               <Route
                 path="*"
                 element={

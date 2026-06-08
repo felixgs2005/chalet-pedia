@@ -5,6 +5,8 @@
 // ============================================================
 
 import { useState } from "react";
+import { submitContactForm } from "../../services/submitContactForm";
+import ContactFormFields from "../../components/ContactFormFields";
 
 export default function Contact() {
   const [formData, setFormData] = useState({
@@ -16,15 +18,7 @@ export default function Contact() {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState(null);
-
-  const sujetOptions = [
-    { value: "support", label: "Support technique" },
-    { value: "proprietaire", label: "Annoncer un chalet" },
-    { value: "partenariat", label: "Demande de partenariat" },
-    { value: "publicite", label: "Publicité" },
-    { value: "signalement", label: "Signalement d'annonce" },
-    { value: "autre", label: "Autre" },
-  ];
+  const [submitError, setSubmitError] = useState("");
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -37,10 +31,11 @@ export default function Contact() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
-    
-    // Simulation d'envoi
-    setTimeout(() => {
-      setIsSubmitting(false);
+    setSubmitError("");
+    setSubmitStatus(null);
+
+    try {
+      await submitContactForm(formData);
       setSubmitStatus("success");
       setFormData({
         nom: "",
@@ -49,10 +44,14 @@ export default function Contact() {
         message: "",
         consentement: false,
       });
-      
-      // Réinitialiser après 5 secondes
       setTimeout(() => setSubmitStatus(null), 5000);
-    }, 1500);
+    } catch (err) {
+      setSubmitError(
+        err.message || "Impossible d'envoyer le message. Réessayez plus tard."
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const contactInfo = [
@@ -155,6 +154,15 @@ export default function Contact() {
                 rapidement.
               </p>
 
+              {submitError && (
+                <div className="contact-success" style={{ borderColor: "#c0392b", background: "#fdecea" }}>
+                  <div className="contact-success-text">
+                    <strong>Erreur</strong>
+                    <p>{submitError}</p>
+                  </div>
+                </div>
+              )}
+
               {submitStatus === "success" && (
                 <div className="contact-success">
                   <div className="contact-success-icon">✓</div>
@@ -169,90 +177,7 @@ export default function Contact() {
               )}
 
               <form onSubmit={handleSubmit} className="contact-form">
-                <div className="form-row">
-                  <div className="form-group">
-                    <label htmlFor="nom" className="form-label">
-                      Nom complet *
-                    </label>
-                    <input
-                      type="text"
-                      id="nom"
-                      name="nom"
-                      value={formData.nom}
-                      onChange={handleChange}
-                      required
-                      className="form-input"
-                      placeholder="Votre nom"
-                    />
-                  </div>
-                  <div className="form-group">
-                    <label htmlFor="email" className="form-label">
-                      Adresse email *
-                    </label>
-                    <input
-                      type="email"
-                      id="email"
-                      name="email"
-                      value={formData.email}
-                      onChange={handleChange}
-                      required
-                      className="form-input"
-                      placeholder="votre@email.com"
-                    />
-                  </div>
-                </div>
-
-                <div className="form-group">
-                  <label htmlFor="sujet" className="form-label">
-                    Sujet *
-                  </label>
-                  <select
-                    id="sujet"
-                    name="sujet"
-                    value={formData.sujet}
-                    onChange={handleChange}
-                    required
-                    className="form-select"
-                  >
-                    {sujetOptions.map((option) => (
-                      <option key={option.value} value={option.value}>
-                        {option.label}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                <div className="form-group">
-                  <label htmlFor="message" className="form-label">
-                    Message *
-                  </label>
-                  <textarea
-                    id="message"
-                    name="message"
-                    value={formData.message}
-                    onChange={handleChange}
-                    required
-                    className="form-textarea"
-                    placeholder="Décrivez votre demande ou question..."
-                    rows="6"
-                  />
-                </div>
-
-                <div className="form-group">
-                  <label className="form-checkbox">
-                    <input
-                      type="checkbox"
-                      name="consentement"
-                      checked={formData.consentement}
-                      onChange={handleChange}
-                      required
-                    />
-                    <span>
-                      J'accepte que mes données soient traitées conformément à
-                      la politique de confidentialité de ChaletPedia. *
-                    </span>
-                  </label>
-                </div>
+                <ContactFormFields formData={formData} onChange={handleChange} />
 
                 <button
                   type="submit"
