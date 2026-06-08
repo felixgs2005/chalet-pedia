@@ -2,7 +2,8 @@
 import { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import ChaletCard from "../components/ChaletCard";
-import { chalets } from "../data/chalets";
+import { useChalets } from "../hooks/useChalets";
+import { chalets as localChalets } from "../data/chalets";
 import { articles } from "../data/articles";
 import { countChaletsByRegion, getPageSlugFromRegionKey } from "../data/listingRegions";
 
@@ -84,8 +85,10 @@ function AnimatedNumber({ target, suffix = "" }) {
 
 export default function HomePage() {
   const [faqTab, setFaqTab] = useState("locataires");
-  const coupsDeCoeur = chalets.slice(0, 3);
-  const favoris = chalets.filter((c) => !c.isFavori).slice(0, 6);
+  const { chalets: fetchedChalets, loading: chaletsLoading, error: chaletsError } = useChalets();
+  const sourceChalets = fetchedChalets && fetchedChalets.length ? fetchedChalets : localChalets;
+  const coupsDeCoeur = sourceChalets.slice(0, 3);
+  const favoris = sourceChalets.filter((c) => !c.isFavori).slice(0, 6);
 
   return (
     <div>
@@ -216,7 +219,7 @@ export default function HomePage() {
             style={homeRegionBackground(HOME_REGION_IMAGES.laurentides, true)}
           >
             <div className="badge-brut">
-              [ {countChaletsByRegion(chalets, "laurentides")} CHALETS ]
+              [ {countChaletsByRegion(sourceChalets, "laurentides")} CHALETS ]
             </div>
             <div>
               <div className="region-name lg">LAURENTIDES</div>
@@ -229,7 +232,7 @@ export default function HomePage() {
               className="region-cell border-bottom"
               style={homeRegionBackground(HOME_REGION_IMAGES.gaspesie)}
             >
-              <div className="badge-brut-sm">[ {countChaletsByRegion(chalets, "gaspesie")} ]</div>
+              <div className="badge-brut-sm">[ {countChaletsByRegion(sourceChalets, "gaspesie")} ]</div>
               <div className="region-name md">GASPÉSIE</div>
             </Link>
             <Link
@@ -237,7 +240,7 @@ export default function HomePage() {
               className="region-cell"
               style={homeRegionBackground(HOME_REGION_IMAGES.mauricie)}
             >
-              <div className="badge-brut-sm">[ {countMauricieChalets(chalets)} ]</div>
+              <div className="badge-brut-sm">[ {countMauricieChalets(sourceChalets)} ]</div>
               <div className="region-name md">MAURICIE</div>
             </Link>
           </div>
@@ -247,7 +250,7 @@ export default function HomePage() {
               className="region-cell border-bottom"
               style={homeRegionBackground(HOME_REGION_IMAGES.saguenay)}
             >
-              <div className="badge-brut-sm">[ {countChaletsByRegion(chalets, "saguenay")} ]</div>
+              <div className="badge-brut-sm">[ {countChaletsByRegion(sourceChalets, "saguenay")} ]</div>
               <div className="region-name sm">SAGUENAY-<br />LAC-ST-JEAN</div>
             </Link>
             <Link to={listingPath("all")} className="region-cell cta">
