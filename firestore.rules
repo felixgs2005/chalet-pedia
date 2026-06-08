@@ -72,10 +72,19 @@ service cloud.firestore {
 
     // Booking reservations
     match /bookings/{bookingId} {
-      allow read: if true;
+      // Only the booking owner can read their bookings
+      allow read: if request.auth != null && resource.data.userUid == request.auth.uid;
+      // Creation only by authenticated user and must include the owner UID and a timestamped visit date
       allow create: if request.auth != null
-                    && request.resource.data.userUid == request.auth.uid;
-      allow update, delete: if false;
+                    && request.resource.data.userUid == request.auth.uid
+                    && request.resource.data.dateVisite is string
+                    && request.resource.data.dateVisiteTs is timestamp;
+      // Allow delete by the owner only if the request is made at least 24 hours before the visit
+      allow delete: if request.auth != null
+                    && resource.data.userUid == request.auth.uid
+                    && request.time < resource.data.dateVisiteTs - duration.value(24, 'h');
+      // Disallow other updates
+      allow update: if false;
     }
 
     // Extension Firebase « Trigger Email from Firestore »
