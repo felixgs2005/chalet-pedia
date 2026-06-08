@@ -1,7 +1,7 @@
 const { initializeApp } = require("firebase-admin/app");
 const { FieldValue } = require("firebase-admin/firestore");
 const { onDocumentCreated } = require("firebase-functions/v2/firestore");
-const { sendContactEmail, sendAdvertiserEmail } = require("./SendEmail");
+const { sendContactEmail, sendListingContactEmail } = require("./SendEmail");
 
 initializeApp();
 
@@ -43,12 +43,12 @@ exports.onContactMessageCreated = onDocumentCreated(
 );
 
 /**
- * Déclenchée à la création d'un document dans messages (« Contacter l'annonceur »).
- * Envoie un courriel à l'annonceur via Nodemailer si son adresse est connue.
+ * Déclenchée à la création d'un document dans listingContactMessages (modale annonceur).
+ * Envoie le courriel au propriétaire via Nodemailer.
  */
-exports.onAnnonceurMessageCreated = onDocumentCreated(
+exports.onListingContactCreated = onDocumentCreated(
   {
-    document: "messages/{messageId}",
+    document: "listingContactMessages/{messageId}",
     region,
   },
   async (event) => {
@@ -59,27 +59,19 @@ exports.onAnnonceurMessageCreated = onDocumentCreated(
     const docRef = snap.ref;
 
     try {
-      const result = await sendAdvertiserEmail(data);
-      if (result.skipped) {
-        await docRef.update({
-          statutCourriel: "sans_email",
-          courrielEnvoyeLe: FieldValue.serverTimestamp(),
-        });
-        return;
-      }
-
+      const result = await sendListingContactEmail(data);
       await docRef.update({
-        statutCourriel: "envoye",
-        courrielEnvoyeLe: FieldValue.serverTimestamp(),
+        statut: "envoye",
+        emailEnvoyeLe: FieldValue.serverTimestamp(),
         destinataireCourriel: result.to,
         messageIdCourriel: result.messageId || null,
       });
     } catch (err) {
-      console.error("sendAdvertiserEmail:", err);
+      console.error("sendListingContactEmail:", err);
       await docRef.update({
-        statutCourriel: "erreur",
-        erreurCourriel: err.message || "Erreur envoi courriel",
-        courrielEnvoyeLe: FieldValue.serverTimestamp(),
+        statut: "erreur",
+        erreurEnvoi: err.message || "Erreur envoi courriel",
+        emailEnvoyeLe: FieldValue.serverTimestamp(),
       });
     }
   }

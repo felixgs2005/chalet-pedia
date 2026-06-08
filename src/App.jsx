@@ -31,8 +31,6 @@ import Contact from "./pages/footer/Contact";
 import RequireAuth from "./components/RequireAuth";
 import Reglages from "./pages/compte/Reglages";
 import Favoris from "./pages/compte/Favoris";
-import Messages from "./pages/compte/Messages";
-import MessageConversation from "./pages/compte/MessageConversation";
 import "./styles/global.css";
 import "./styles/compte.css";
 import "./styles/submit-listing.css";
@@ -104,22 +102,6 @@ export default function App() {
               element={
                 <RequireAuth>
                   <Favoris />
-                </RequireAuth>
-              }
-            />
-            <Route
-              path="/compte/messages/"
-              element={
-                <RequireAuth>
-                  <Messages />
-                </RequireAuth>
-              }
-            />
-            <Route
-              path="/compte/messages/:conversationKey/"
-              element={
-                <RequireAuth>
-                  <MessageConversation />
                 </RequireAuth>
               }
             />

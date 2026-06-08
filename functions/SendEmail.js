@@ -47,17 +47,11 @@ function escapeHtml(value) {
     .replace(/"/g, "&quot;");
 }
 
-function normalizeEmail(value) {
-  const email = String(value || "").trim().toLowerCase();
-  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return null;
-  return email;
-}
-
 /**
  * Structure du document Firestore `contactMessages` (créé côté client, envoyé par Cloud Function).
  */
-function buildContactMessageDocument({ nom, email, sujet, message, consentement }) {
-  return {
+function buildContactMessageDocument({ nom, email, sujet, message, consentement, telephone }) {
+  const doc = {
     nom: String(nom || "").trim(),
     email: String(email || "").trim(),
     sujet: String(sujet || "autre"),
@@ -65,6 +59,9 @@ function buildContactMessageDocument({ nom, email, sujet, message, consentement 
     consentement: Boolean(consentement),
     statut: "en_attente",
   };
+  const tel = String(telephone || "").trim();
+  if (tel) doc.telephone = tel;
+  return doc;
 }
 
 /**
@@ -76,6 +73,7 @@ async function sendContactEmail(contactData) {
   const email = String(contactData.email || "").trim();
   const sujet = String(contactData.sujet || "autre");
   const message = String(contactData.message || "").trim();
+  const telephone = String(contactData.telephone || "").trim();
 
   if (!nom || !email || !message) {
     throw new Error("Document contact incomplet (nom, email, message requis).");
@@ -84,6 +82,10 @@ async function sendContactEmail(contactData) {
   const to = RECIPIENTS_BY_SUBJECT[sujet] || RECIPIENTS_BY_SUBJECT.autre;
   const sujetLabel = SUBJECT_LABELS[sujet] || sujet;
   const fromAddress = process.env.SMTP_FROM || process.env.SMTP_USER;
+  const telephoneLine = telephone ? `Téléphone : ${telephone}` : "";
+  const telephoneHtml = telephone
+    ? `<p><strong>Téléphone :</strong> ${escapeHtml(telephone)}</p>`
+    : "";
 
   const transporter = createTransporter();
 
@@ -97,15 +99,19 @@ async function sendContactEmail(contactData) {
       "",
       `Nom : ${nom}`,
       `Courriel : ${email}`,
+      telephoneLine,
       `Sujet : ${sujetLabel}`,
       "",
       "Message :",
       message,
-    ].join("\n"),
+    ]
+      .filter(Boolean)
+      .join("\n"),
     html: `
       <h2>Nouveau message — formulaire contact</h2>
       <p><strong>Nom :</strong> ${escapeHtml(nom)}</p>
       <p><strong>Courriel :</strong> <a href="mailto:${escapeHtml(email)}">${escapeHtml(email)}</a></p>
+      ${telephoneHtml}
       <p><strong>Sujet :</strong> ${escapeHtml(sujetLabel)}</p>
       <p><strong>Message :</strong></p>
       <p style="white-space:pre-wrap">${escapeHtml(message)}</p>
@@ -116,88 +122,162 @@ async function sendContactEmail(contactData) {
   return { messageId: info.messageId, to };
 }
 
+function normalizeEmail(value) {
+  const email = String(value || "").trim().toLowerCase();
+  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return null;
+  return email;
+}
+
+async function fetchUserEmail(db, uid) {
+  if (!uid) return null;
+  const snap = await db.collection("users").doc(uid).get();
+  if (!snap.exists) return null;
+  const data = snap.data();
+  return normalizeEmail(data.email || data.courriel);
+}
+
+async function fetchChaletDoc(db, entiteId) {
+  const direct = await db.collection("chalets").doc(entiteId).get();
+  if (direct.exists) return direct;
+
+  const bySlug = await db
+    .collection("chalets")
+    .where("slug", "==", entiteId)
+    .limit(1)
+    .get();
+  return bySlug.docs[0] || null;
+}
+
+async function fetchServiceListingDoc(db, entiteId, categorieSlug) {
+  if (categorieSlug) {
+    const direct = await db
+      .collection("categorieServices")
+      .doc(categorieSlug)
+      .collection("annoncesService")
+      .doc(entiteId)
+      .get();
+    if (direct.exists) return direct;
+
+    const bySlug = await db
+      .collection("categorieServices")
+      .doc(categorieSlug)
+      .collection("annoncesService")
+      .where("slug", "==", entiteId)
+      .limit(1)
+      .get();
+    if (!bySlug.empty) return bySlug.docs[0];
+  }
+
+  const group = await db
+    .collectionGroup("annoncesService")
+    .where("slug", "==", entiteId)
+    .limit(1)
+    .get();
+  return group.docs[0] || null;
+}
+
 /**
- * Notifie l'annonceur par courriel (message interne déjà enregistré dans `messages`).
- * @param {object} messageData — document Firestore messages
+ * Résout le courriel du propriétaire côté serveur (Admin SDK).
+ * @param {FirebaseFirestore.Firestore} db
  */
-async function sendAdvertiserEmail(messageData) {
-  const destinataire = messageData.destinataire || {};
-  const expediteur = messageData.expediteur || {};
-  const toEmail = normalizeEmail(destinataire.email);
-
-  if (!toEmail) {
-    return { skipped: true, reason: "no_advertiser_email" };
+async function resolveListingOwnerEmail(db, { typeEntite, entiteId, categorieSlug }) {
+  if (typeEntite === "chalet") {
+    const chaletDoc = await fetchChaletDoc(db, entiteId);
+    if (!chaletDoc?.exists) {
+      throw new Error("Annonce introuvable.");
+    }
+    const data = chaletDoc.data();
+    const fromListing = normalizeEmail(data.courrielContact);
+    if (fromListing) return fromListing;
+    const fromUser = await fetchUserEmail(db, data.proprietaireId);
+    if (fromUser) return fromUser;
+    throw new Error("Aucun courriel propriétaire pour cette annonce.");
   }
 
-  const texte = String(messageData.texte || "").trim();
-  if (!texte) {
-    throw new Error("Message vide.");
+  if (typeEntite === "service") {
+    const listingDoc = await fetchServiceListingDoc(db, entiteId, categorieSlug);
+    if (!listingDoc?.exists) {
+      throw new Error("Annonce introuvable.");
+    }
+    const data = listingDoc.data();
+    const fromListing = normalizeEmail(data.courrielContact);
+    if (fromListing) return fromListing;
+    const fromUser = await fetchUserEmail(db, data.proprietaireId);
+    if (fromUser) return fromUser;
+    throw new Error("Aucun courriel propriétaire pour cette annonce.");
   }
 
-  const entiteTitre = String(messageData.entiteTitre || "votre annonce");
-  const entiteUrl = String(messageData.entiteUrl || "");
-  const origin =
-    process.env.APP_ORIGIN || "https://chalet-pedia.vercel.app";
-  const listingUrl = `${origin.replace(/\/$/, "")}${entiteUrl}`;
-  const fromLine = expediteur.displayName || "Un utilisateur ChaletPedia";
-  const fromEmail = expediteur.email ? ` (${expediteur.email})` : "";
-  const pieceJointeUrl = messageData.pieceJointeUrl || null;
-  const pieceJointeNom = messageData.pieceJointeNom || null;
+  throw new Error("Type d'annonce non pris en charge.");
+}
 
-  let attachmentBlock = "";
-  if (pieceJointeUrl) {
-    const label = pieceJointeNom || "Pièce jointe";
-    attachmentBlock = `\n\nPièce jointe : ${label}\n${pieceJointeUrl}`;
+/**
+ * Envoie le message du visiteur au propriétaire/annonceur (Nodemailer).
+ * @param {object} contactData — document Firestore listingContactMessages
+ */
+async function sendListingContactEmail(contactData) {
+  const { getFirestore } = require("firebase-admin/firestore");
+  const db = getFirestore();
+
+  const nom = String(contactData.nom || "").trim();
+  const email = String(contactData.email || "").trim();
+  const telephone = String(contactData.telephone || "").trim();
+  const message = String(contactData.message || "").trim();
+  const entiteTitre = String(contactData.entiteTitre || "votre annonce");
+  const entiteUrl = String(contactData.entiteUrl || "");
+
+  if (!nom || !email || !telephone || !message) {
+    throw new Error("Document incomplet (nom, email, téléphone, message requis).");
   }
 
-  const text = [
-    "Bonjour,",
-    "",
-    `Vous avez reçu un message via ChaletPedia concernant l'annonce « ${entiteTitre} ».`,
-    "",
-    `De : ${fromLine}${fromEmail}`,
-    "",
-    "Message :",
-    texte,
-    attachmentBlock,
-    "",
-    `Voir l'annonce : ${listingUrl}`,
-    "",
-    "Répondez depuis votre compte ChaletPedia (section Messages) ou par courriel si l'expéditeur a indiqué son adresse.",
-  ].join("\n");
-
-  const html = [
-    "<p>Bonjour,</p>",
-    `<p>Vous avez reçu un message via <strong>ChaletPedia</strong> concernant l'annonce « <strong>${escapeHtml(entiteTitre)}</strong> ».</p>`,
-    `<p><strong>De :</strong> ${escapeHtml(fromLine)}${escapeHtml(fromEmail)}</p>`,
-    "<p><strong>Message :</strong></p>",
-    `<p style="white-space:pre-wrap">${escapeHtml(texte)}</p>`,
-    pieceJointeUrl
-      ? `<p><strong>Pièce jointe :</strong> <a href="${escapeHtml(pieceJointeUrl)}">${escapeHtml(pieceJointeNom || "Fichier")}</a></p>`
-      : "",
-    `<p><a href="${escapeHtml(listingUrl)}">Voir l'annonce sur ChaletPedia</a></p>`,
-    '<p style="color:#666;font-size:12px">Répondez depuis votre compte (Messages) ou par courriel à l\'expéditeur.</p>',
-  ].join("");
-
+  const toEmail = await resolveListingOwnerEmail(db, contactData);
+  const origin = process.env.APP_ORIGIN || "https://chalet-pedia.vercel.app";
+  const listingUrl = entiteUrl
+    ? `${origin.replace(/\/$/, "")}${entiteUrl}`
+    : origin.replace(/\/$/, "");
   const fromAddress = process.env.SMTP_FROM || process.env.SMTP_USER;
   const transporter = createTransporter();
 
   const mailOptions = {
     from: `"ChaletPedia" <${fromAddress}>`,
     to: toEmail,
-    replyTo: normalizeEmail(expediteur.email) || undefined,
+    replyTo: email,
     subject: `ChaletPedia — message pour « ${entiteTitre} »`,
-    text,
-    html,
+    text: [
+      "Bonjour,",
+      "",
+      `Vous avez reçu un message via ChaletPedia concernant l'annonce « ${entiteTitre} ».`,
+      "",
+      `Nom : ${nom}`,
+      `Courriel : ${email}`,
+      `Téléphone : ${telephone}`,
+      "",
+      "Message :",
+      message,
+      "",
+      `Voir l'annonce : ${listingUrl}`,
+      "",
+      "Répondez directement à l'expéditeur en répondant à ce courriel.",
+    ].join("\n"),
+    html: [
+      "<p>Bonjour,</p>",
+      `<p>Vous avez reçu un message via <strong>ChaletPedia</strong> concernant l'annonce « <strong>${escapeHtml(entiteTitre)}</strong> ».</p>`,
+      `<p><strong>Nom :</strong> ${escapeHtml(nom)}</p>`,
+      `<p><strong>Courriel :</strong> <a href="mailto:${escapeHtml(email)}">${escapeHtml(email)}</a></p>`,
+      `<p><strong>Téléphone :</strong> ${escapeHtml(telephone)}</p>`,
+      "<p><strong>Message :</strong></p>",
+      `<p style="white-space:pre-wrap">${escapeHtml(message)}</p>`,
+      `<p><a href="${escapeHtml(listingUrl)}">Voir l'annonce sur ChaletPedia</a></p>`,
+      '<p style="color:#666;font-size:12px">Répondez directement à l\'expéditeur en répondant à ce courriel.</p>',
+    ].join(""),
   };
 
   const info = await transporter.sendMail(mailOptions);
-  return { messageId: info.messageId, to: toEmail, skipped: false };
+  return { messageId: info.messageId, to: toEmail };
 }
 
 module.exports = {
   sendContactEmail,
-  sendAdvertiserEmail,
+  sendListingContactEmail,
   buildContactMessageDocument,
   RECIPIENTS_BY_SUBJECT,
 };

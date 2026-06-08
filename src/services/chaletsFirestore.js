@@ -55,6 +55,7 @@ export function mapFirestoreChalet(docSnap, proprietaireUser = null) {
     note: data.note > 0 ? data.note : null,
     nbAvis: data.nombreAvis ?? 0,
     proprietaireId: data.proprietaireId || "",
+    courrielContact: data.courrielContact || "",
     proprietaire: mapProprietaireFromUser(proprietaireUser),
   };
 }

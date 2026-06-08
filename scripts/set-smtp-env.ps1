@@ -1,10 +1,10 @@
-# Configure les variables SMTP sur les 2 Cloud Functions (Cloud Run).
+# Configure les variables SMTP sur la Cloud Function contact (Cloud Run).
 # Prérequis : gcloud auth login (compte Owner du projet)
 
 $ErrorActionPreference = "Stop"
 $ProjectId = "chaletpedia"
 $Region = "northamerica-northeast1"
-$Services = @("oncontactmessagecreated", "onannonceurmessagecreated")
+$Services = @("oncontactmessagecreated", "onlistingcontactcreated")
 
 $gcloud = "$env:LOCALAPPDATA\Google\Cloud SDK\google-cloud-sdk\bin\gcloud.cmd"
 if (-not (Test-Path $gcloud)) {
@@ -23,7 +23,7 @@ Write-Host ""
 Write-Host "Variables SMTP pour ChaletPedia (Gmail = mot de passe d'application)" -ForegroundColor Cyan
 Write-Host ""
 
-$defaultUser = "wintechnologie830@gmail.com"
+$defaultUser = "adeltamani82@gmail.com"
 $smtpUserInput = Read-Host "SMTP_USER (Entree = $defaultUser)"
 $smtpUser = if ([string]::IsNullOrWhiteSpace($smtpUserInput)) { $defaultUser } else { $smtpUserInput }
 $smtpPass = Read-Host "SMTP_PASS (mot de passe d'application Gmail, obligatoire)" -AsSecureString

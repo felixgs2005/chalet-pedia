@@ -3,7 +3,7 @@ $ErrorActionPreference = "Continue"
 Set-Location (Split-Path $PSScriptRoot -Parent)
 
 Write-Host "Suppression des functions existantes (si présentes)..."
-firebase functions:delete onContactMessageCreated onAnnonceurMessageCreated `
+firebase functions:delete onContactMessageCreated onAnnonceurMessageCreated onListingContactCreated `
   --region northamerica-northeast1 --force 2>$null
 
 Start-Sleep -Seconds 8

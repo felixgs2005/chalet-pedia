@@ -41,6 +41,7 @@ export function mapFirestoreServiceListing(docSnap) {
     courrielContact: data.courrielContact || "",
     telephoneContact: data.telephoneContact || "",
     adresseContact: data.adresseContact || "",
+    proprietaireId: data.proprietaireId || "",
     statut: data.statut || "",
     note: data.note > 0 ? data.note : null,
     nbAvis: data.nombreAvis ?? 0,

@@ -92,9 +92,6 @@ export default function UserMenu({ user, onLogout, onNavigate }) {
             </span>
           )}
         </Link>
-        <Link to="/compte/messages/" className="nav-user-dropdown__item" role="menuitem" onClick={handleNav}>
-          Messages
-        </Link>
         <Link to="/compte/reglages/" className="nav-user-dropdown__item" role="menuitem" onClick={handleNav}>
           Réglages
         </Link>
