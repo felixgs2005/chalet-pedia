@@ -1,4 +1,4 @@
-import { collection, addDoc, serverTimestamp, query, where, getDocs } from "firebase/firestore";
+import { collection, addDoc, serverTimestamp, query, where, getDocs, deleteDoc, doc } from "firebase/firestore";
 import { db } from "../firebase";
 
 /**
@@ -42,6 +42,8 @@ export async function createBooking(bookingData) {
     userUid,
     userEmail,
     dateVisite,
+    // store a timestamp version of the visit date for security rules and comparisons
+    dateVisiteTs: new Date(dateVisite + "T00:00:00"),
     nbInvites,
     notes,
     statut: "en_attente",
@@ -60,4 +62,14 @@ export async function fetchBookingsForUser(uid) {
   const q = query(collection(db, "bookings"), where("userUid", "==", uid));
   const snapshot = await getDocs(q);
   return snapshot.docs.map((d) => ({ id: d.id, ...d.data() }));
+}
+
+/**
+ * Supprime une réservation (efface le document).
+ * @param {string} bookingId
+ */
+export async function deleteBooking(bookingId) {
+  if (!bookingId) throw new Error("bookingId requis");
+  const d = doc(db, "bookings", bookingId);
+  await deleteDoc(d);
 }
