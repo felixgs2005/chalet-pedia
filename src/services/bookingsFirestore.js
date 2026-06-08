@@ -16,6 +16,7 @@ export async function createBooking(bookingData) {
   const {
     chaletSlug,
     chaletId,
+    typeEntite = "chalet",
     userUid,
     userEmail,
     dateVisite,
@@ -39,6 +40,7 @@ export async function createBooking(bookingData) {
   const docRef = await addDoc(collection(db, "bookings"), {
     chaletSlug,
     chaletId,
+    typeEntite,
     userUid,
     userEmail,
     dateVisite,
@@ -56,6 +58,8 @@ export async function createBooking(bookingData) {
     try {
       let nom = "Utilisateur";
       let telephone = "Non fourni";
+      let proprietaireId = null;
+      let courrielContact = null;
 
       if (userUid) {
         try {
@@ -68,6 +72,20 @@ export async function createBooking(bookingData) {
           }
         } catch (err) {
           // ignore profile fetch errors
+        }
+      }
+
+      // Try to fetch chalet doc to obtain proprietor info to help routing the email
+      if (chaletId) {
+        try {
+          const chaletSnap = await getDoc(doc(db, "chalets", chaletId));
+          if (chaletSnap.exists()) {
+            const cdata = chaletSnap.data() || {};
+            proprietaireId = cdata.proprietaireId || null;
+            courrielContact = cdata.courrielContact || null;
+          }
+        } catch (err) {
+          // ignore
         }
       }
 
@@ -86,19 +104,23 @@ export async function createBooking(bookingData) {
         telephone,
         message,
         consentement: true,
-        typeEntite: "chalet",
+        typeEntite: typeEntite || "chalet",
         entiteId: chaletId || chaletSlug,
         entiteTitre: chaletSlug,
         entiteUrl: `/chalet/${chaletSlug}`,
+        proprietaireId,
+        destinataireEmail: courrielContact || null,
       };
 
-      await addDoc(collection(db, "listingContactMessages"), payload);
+      // Create the contact message document synchronously so we can be sure
+      // the Cloud Function trigger will run. If this fails, log and continue.
+      const contactRef = await addDoc(collection(db, "listingContactMessages"), payload);
+      console.log("listingContactMessages created:", contactRef.id);
     } catch (err) {
       // don't fail booking creation if notify fails
       console.error("notifyOwner error:", err);
     }
   }
-
   // Trigger notification asynchronously (don't block booking creation)
   _notifyOwner().catch((e) => console.error(e));
 

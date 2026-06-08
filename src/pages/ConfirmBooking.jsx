@@ -34,6 +34,7 @@ export default function ConfirmBooking() {
   const { currentUser } = useAuth();
 
   const { chaletSlug, chaletId, dateVisite, nbInvites, returnPath } = location.state || {};
+  const { typeEntite } = location.state || {};
 
   const [notes, setNotes] = useState("");
   const [termsAccepted, setTermsAccepted] = useState(false);
@@ -59,6 +60,7 @@ export default function ConfirmBooking() {
       await createBooking({
         chaletSlug,
         chaletId,
+        typeEntite,
         userUid: currentUser?.uid,
         userEmail: currentUser?.email,
         dateVisite,
