@@ -30,6 +30,7 @@ export default function VentePage() {
   const [bookingOpen, setBookingOpen] = useState(false);
   const [bookingDate, setBookingDate] = useState('');
   const [bookingInvites, setBookingInvites] = useState(1);
+  
 
   const handleOrganizeClick = () => {
     if (!currentUser) {
@@ -293,7 +294,7 @@ export default function VentePage() {
               <input
                 type="date"
                 value={bookingDate}
-                onChange={e => setBookingDate(e.target.value)}
+                onChange={(e) => setBookingDate(e.target.value)}
               />
             </label>
             <label>
@@ -302,7 +303,7 @@ export default function VentePage() {
                 type="number"
                 min="1"
                 value={bookingInvites}
-                onChange={e => setBookingInvites(parseInt(e.target.value) || 1)}
+                onChange={(e) => setBookingInvites(parseInt(e.target.value) || 1)}
               />
             </label>
             <button className="booking-modal-cta" onClick={handleBookingSubmit}>
