@@ -1,0 +1,432 @@
+/* Page contact — /contact/ */
+.contact-page {
+  background: #f3f0e9;
+  position: relative;
+  overflow: hidden;
+}
+
+.contact-page::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: min(480px, 50vw);
+  height: min(480px, 50vw);
+  background: radial-gradient(circle, rgba(31, 77, 58, 0.07) 0%, transparent 68%);
+  pointer-events: none;
+}
+
+.contact-page::after {
+  content: "";
+  position: absolute;
+  bottom: 120px;
+  left: 0;
+  width: min(360px, 40vw);
+  height: min(360px, 40vw);
+  background: radial-gradient(circle, rgba(31, 77, 58, 0.05) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+/* Hero */
+.contact-page .contact-hero {
+  position: relative;
+  z-index: 1;
+  background: transparent;
+  padding: 64px 32px 48px;
+}
+
+.contact-page .contact-hero-kicker {
+  animation: contactFadeUp 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.contact-page .contact-hero-title {
+  font-size: clamp(32px, 6vw, 48px);
+  text-transform: none;
+  line-height: 1.1;
+  animation: contactFadeUp 0.55s cubic-bezier(0.22, 1, 0.36, 1) 0.06s both;
+}
+
+.contact-page .contact-hero-sub {
+  animation: contactFadeUp 0.55s cubic-bezier(0.22, 1, 0.36, 1) 0.12s both;
+}
+
+/* Contenu */
+.contact-page .contact-content {
+  position: relative;
+  z-index: 1;
+  padding: 48px 32px 80px;
+  animation: contactFadeUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.18s both;
+}
+
+.contact-page .contact-grid {
+  gap: 32px;
+}
+
+/* Colonne coordonnées */
+.contact-page .contact-info-col {
+  animation: contactSlideRight 0.55s cubic-bezier(0.22, 1, 0.36, 1) 0.28s both;
+}
+
+.contact-page .contact-info-card {
+  border-radius: 16px;
+  padding: 32px 28px;
+  box-shadow: 0 8px 28px rgba(15, 15, 15, 0.04);
+  transition: box-shadow 0.3s ease, transform 0.3s ease;
+}
+
+.contact-page .contact-info-card:hover {
+  box-shadow: 0 14px 36px rgba(15, 15, 15, 0.07);
+}
+
+.contact-page .contact-info-title {
+  font-size: 18px;
+  text-transform: none;
+  letter-spacing: -0.01em;
+}
+
+.contact-page .contact-info-item {
+  padding: 10px 10px;
+  margin: 0 -10px;
+  border-radius: 10px;
+  transition: background 0.22s ease, padding-left 0.22s ease;
+  animation: contactFadeUp 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.contact-page .contact-info-item:nth-child(1) { animation-delay: 0.38s; }
+.contact-page .contact-info-item:nth-child(2) { animation-delay: 0.44s; }
+.contact-page .contact-info-item:nth-child(3) { animation-delay: 0.5s; }
+.contact-page .contact-info-item:nth-child(4) { animation-delay: 0.56s; }
+
+.contact-page .contact-info-item:hover {
+  background: rgba(31, 77, 58, 0.05);
+  padding-left: 14px;
+}
+
+.contact-page .contact-info-icon {
+  transition: transform 0.22s ease, box-shadow 0.22s ease;
+}
+
+.contact-page .contact-info-item:hover .contact-info-icon {
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(15, 15, 15, 0.06);
+}
+
+.contact-page .contact-info-email {
+  text-decoration: none;
+  background-image: linear-gradient(#1f4d3a, #1f4d3a);
+  background-size: 0% 1.5px;
+  background-repeat: no-repeat;
+  background-position: 0 100%;
+  transition: background-size 0.25s ease, color 0.2s ease;
+}
+
+.contact-page .contact-info-email:hover {
+  background-size: 100% 1.5px;
+  color: #163a2c;
+}
+
+.contact-page .contact-info-note {
+  border-left: 3px solid #1f4d3a;
+  border-radius: 0 10px 10px 0;
+  animation: contactFadeUp 0.45s ease 0.62s both;
+}
+
+/* Carte urgence — alerte sobre, alignée au reste de la page */
+.contact-page .contact-urgent-card {
+  background: #fff;
+  border: 1px solid rgba(192, 57, 43, 0.18);
+  border-left: 4px solid #b33a2e;
+  border-radius: 14px;
+  padding: 22px 24px 20px;
+  text-align: left;
+  box-shadow: 0 6px 22px rgba(192, 57, 43, 0.06);
+  transition: border-color 0.22s ease, box-shadow 0.22s ease;
+  animation: contactFadeUp 0.5s ease 0.5s both;
+}
+
+.contact-page .contact-urgent-card:hover {
+  border-color: rgba(192, 57, 43, 0.28);
+  box-shadow: 0 10px 28px rgba(192, 57, 43, 0.1);
+}
+
+.contact-page .contact-urgent-icon {
+  display: none;
+}
+
+.contact-page .contact-urgent-title {
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 700;
+  color: #8b2e2e;
+  text-transform: none;
+  letter-spacing: 0;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.contact-page .contact-urgent-title::before {
+  content: "!";
+  flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: rgba(179, 58, 46, 0.12);
+  color: #b33a2e;
+  font-size: 13px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+
+.contact-page .contact-urgent-desc {
+  font-size: 14px;
+  color: #4a4a48;
+  line-height: 1.6;
+  margin-bottom: 16px;
+}
+
+.contact-page .contact-urgent-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: transparent;
+  color: #b33a2e;
+  border: 1.5px solid rgba(179, 58, 46, 0.45);
+  border-radius: 10px;
+  padding: 10px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+  transition:
+    background 0.22s ease,
+    color 0.22s ease,
+    border-color 0.22s ease;
+}
+
+.contact-page .contact-urgent-btn:hover {
+  background: #b33a2e;
+  color: #fff;
+  border-color: #b33a2e;
+}
+
+/* Formulaire */
+.contact-page .contact-form-col {
+  animation: contactSlideLeft 0.55s cubic-bezier(0.22, 1, 0.36, 1) 0.32s both;
+}
+
+.contact-page .contact-form-card {
+  border-radius: 16px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 10px 36px rgba(15, 15, 15, 0.06);
+  transition: box-shadow 0.3s ease;
+}
+
+.contact-page .contact-form-card:hover {
+  box-shadow: 0 16px 44px rgba(15, 15, 15, 0.08);
+}
+
+.contact-page .contact-form-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, #1f4d3a, #7fa890 60%, transparent);
+  transform: scaleX(0);
+  transform-origin: left;
+  animation: contactLineGrow 0.75s cubic-bezier(0.22, 1, 0.36, 1) 0.45s forwards;
+}
+
+.contact-page .contact-form-title {
+  font-size: 20px;
+  text-transform: none;
+  letter-spacing: -0.01em;
+}
+
+.contact-page .contact-success {
+  animation: contactFadeUp 0.4s ease both;
+}
+
+.contact-page .contact-form .form-input,
+.contact-page .contact-form .form-select,
+.contact-page .contact-form .form-textarea {
+  background: #fafaf6;
+  transition:
+    border-color 0.22s ease,
+    background 0.22s ease,
+    box-shadow 0.22s ease;
+}
+
+.contact-page .contact-form .form-input:focus,
+.contact-page .contact-form .form-select:focus,
+.contact-page .contact-form .form-textarea:focus {
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(31, 77, 58, 0.1);
+}
+
+.contact-page .contact-form .form-label {
+  letter-spacing: 0.06em;
+}
+
+.contact-page .contact-form .form-checkbox {
+  padding: 8px 10px;
+  margin: 0 -10px;
+  border-radius: 8px;
+  transition: background 0.2s ease;
+}
+
+.contact-page .contact-form .form-checkbox:hover {
+  background: rgba(31, 77, 58, 0.04);
+}
+
+.contact-page .contact-form .form-submit {
+  border-radius: 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition:
+    background 0.22s ease,
+    box-shadow 0.22s ease,
+    transform 0.22s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.contact-page .contact-form .form-submit:hover:not(:disabled) {
+  background: #183d2f;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(31, 77, 58, 0.3);
+}
+
+.contact-page .contact-form .form-submit:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.contact-page .contact-form-note {
+  animation: contactFadeUp 0.45s ease 0.55s both;
+  transition: border-color 0.2s ease;
+}
+
+.contact-page .contact-form-note:hover {
+  border-color: rgba(31, 77, 58, 0.25);
+}
+
+/* CTA FAQ */
+.contact-page .contact-faq-cta {
+  position: relative;
+  z-index: 1;
+  background: linear-gradient(180deg, #f8f5ee 0%, #f3f0e9 100%);
+  padding: 64px 32px;
+  animation: contactFadeUp 0.5s ease 0.4s both;
+}
+
+.contact-page .contact-faq-title {
+  text-transform: none;
+  font-size: clamp(22px, 4vw, 26px);
+}
+
+.contact-page .contact-faq-btn {
+  border-radius: 12px;
+  transition:
+    background 0.22s ease,
+    transform 0.22s ease,
+    box-shadow 0.22s ease;
+  box-shadow: 0 4px 16px rgba(31, 77, 58, 0.2);
+}
+
+.contact-page .contact-faq-btn:hover {
+  background: #183d2f;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 22px rgba(31, 77, 58, 0.28);
+}
+
+/* Animations */
+@keyframes contactFadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes contactSlideRight {
+  from {
+    opacity: 0;
+    transform: translateX(-16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes contactSlideLeft {
+  from {
+    opacity: 0;
+    transform: translateX(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes contactLineGrow {
+  to {
+    transform: scaleX(1);
+  }
+}
+
+@media (max-width: 768px) {
+  .contact-page .contact-hero {
+    padding: 48px 20px 36px;
+  }
+
+  .contact-page .contact-content {
+    padding: 36px 20px 56px;
+  }
+
+  .contact-page .contact-info-col,
+  .contact-page .contact-form-col {
+    animation-name: contactFadeUp;
+  }
+
+  .contact-page .contact-info-item:hover {
+    padding-left: 10px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .contact-page .contact-hero-kicker,
+  .contact-page .contact-hero-title,
+  .contact-page .contact-hero-sub,
+  .contact-page .contact-content,
+  .contact-page .contact-info-col,
+  .contact-page .contact-form-col,
+  .contact-page .contact-info-item,
+  .contact-page .contact-info-note,
+  .contact-page .contact-urgent-card,
+  .contact-page .contact-form-card::before,
+  .contact-page .contact-success,
+  .contact-page .contact-form-note,
+  .contact-page .contact-faq-cta {
+    animation: none;
+  }
+
+  .contact-page .contact-form-card::before {
+    transform: scaleX(1);
+  }
+
+  .contact-page .contact-info-card:hover,
+  .contact-page .contact-form .form-submit:hover:not(:disabled),
+  .contact-page .contact-faq-btn:hover {
+    transform: none;
+  }
+}
