@@ -20,6 +20,7 @@ import { buildChaletFavoriCible } from "../services/favorisFirestore";
 import { buildChaletMessageCible } from "../services/messagesFirestore";
 import ContactModal from "../components/ContactModal";
 import FavoriteButton from "../components/FavoriteButton";
+import ListingActionLinks from "../components/ListingActionLinks";
 
 export default function ChaletPage() {
   const { slug } = useParams();
@@ -359,13 +360,17 @@ export default function ChaletPage() {
             >
               Organiser une visite privée
             </button>
-            <button
-              type="button"
-              className="booking-secondary"
-              onClick={() => setReviewOpen(true)}
-            >
-              Rédiger un avis
-            </button>
+
+            <div className="booking-divider" />
+
+            <ListingActionLinks
+              listing={{
+                slug: chalet.slug,
+                titre: chalet.nom,
+                categorieSlug: "chalet-a-louer",
+              }}
+              onWriteReview={() => setReviewOpen(true)}
+            />
 
             <div className="booking-divider" />
 

@@ -2,13 +2,18 @@ rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
+    function isAvisStatsUpdate() {
+      return request.resource.data.diff(resource.data).affectedKeys().hasOnly(['note', 'nombreAvis']);
+    }
+
     match /chalets/{chaletId} {
       allow read: if true;
       allow create: if request.auth != null
         && request.resource.data.proprietaireId == request.auth.uid;
       allow update: if request.auth != null
         && (
-          !('proprietaireId' in resource.data)
+          isAvisStatsUpdate()
+          || !('proprietaireId' in resource.data)
           || resource.data.proprietaireId == request.auth.uid
         );
     }
@@ -19,7 +24,8 @@ service cloud.firestore {
         && request.resource.data.proprietaireId == request.auth.uid;
       allow update: if request.auth != null
         && (
-          !('proprietaireId' in resource.data)
+          isAvisStatsUpdate()
+          || !('proprietaireId' in resource.data)
           || resource.data.proprietaireId == request.auth.uid
         );
     }

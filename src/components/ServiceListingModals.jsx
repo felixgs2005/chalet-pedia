@@ -54,7 +54,7 @@ function ClaimModal({ open, onClose, claimPrice = CLAIM_PRICE }) {
   );
 }
 
-function ReportModal({ open, onClose, listing }) {
+export function ReportModal({ open, onClose, listing }) {
   const { currentUser } = useAuth();
   const [details, setDetails] = useState("");
   const [submitting, setSubmitting] = useState(false);
