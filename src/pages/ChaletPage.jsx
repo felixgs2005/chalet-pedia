@@ -352,7 +352,6 @@ export default function ChaletPage() {
             >
               Contacter le propriétaire
             </button>
-            <button type="button" className="booking-secondary">Vérifier les disponibilités</button>
             <button
               type="button"
               className="booking-secondary"
