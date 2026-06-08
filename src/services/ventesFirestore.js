@@ -34,6 +34,7 @@ export function mapFirestoreVente(docSnap) {
       value: item.valeur ?? item.value ?? "",
     })),
     proprietaireId: data.proprietaireId || "",
+    courrielContact: data.courrielContact || "",
   };
 }
 

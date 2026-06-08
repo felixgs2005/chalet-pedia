@@ -17,6 +17,19 @@ export function buildChaletMessageCible(chalet) {
   };
 }
 
+export function buildVenteMessageCible(vente) {
+  if (!vente?.slug) return null;
+  return {
+    typeEntite: "vente",
+    entiteId: vente.slug,
+    entiteTitre: vente.titre || vente.nom,
+    entiteUrl: `/chalets/chalets-a-vendre/${vente.slug}`,
+    destinataireUid: vente.proprietaireId || "",
+    destinataireNom: "Propriétaire",
+    courrielContact: vente.courrielContact || "",
+  };
+}
+
 export function buildServiceMessageCible(listing) {
   if (!listing?.categorieSlug || !listing?.slug) return null;
   const destinataireEmail =

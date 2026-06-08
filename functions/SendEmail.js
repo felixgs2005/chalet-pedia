@@ -148,6 +148,18 @@ async function fetchChaletDoc(db, entiteId) {
   return bySlug.docs[0] || null;
 }
 
+async function fetchVenteDoc(db, entiteId) {
+  const direct = await db.collection("ventes").doc(entiteId).get();
+  if (direct.exists) return direct;
+
+  const bySlug = await db
+    .collection("ventes")
+    .where("slug", "==", entiteId)
+    .limit(1)
+    .get();
+  return bySlug.docs[0] || null;
+}
+
 async function fetchServiceListingDoc(db, entiteId, categorieSlug) {
   if (categorieSlug) {
     const direct = await db
@@ -200,6 +212,19 @@ async function resolveListingOwnerEmail(db, { typeEntite, entiteId, categorieSlu
       throw new Error("Annonce introuvable.");
     }
     const data = listingDoc.data();
+    const fromListing = normalizeEmail(data.courrielContact);
+    if (fromListing) return fromListing;
+    const fromUser = await fetchUserEmail(db, data.proprietaireId);
+    if (fromUser) return fromUser;
+    throw new Error("Aucun courriel propriétaire pour cette annonce.");
+  }
+
+  if (typeEntite === "vente") {
+    const venteDoc = await fetchVenteDoc(db, entiteId);
+    if (!venteDoc?.exists) {
+      throw new Error("Annonce introuvable.");
+    }
+    const data = venteDoc.data();
     const fromListing = normalizeEmail(data.courrielContact);
     if (fromListing) return fromListing;
     const fromUser = await fetchUserEmail(db, data.proprietaireId);

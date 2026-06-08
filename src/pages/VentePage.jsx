@@ -12,7 +12,9 @@ import { PinIcon, CameraIcon } from "../components/Icons";
 import { useSharePage } from "../hooks/useSharePage";
 import ShareToast from "../components/ShareToast";
 import FavoriteButton from "../components/FavoriteButton";
+import ContactModal from "../components/ContactModal";
 import { buildVenteFavoriCible } from "../services/favorisFirestore";
+import { buildVenteMessageCible } from "../services/messagesFirestore";
 
 export default function VentePage() {
   const { slug } = useParams();
@@ -20,6 +22,7 @@ export default function VentePage() {
   const { share, feedback: shareFeedback } = useSharePage();
   const [galleryOpen, setGalleryOpen] = useState(false);
   const [activeImg, setActiveImg] = useState(0);
+  const [contactOpen, setContactOpen] = useState(false);
 
   if (loading) {
     return (
@@ -77,10 +80,16 @@ export default function VentePage() {
   };
 
   const favoriCible = buildVenteFavoriCible(vente);
+  const messageCible = buildVenteMessageCible(vente);
 
   return (
     <div className="vente-detail">
       <ShareToast message={shareFeedback} />
+      <ContactModal
+        open={contactOpen}
+        onClose={() => setContactOpen(false)}
+        cible={messageCible}
+      />
       <nav className="breadcrumb">
         <Link to="/">Accueil</Link>
         <span className="separator">›</span>
@@ -219,7 +228,14 @@ export default function VentePage() {
               ))}
             </div>
 
-            <button className="price-cta">Organiser une visite privée →</button>
+            <button
+              type="button"
+              className="price-cta"
+              onClick={() => setContactOpen(true)}
+            >
+              Contacter l&apos;annonceur
+            </button>
+            <button className="price-secondary">Organiser une visite privée →</button>
             <button className="price-secondary">Demander la brochure</button>
           </div>
         </div>
