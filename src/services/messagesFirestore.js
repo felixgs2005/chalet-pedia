@@ -1,8 +1,6 @@
 import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 import { db } from "../firebase";
 import { extractEmailFromDescription } from "../utils/extractEmailFromDescription";
-import { normalizeEmail } from "../utils/normalizeEmail";
-import { resolveUtilisateurByUid } from "../utils/resolveUtilisateur";
 
 export function buildChaletMessageCible(chalet) {
   if (!chalet) return null;
@@ -47,20 +45,6 @@ export function buildServiceMessageCible(listing) {
     destinataireEmail,
     courrielContact: listing.courrielContact || "",
   };
-}
-
-/** Résout le courriel du propriétaire/annonceur (validation côté client). */
-export async function resolveDestinataireEmail(cible) {
-  if (!cible) return null;
-  const fromCible =
-    normalizeEmail(cible.destinataireEmail) ||
-    normalizeEmail(cible.courrielContact);
-  if (fromCible) return fromCible;
-  if (cible.destinataireUid) {
-    const user = await resolveUtilisateurByUid(cible.destinataireUid);
-    return normalizeEmail(user.email);
-  }
-  return null;
 }
 
 /**
