@@ -317,27 +317,6 @@ export default function ChaletPage() {
             </div>
             <div className="booking-commission">✓ 0 % de commission — prix direct propriétaire</div>
 
-            <div style={{ background: "#FAFAF6", border: "1px solid rgba(15,15,15,0.08)", borderRadius: 12, padding: 14, marginBottom: 14 }}>
-              <div style={{ fontSize: 10, fontWeight: 800, letterSpacing: "0.22em", color: "#1F4D3A", textTransform: "uppercase", marginBottom: 10 }}>
-                Tarification
-              </div>
-              {[
-                { lang: "FR", bg: "#1F4D3A", label: "Consulter les disponibilités" },
-                { lang: "EN", bg: "#4A4A48", label: "Check availability" },
-              ].map((item) => (
-                <a
-                  key={item.lang}
-                  href="#contact"
-                  style={{ display: "flex", alignItems: "center", gap: 10, padding: "8px 8px", borderRadius: 8, textDecoration: "none", color: "#1A1A1A", fontSize: 13, fontWeight: 500 }}
-                >
-                  <span style={{ background: item.bg, color: "#fff", fontFamily: "'Archivo Black', sans-serif", fontSize: 10, padding: "3px 6px", borderRadius: 4, minWidth: 26, textAlign: "center" }}>
-                    {item.lang}
-                  </span>
-                  <span style={{ flex: 1 }}>{item.label}</span>
-                  <span style={{ fontSize: 12, color: "#1F4D3A", fontWeight: 700 }}>↗</span>
-                </a>
-              ))}
-            </div>
 
             {bookingOpen && (
               <div className="booking-modal">
