@@ -76,13 +76,24 @@ export async function submitListingContactForm(
   }
 
   const trimmedMessage = String(message || "").trim();
+  const trimmedNom = String(nom || "").trim();
+  const trimmedEmail = String(email || "").trim();
+  const trimmedTelephone = String(telephone || "").trim();
+
+  if (!trimmedNom) {
+    throw new Error("Le nom est obligatoire.");
+  }
+  if (!trimmedEmail) {
+    throw new Error("Le courriel est obligatoire.");
+  }
+  if (!trimmedTelephone) {
+    throw new Error("Le numéro de téléphone est obligatoire.");
+  }
   if (!trimmedMessage) {
     throw new Error("Veuillez écrire un message.");
   }
-
-  const ownerEmail = await resolveDestinataireEmail(cible);
-  if (!ownerEmail) {
-    throw new Error("Aucun courriel de propriétaire n'est disponible pour cette annonce.");
+  if (!consentement) {
+    throw new Error("Vous devez accepter la politique de confidentialité.");
   }
 
   const payload = {
@@ -90,9 +101,9 @@ export async function submitListingContactForm(
     entiteId: cible.entiteId,
     entiteTitre: cible.entiteTitre || "",
     entiteUrl: cible.entiteUrl || "",
-    nom: String(nom || "").trim(),
-    email: String(email || "").trim(),
-    telephone: String(telephone || "").trim(),
+    nom: trimmedNom,
+    email: trimmedEmail,
+    telephone: trimmedTelephone,
     message: trimmedMessage,
     consentement: Boolean(consentement),
     statut: "en_attente",
@@ -104,5 +115,5 @@ export async function submitListingContactForm(
   }
 
   const ref = await addDoc(collection(db, "listingContactMessages"), payload);
-  return { id: ref.id, toEmail: ownerEmail };
+  return { id: ref.id };
 }

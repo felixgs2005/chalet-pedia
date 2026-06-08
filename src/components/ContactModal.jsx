@@ -122,13 +122,16 @@ export default function ContactModal({ open, onClose, cible, onSent }) {
               setSubmitStatus(null);
 
               try {
-                const result = await submitListingContactForm(cible, formData);
+                await submitListingContactForm(cible, formData);
                 setSubmitStatus("success");
-                onSent?.(result);
+                onSent?.();
                 window.setTimeout(() => requestClose(), 2400);
               } catch (err) {
+                const msg = String(err?.message || "");
                 setSubmitError(
-                  err.message || "Impossible d'envoyer le message. Réessayez plus tard."
+                  msg.includes("permission") || msg.includes("Permission")
+                    ? "Impossible d'enregistrer le message. Vérifiez que tous les champs obligatoires (dont le téléphone) sont remplis."
+                    : msg || "Impossible d'envoyer le message. Réessayez plus tard."
                 );
               } finally {
                 setIsSubmitting(false);

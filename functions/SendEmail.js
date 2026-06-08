@@ -128,6 +128,32 @@ function normalizeEmail(value) {
   return email;
 }
 
+const EMAIL_RE = /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/;
+
+/** Courriel dans les blocs description (annonces service legacy). */
+function extractEmailFromDescription(description) {
+  if (!Array.isArray(description)) return null;
+
+  for (const block of description) {
+    const parts = [];
+    if (typeof block === "string") {
+      parts.push(block);
+    } else if (block?.contenu && Array.isArray(block.contenu)) {
+      parts.push(...block.contenu);
+    } else if (block?.texte) {
+      parts.push(block.texte);
+    }
+
+    for (const part of parts) {
+      const match = String(part).match(EMAIL_RE);
+      const email = normalizeEmail(match?.[0]);
+      if (email) return email;
+    }
+  }
+
+  return null;
+}
+
 async function fetchUserEmail(db, uid) {
   if (!uid) return null;
   const snap = await db.collection("users").doc(uid).get();
@@ -214,6 +240,8 @@ async function resolveListingOwnerEmail(db, { typeEntite, entiteId, categorieSlu
     const data = listingDoc.data();
     const fromListing = normalizeEmail(data.courrielContact);
     if (fromListing) return fromListing;
+    const fromDescription = extractEmailFromDescription(data.description);
+    if (fromDescription) return fromDescription;
     const fromUser = await fetchUserEmail(db, data.proprietaireId);
     if (fromUser) return fromUser;
     throw new Error("Aucun courriel propriétaire pour cette annonce.");
