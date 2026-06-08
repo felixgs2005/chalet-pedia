@@ -1,4 +1,4 @@
-﻿/* ============================================================
+/* ============================================================
    FOOTER PAGES â€” styles communs + pages spÃ©cifiques
    Tokens : vert #1f4d3a Â· noir #0f0f0f Â· crÃ¨me #f8f5ee
             texte #4a4a48 Â· border #ebe7de
@@ -1695,7 +1695,7 @@
   position: relative;
 }
 .annoncez-forfaits-inclus li::before {
-  content: "âœ“";
+  content: "\2713";
   position: absolute;
   left: 0;
   color: #1f4d3a;
@@ -1782,7 +1782,7 @@
   position: relative;
 }
 .annoncez-forfait-features li::before {
-  content: "âœ“";
+  content: "\2713";
   position: absolute;
   left: 0;
   color: #1f4d3a;

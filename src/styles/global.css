@@ -3680,7 +3680,7 @@ a.region-cell {
 }
 
 .feature-list li::before {
-  content: "âœ“";
+  content: "\2713";
   position: absolute;
   left: 0;
   top: 8px;
@@ -4611,7 +4611,7 @@ button:hover .cp-icon {
 }
 
 .feature-block li::before {
-  content: "âœ“";
+  content: "\2713";
   position: absolute;
   left: 0;
   top: 6px;
