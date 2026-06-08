@@ -378,6 +378,28 @@
   box-shadow: 0 1px 0 rgba(0, 0, 0, 0.06);
 }
 
+
+/* Small plain button used in reservations list for actions like 'Supprimer' */
+.btn-plain {
+  appearance: none;
+  border: 1px solid rgba(232, 93, 82, 0.9);
+  background: transparent;
+  color: rgba(232, 93, 82, 0.95);
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 13px;
+  cursor: pointer;
+  transition: background 0.12s ease, transform 0.08s ease;
+}
+.btn-plain:hover {
+  background: rgba(232, 93, 82, 0.08);
+  transform: translateY(-1px);
+}
+.btn-plain:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
 .compte-conversation__card-check {
   position: absolute;
   top: 18px;
