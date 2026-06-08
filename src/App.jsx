@@ -38,6 +38,7 @@ import "./styles/compte.css";
 import "./styles/submit-listing.css";
 import "./styles/footer-pages.css";
 import "./styles/booking-modal.css";
+import "./styles/confirm-booking.css";
 
 function Layout({ children }) {
   return (
