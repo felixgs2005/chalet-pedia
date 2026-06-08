@@ -278,7 +278,6 @@ export default function VentePage() {
             >
               Contacter l&apos;annonceur
             </button>
-            <button className="price-secondary">Demander la brochure</button>
           </div>
         </div>
       </div>
