@@ -15,7 +15,9 @@ import FavoriteButton from "../components/FavoriteButton";
 import ContactModal from "../components/ContactModal";
 import ReviewModal from "../components/ReviewModal";
 import ListingActionLinks from "../components/ListingActionLinks";
+import AvisList from "../components/AvisList";
 import { useAuth } from "../context/AuthContext";
+import { useAvis } from "../hooks/useAvis";
 import { buildVenteAvisCible } from "../services/avisFirestore";
 import { buildVenteFavoriCible } from "../services/favorisFirestore";
 import { buildVenteMessageCible } from "../services/messagesFirestore";
@@ -23,6 +25,7 @@ import { buildVenteMessageCible } from "../services/messagesFirestore";
 export default function VentePage() {
   const { slug } = useParams();
   const { vente, loading, error } = useVenteBySlug(slug);
+  const { avis, loading: avisLoading, refresh: refreshAvis } = useAvis("vente", slug);
   const { share, feedback: shareFeedback } = useSharePage();
   const { currentUser } = useAuth();
   const navigate = useNavigate();
@@ -135,6 +138,7 @@ export default function VentePage() {
         open={reviewOpen}
         onClose={() => setReviewOpen(false)}
         cible={avisCible}
+        onSubmitted={refreshAvis}
       />
       <nav className="breadcrumb">
         <Link to="/">Accueil</Link>
@@ -257,6 +261,12 @@ export default function VentePage() {
               </div>
             ))}
           </div>
+
+          <AvisList
+            avis={avis}
+            loading={avisLoading}
+            onWriteReview={() => setReviewOpen(true)}
+          />
         </div>
 
         <div>
