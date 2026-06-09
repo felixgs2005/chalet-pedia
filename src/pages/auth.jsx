@@ -38,8 +38,8 @@ function Auth() {
     if (closing) return;
     setClosing(true);
     setVisible(false);
-    window.setTimeout(() => navigate(returnTo || "/"), 280);
-  }, [closing, navigate, returnTo]);
+    window.setTimeout(() => navigate("/", { replace: true }), 280);
+  }, [closing, navigate]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
