@@ -51,7 +51,7 @@ const JALONS = [
   { an: "2020", titre: "Naissance de l'idée", desc: "Nicolas rêve de simplifier la location de chalets au Québec." },
   { an: "2021", titre: "Lancement officiel", desc: "ChaletPedia accueille ses premiers 50 chalets et 1 000 utilisateurs." },
   { an: "2022", titre: "Première expansion", desc: "La plateforme atteint 5 000 chalets et 50 000 visites mensuelles." },
-  { an: "2023", titre: "Services premium", desc: "Lancement des formations, promotions et services marketing." },
+  { an: "2023", titre: "Services premium", desc: "Lancement des promotions et services marketing." },
   { an: "2024", titre: "Devenir la référence", desc: "ChaletPedia s'impose comme la plateforme #1 des chalets québécois." },
   { an: "2025", titre: "Croissance continue", desc: "Expansion vers les services et consolidation de l'écosystème." },
 ];
@@ -92,8 +92,8 @@ export default function APropos() {
             </p>
             <p>
               Depuis nos débuts, nous construisons une plateforme qui met au cœur
-              les besoins des propriétaires et des locataires, en offrant outils,
-              formations et ressources pour rendre chaque séjour inoubliable.
+              les besoins des propriétaires et des locataires, en offrant outils
+              et ressources pour rendre chaque séjour inoubliable.
             </p>
           </div>
         </div>

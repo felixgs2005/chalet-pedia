@@ -1157,16 +1157,6 @@ a.region-cell {
   color: #7FA890;
 }
 
-.footer-link-static {
-  cursor: not-allowed;
-  opacity: 0.5;
-}
-
-.footer-link-static:hover {
-  opacity: 0.5;
-  color: inherit;
-}
-
 .footer-bottom {
   border-top: 1px solid rgba(248, 245, 238, 0.18);
   padding-top: 20px;
@@ -2881,29 +2871,6 @@ a.region-cell {
 .astuce-card-meta strong {
   color: #1f4d3a;
   font-weight: 600;
-}
-.astuces-formations-cta {
-  padding: 48px 32px;
-  text-align: center;
-  background: #fafaf6;
-  border-top: 1px solid #ebe7de;
-  border-bottom: 1px solid #ebe7de;
-}
-.astuces-formations-cta p {
-  font-size: 17px;
-  color: #4a4a48;
-  max-width: 640px;
-  margin: 0 auto;
-  line-height: 1.55;
-}
-.astuces-formations-cta a {
-  color: #1f4d3a;
-  font-weight: 700;
-  text-decoration: underline;
-  text-underline-offset: 3px;
-}
-.astuces-formations-cta a:hover {
-  color: #0f0f0f;
 }
 .astuces-citq {
   padding: 64px 32px 88px;

@@ -40,9 +40,6 @@ export default function Footer() {
         {/* ── Colonne 3 : Outils & Ressources ── */}
         <div className="footer-nav-col">
           <div className="footer-col-title">Outils &amp; Ressources</div>
-          <span className="footer-link footer-link-static">
-            Formations
-          </span>
           <Link to="/academie/astuces/" className="footer-link">
             Guides pratiques
           </Link>

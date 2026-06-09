@@ -58,13 +58,6 @@ export default function Astuces() {
         </div>
       </section>
 
-      <section className="astuces-formations-cta">
-        <p>
-          Vous maîtrisez ces astuces à la perfection et souhaitez passer au niveau supérieur ?{" "}
-          <span className="astuces-formations-link disabled" aria-disabled="true">Découvrez nos formations.</span>
-        </p>
-      </section>
-
       <section className="astuces-citq">
         <div className="astuces-citq-inner">
           <h2 className="astuces-citq-title">

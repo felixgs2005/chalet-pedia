@@ -4,7 +4,7 @@
 // Foire aux questions pour les locataires et propriétaires.
 // ============================================================
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 
 const faqSections = [
   {
@@ -88,8 +88,27 @@ const faqSections = [
 ];
 
 export default function FAQ() {
+  const [searchQuery, setSearchQuery] = useState("");
   const [openSections, setOpenSections] = useState({});
   const [openQuestions, setOpenQuestions] = useState({});
+
+  const isSearching = searchQuery.trim() !== "";
+
+  const filteredSections = useMemo(() => {
+    const query = searchQuery.trim().toLowerCase();
+    if (!query) return faqSections;
+
+    return faqSections
+      .map((section) => ({
+        ...section,
+        questions: section.questions.filter(
+          (item) =>
+            item.q.toLowerCase().includes(query) ||
+            item.r.toLowerCase().includes(query)
+        ),
+      }))
+      .filter((section) => section.questions.length > 0);
+  }, [searchQuery]);
 
   const toggleSection = (sectionId) => {
     setOpenSections((prev) => ({
@@ -104,6 +123,15 @@ export default function FAQ() {
       ...prev,
       [key]: !prev[key],
     }));
+  };
+
+  const isSectionOpen = (sectionId) =>
+    isSearching || openSections[sectionId] === undefined || openSections[sectionId];
+
+  const isQuestionOpen = (key) => isSearching || openQuestions[key];
+
+  const handleSearch = (e) => {
+    e.preventDefault();
   };
 
   return (
@@ -123,59 +151,79 @@ export default function FAQ() {
       {/* ── CONTENU ── */}
       <section className="faq-content">
         <div className="faq-content-inner">
-          <div className="faq-search-wrap">
+          <form
+            className="faq-search-wrap"
+            onSubmit={handleSearch}
+            role="search"
+            aria-label="Rechercher dans la FAQ"
+          >
             <input
               type="search"
               placeholder="Rechercher une question..."
               className="faq-search-input"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
             />
-            <button type="button" className="faq-search-btn">
+            <button type="submit" className="faq-search-btn" aria-label="Rechercher">
               🔍
             </button>
-          </div>
+          </form>
 
           <div className="faq-sections">
-            {faqSections.map((section) => (
-              <div key={section.id} className="faq-section">
+            {filteredSections.length > 0 ? (
+              filteredSections.map((section) => (
+                <div key={section.id} className="faq-section">
+                  <button
+                    className="faq-section-header"
+                    onClick={() => toggleSection(section.id)}
+                  >
+                    <h2 className="faq-section-title">{section.titre}</h2>
+                    <span className="faq-section-toggle">
+                      {isSectionOpen(section.id) ? "−" : "+"}
+                    </span>
+                  </button>
+
+                  {isSectionOpen(section.id) && (
+                    <div className="faq-section-content">
+                      {section.questions.map((item, idx) => {
+                        const key = `${section.id}-${idx}`;
+                        const isOpen = isQuestionOpen(key);
+                        return (
+                          <div key={key} className="faq-item">
+                            <button
+                              className="faq-question"
+                              onClick={() => toggleQuestion(section.id, idx)}
+                            >
+                              <span className="faq-q-mark" aria-hidden="true">?</span>
+                              <span className="faq-q-text">{item.q}</span>
+                              <span className="faq-chevron">
+                                {isOpen ? "−" : "+"}
+                              </span>
+                            </button>
+                            {isOpen && (
+                              <div className="faq-answer">
+                                <p>{item.r}</p>
+                              </div>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+              ))
+            ) : (
+              <div className="faq-empty">
+                <p>Aucune question ne correspond à « {searchQuery} ».</p>
                 <button
-                  className="faq-section-header"
-                  onClick={() => toggleSection(section.id)}
+                  type="button"
+                  className="faq-empty__btn"
+                  onClick={() => setSearchQuery("")}
                 >
-                  <h2 className="faq-section-title">{section.titre}</h2>
-                  <span className="faq-section-toggle">
-                    {openSections[section.id] ? "−" : "+"}
-                  </span>
+                  Réinitialiser la recherche
                 </button>
-                
-                {(openSections[section.id] === undefined || openSections[section.id]) && (
-                  <div className="faq-section-content">
-                    {section.questions.map((item, idx) => {
-                      const key = `${section.id}-${idx}`;
-                      const isOpen = openQuestions[key];
-                      return (
-                        <div key={key} className="faq-item">
-                          <button
-                            className="faq-question"
-                            onClick={() => toggleQuestion(section.id, idx)}
-                          >
-                            <span className="faq-q-mark" aria-hidden="true">?</span>
-                            <span className="faq-q-text">{item.q}</span>
-                            <span className="faq-chevron">
-                              {isOpen ? "−" : "+"}
-                            </span>
-                          </button>
-                          {isOpen && (
-                            <div className="faq-answer">
-                              <p>{item.r}</p>
-                            </div>
-                          )}
-                        </div>
-                      );
-                    })}
-                  </div>
-                )}
               </div>
-            ))}
+            )}
           </div>
 
           {/* ── CTA CONTACT ── */}
