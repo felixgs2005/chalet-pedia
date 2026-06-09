@@ -243,14 +243,16 @@ export default function VentePage() {
             <div className="price-amount">{vente.prix}</div>
             <div className="price-note">Vente directe par le propriétaire</div>
 
-            <div className="price-features">
-              {vente.priceFeatures.map((pf) => (
-                <div className="price-features-row" key={pf.label}>
-                  <span>{pf.label}</span>
-                  <strong>{pf.value}</strong>
-                </div>
-              ))}
-            </div>
+            {vente.priceFeatures && vente.priceFeatures.length > 0 && (
+              <div className="price-features">
+                {vente.priceFeatures.map((pf) => (
+                  <div className="price-features-row" key={pf.label}>
+                    <span>{pf.label}</span>
+                    <strong>{pf.value}</strong>
+                  </div>
+                ))}
+              </div>
+            )}
 
             {/* Visite privée disabled for ventes */}
             <button
