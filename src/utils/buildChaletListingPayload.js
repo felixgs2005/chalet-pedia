@@ -1,4 +1,5 @@
 import { slugifyServiceTitle } from "./buildServiceListingPayload";
+import { formatPrixCAD } from "./formatPrix";
 import {
   parseCaracteristiquesInput,
   parseEquipementsInput,
@@ -74,7 +75,7 @@ export function buildChaletListingPayload(form, { imageUrls = [], proprietaireId
       description: stripTextFromHtml(descriptionHtml),
       descriptionHtml,
       descriptionTitre: form.descriptionTitre?.trim() || form.titre.trim(),
-      prix: form.prix?.trim() || "",
+      prix: formatPrixCAD(form.prix) || "",
       nombreChambres: toNumberOrNull(form.nombreChambres),
       nombreSallesBain: toNumberOrNull(form.nombreSallesBain),
       garages: toNumberOrNull(form.nombreGarages),

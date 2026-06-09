@@ -21,6 +21,7 @@ import { buildChaletMessageCible } from "../services/messagesFirestore";
 import ContactModal from "../components/ContactModal";
 import FavoriteButton from "../components/FavoriteButton";
 import ListingActionLinks from "../components/ListingActionLinks";
+import { formatPrixNuit } from "../utils/formatPrix";
 
 export default function ChaletPage() {
   const { slug } = useParams();
@@ -259,7 +260,7 @@ export default function ChaletPage() {
                 </div>
               )}
               <div className="info-stat">
-                <div className="info-stat-num">{chalet.prixNuit ? `${chalet.prixNuit}$` : "—"}</div>
+                <div className="info-stat-num">{formatPrixNuit(chalet.prixNuit) || "—"}</div>
                 <div className="info-stat-label">/ nuit</div>
               </div>
             </div>
@@ -312,7 +313,7 @@ export default function ChaletPage() {
             <div className="booking-from">À partir de</div>
             <div className="booking-price">
               <span className="booking-price-num">
-                {chalet.prixNuit ? `${chalet.prixNuit}$` : "Prix sur demande"}
+                {formatPrixNuit(chalet.prixNuit) || "Prix sur demande"}
               </span>
               {chalet.prixNuit && <span className="booking-price-unit">/ nuit</span>}
             </div>

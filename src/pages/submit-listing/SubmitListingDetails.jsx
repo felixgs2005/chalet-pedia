@@ -18,6 +18,7 @@ import {
 import { mapFirebaseError } from "../../utils/firebaseErrors";
 import { promiseWithTimeout } from "../../utils/promiseWithTimeout";
 import { syncUserCourriel } from "../../services/userProfileFirestore";
+import { parsePrixDigits } from "../../utils/formatPrix";
 
 const CATEGORIES = [
   { value: "chalets-louer", label: "Chalets à louer", short: "À louer" },
@@ -108,6 +109,11 @@ export default function SubmitListingDetails() {
       }
       return next;
     });
+  };
+
+  const updatePrixDigits = (field) => (e) => {
+    const digits = parsePrixDigits(e.target.value);
+    setForm((prev) => ({ ...prev, [field]: digits }));
   };
 
   const updateCaracteristique = (id, field, value) => {
@@ -615,12 +621,13 @@ export default function SubmitListingDetails() {
               <input
                 id="listing-prix"
                 type="text"
+                inputMode="numeric"
                 className="submit-listing-input"
                 value={form.prix}
-                onChange={update("prix")}
+                onChange={updatePrixDigits("prix")}
                 disabled={sent || submitting}
                 required
-                placeholder="Ex. : 1 389 900 $"
+                placeholder="Ex. : 1389900"
               />
             </div>
           ) : (
@@ -630,12 +637,11 @@ export default function SubmitListingDetails() {
               </label>
               <input
                 id="listing-prix-nuit"
-                type="number"
-                min="1"
-                step="1"
+                type="text"
+                inputMode="numeric"
                 className="submit-listing-input"
                 value={form.prixParNuit}
-                onChange={update("prixParNuit")}
+                onChange={updatePrixDigits("prixParNuit")}
                 disabled={sent || submitting}
                 required
                 placeholder="Ex. : 250"
