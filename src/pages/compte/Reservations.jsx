@@ -126,13 +126,15 @@ export default function Reservations() {
                   >
                     🏔️ {b.chaletSlug}
                   </Link>
-                  <span
-                    className={`compte-reservations-badge ${
-                      STATUT_CLASSES[b.statut] || "compte-reservations-badge--pending"
-                    }`}
-                  >
-                    {STATUT_LABELS[b.statut] || b.statut}
-                  </span>
+                  {b.statut && b.statut !== "en_attente" ? (
+                    <span
+                      className={`compte-reservations-badge ${
+                        STATUT_CLASSES[b.statut] || "compte-reservations-badge--pending"
+                      }`}
+                    >
+                      {STATUT_LABELS[b.statut] || b.statut}
+                    </span>
+                  ) : null}
                 </div>
 
                 <div className="compte-reservations-card__details">
