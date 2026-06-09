@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { fetchBookingsForUser, deleteBooking } from "../../services/bookingsFirestore";
+import { getDoc, doc as firestoreDoc } from "firebase/firestore";
+import { db } from "../../firebase";
 
 // Canonical keys: 'pending', 'confirmed', 'cancelled'
 const STATUT_LABELS = {
@@ -196,8 +198,32 @@ export default function Reservations() {
                             await deleteBooking(b.id);
                             setBookings((prev) => prev.filter((x) => x.id !== b.id));
                           } catch (err) {
-                            console.error(err);
-                            alert('Impossible de supprimer la réservation.');
+                            console.error("deleteBooking error:", err);
+                            const msg = err?.message || String(err);
+                            const code = err?.code ? ` (${err.code})` : "";
+
+                            // If permission denied, attempt to fetch the booking doc to inspect stored fields
+                            if (err?.code === "permission-denied") {
+                              try {
+                                const snap = await getDoc(firestoreDoc(db, "bookings", b.id));
+                                if (snap.exists()) {
+                                  const data = snap.data();
+                                  const debug = [
+                                    `userUid: ${data.userUid}`,
+                                    `dateVisite: ${data.dateVisite}`,
+                                    `dateVisiteTs: ${data.dateVisiteTs ? (data.dateVisiteTs.toDate ? data.dateVisiteTs.toDate() : String(data.dateVisiteTs)) : "(missing)"}`,
+                                  ].join("\n");
+                                  alert(`Impossible de supprimer la réservation. Détails: ${msg}${code}\n\nDocument fields:\n${debug}`);
+                                } else {
+                                  alert(`Impossible de supprimer la réservation. Détails: ${msg}${code}\n\nDocument introuvable.`);
+                                }
+                              } catch (readErr) {
+                                console.error("fetch booking doc error:", readErr);
+                                alert(`Impossible de supprimer la réservation. Détails: ${msg}${code}\n(Échec lecture doc: ${readErr?.message || String(readErr)})`);
+                              }
+                            } else {
+                              alert(`Impossible de supprimer la réservation. Détails: ${msg}${code}`);
+                            }
                           }
                         }}
                       >
