@@ -4,8 +4,8 @@
 // Données chargées depuis Firestore (collection ventes).
 // ============================================================
 
-import { useMemo, useState } from "react";
-import { Link } from "react-router-dom";
+import { useMemo, useState, useEffect } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useVentes } from "../hooks/useVentes";
 import { PinIcon, BedIcon, BathIcon, GarageIcon } from "../components/Icons";
 
@@ -13,6 +13,8 @@ const prixToNumber = (prix) => Number(String(prix).replace(/[^\d]/g, "")) || 0;
 
 export default function Vente() {
   const { ventes, loading, error } = useVentes();
+  const location = useLocation();
+  const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
   const [locationQuery, setLocationQuery] = useState("");
   const [region, setRegion] = useState("all");
@@ -25,6 +27,13 @@ export default function Vente() {
     () => Array.from(new Set(ventes.map((v) => v.region).filter(Boolean))),
     [ventes]
   );
+
+  useEffect(() => {
+    const query = location.state?.searchQuery;
+    if (!query) return;
+    setSearchQuery(query);
+    navigate(location.pathname, { replace: true, state: null });
+  }, [location.state, location.pathname, navigate]);
 
   const handleResetFilters = () => {
     setSearchQuery("");

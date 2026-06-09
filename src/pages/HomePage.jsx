@@ -1,6 +1,6 @@
 // src/pages/HomePage.jsx
-import { useState, useEffect, useRef } from "react";
-import { Link } from "react-router-dom";
+import { useState, useEffect, useRef, useMemo } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import ChaletCard from "../components/ChaletCard";
 import { useChalets } from "../hooks/useChalets";
 import { articles } from "../data/articles";
@@ -82,12 +82,49 @@ function AnimatedNumber({ target, suffix = "" }) {
   return <span ref={ref}>{val}{suffix}</span>;
 }
 
+function chaletMatchesQuery(chalet, query) {
+  const q = query.toLowerCase();
+  return (
+    chalet.nom?.toLowerCase().includes(q) ||
+    chalet.sousTitre?.toLowerCase().includes(q) ||
+    chalet.description?.toLowerCase().includes(q) ||
+    chalet.localisation?.toLowerCase().includes(q) ||
+    (chalet.region || "").toLowerCase().includes(q) ||
+    (chalet.regionLabel || "").toLowerCase().includes(q) ||
+    chalet.citq?.toLowerCase().includes(q)
+  );
+}
+
 export default function HomePage() {
+  const navigate = useNavigate();
   const [faqTab, setFaqTab] = useState("locataires");
+  const [searchCategory, setSearchCategory] = useState("all");
+  const [searchQuery, setSearchQuery] = useState("");
   const { chalets: fetchedChalets } = useChalets();
   const sourceChalets = fetchedChalets ?? [];
   const coupsDeCoeur = sourceChalets.slice(0, 3);
   const favoris = sourceChalets.filter((c) => !c.isFavori).slice(0, 6);
+  const isSearching = searchQuery.trim() !== "" && searchCategory !== "vendre";
+
+  const displayedChalets = useMemo(() => {
+    if (!isSearching) return coupsDeCoeur;
+    return sourceChalets
+      .filter((chalet) => chaletMatchesQuery(chalet, searchQuery.trim()))
+      .slice(0, 6);
+  }, [isSearching, searchQuery, sourceChalets, coupsDeCoeur]);
+
+  const handleSearch = (e) => {
+    e.preventDefault();
+    const query = searchQuery.trim();
+    const state = query ? { searchQuery: query } : undefined;
+
+    if (searchCategory === "vendre") {
+      navigate("/chalets/chalets-a-vendre/", { state });
+      return;
+    }
+
+    navigate("/chalets/chalet-a-louer/", { state });
+  };
 
   return (
     <div>
@@ -109,21 +146,30 @@ export default function HomePage() {
         </p>
 
         {/* SEARCH BAR */}
-        <div className="search-bar">
+        <form className="search-bar" onSubmit={handleSearch} role="search" aria-label="Recherche de chalets">
           <div className="search-field">
             <div className="label">Catégorie</div>
-            <select>
-              <option>Toutes les catégories</option>
-              <option>Chalets à louer</option>
-              <option>Chalets à vendre</option>
+            <select
+              value={searchCategory}
+              onChange={(e) => setSearchCategory(e.target.value)}
+              aria-label="Catégorie de recherche"
+            >
+              <option value="all">Toutes les catégories</option>
+              <option value="louer">Chalets à louer</option>
+              <option value="vendre">Chalets à vendre</option>
             </select>
           </div>
           <div className="search-field" style={{ borderRight: "none" }}>
             <div className="label">Rechercher</div>
-            <input type="text" placeholder="Région, localisation..." />
+            <input
+              type="search"
+              placeholder="Région, localisation..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
           </div>
-          <button className="search-btn">⌕ Rechercher</button>
-        </div>
+          <button type="submit" className="search-btn">⌕ Rechercher</button>
+        </form>
 
         {/* CHIPS */}
         <div className="hero-chips">
@@ -166,15 +212,23 @@ export default function HomePage() {
         <div className="section-head">
           <div>
             <div className="kicker">N°02 · COUPS DE CŒUR</div>
-            <h2 className="section-title">Nos chalets coups de cœur.</h2>
+            <h2 className="section-title">
+              {isSearching ? "Résultats de recherche." : "Nos chalets coups de cœur."}
+            </h2>
           </div>
           <Link to="/chalets/chalet-a-louer/" className="section-link">Voir tous les chalets →</Link>
         </div>
-        <div className="chalets-grid">
-          {coupsDeCoeur.map((c) => (
-            <ChaletCard key={c.id} chalet={c} />
-          ))}
-        </div>
+        {isSearching && displayedChalets.length === 0 ? (
+          <p style={{ color: "#4A4A48", marginBottom: 24 }}>
+            Aucun chalet ne correspond à votre recherche. Essayez un autre mot-clé ou consultez toutes les annonces.
+          </p>
+        ) : (
+          <div className="chalets-grid">
+            {displayedChalets.map((c) => (
+              <ChaletCard key={c.id} chalet={c} />
+            ))}
+          </div>
+        )}
       </section>
 
       {/* POURQUOI */}

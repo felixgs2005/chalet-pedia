@@ -1,6 +1,6 @@
 // src/pages/ALouer.jsx
 import { useState, useMemo, useEffect } from "react";
-import { Link, useParams, useNavigate } from "react-router-dom";
+import { Link, useParams, useNavigate, useLocation } from "react-router-dom";
 import { useChalets } from "../hooks/useChalets";
 import {
   getRegionConfig,
@@ -71,6 +71,7 @@ export default function ALouer() {
   const { chalets, loading, error } = useChalets();
   const { pageSlug } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const parsed = parseListingPageSlug(pageSlug);
   const isInvalidSlug = Boolean(pageSlug && !parsed.valid);
@@ -151,6 +152,13 @@ export default function ALouer() {
     const config = getExperienceConfig(next.experienceKey) || getRegionConfig(next.regionKey);
     document.title = config.documentTitle;
   }, [pageSlug]);
+
+  useEffect(() => {
+    const query = location.state?.searchQuery;
+    if (!query) return;
+    setSearchQuery(query);
+    navigate(location.pathname, { replace: true, state: null });
+  }, [location.state, location.pathname, navigate]);
 
   const hasExtraFeatureFilters = Object.keys(features).some(
     (key) => features[key] !== urlFeatureBaseline[key]
@@ -237,7 +245,18 @@ export default function ALouer() {
           const matchesSub = chalet.sousTitre?.toLowerCase().includes(query);
           const matchesDesc = chalet.description?.toLowerCase().includes(query);
           const matchesCitq = chalet.citq?.toLowerCase().includes(query);
-          if (!matchesName && !matchesSub && !matchesDesc && !matchesCitq) {
+          const matchesLoc = chalet.localisation?.toLowerCase().includes(query);
+          const matchesRegion = (chalet.region || "").toLowerCase().includes(query);
+          const matchesRegionLabel = (chalet.regionLabel || "").toLowerCase().includes(query);
+          if (
+            !matchesName &&
+            !matchesSub &&
+            !matchesDesc &&
+            !matchesCitq &&
+            !matchesLoc &&
+            !matchesRegion &&
+            !matchesRegionLabel
+          ) {
             return false;
           }
         }
