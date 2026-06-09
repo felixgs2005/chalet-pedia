@@ -116,9 +116,3 @@ export function getExperienceConfig(key) {
   if (!key || key === "all") return null;
   return LISTING_EXPERIENCES[key] ?? null;
 }
-
-export function countChaletsByExperience(chalets, key) {
-  const config = getExperienceConfig(key);
-  if (!config) return chalets.length;
-  return chalets.filter(config.match).length;
-}

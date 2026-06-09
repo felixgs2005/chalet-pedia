@@ -6,7 +6,3 @@ export function hasCatalogueLink(listing) {
 export function resolveLienCatalogue(listing) {
   return listing?.lienCatalogue?.trim() || "";
 }
-
-export function isExternalCatalogueUrl(href) {
-  return /^https?:\/\//i.test(href || "");
-}
