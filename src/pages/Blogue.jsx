@@ -111,18 +111,6 @@ export default function Blogue() {
         ) : (
           <p className="articles-empty">Aucun article dans cette catégorie pour le moment.</p>
         )}
-
-        <div className="newsletter-cta">
-          <h3>Recevez nos meilleurs articles</h3>
-          <p>
-            Une fois par mois, conseils, études de cas et inspirations pour louer mieux et louer
-            plus. Pas de spam, désinscription en un clic.
-          </p>
-          <form className="newsletter-form" onSubmit={(e) => e.preventDefault()}>
-            <input type="email" placeholder="votre@email.com" required />
-            <button type="submit">S'abonner →</button>
-          </form>
-        </div>
       </div>
     </div>
   );
