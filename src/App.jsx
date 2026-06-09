@@ -32,13 +32,11 @@ import Contact from "./pages/footer/Contact";
 import RequireAuth from "./components/RequireAuth";
 import Reglages from "./pages/compte/Reglages";
 import Favoris from "./pages/compte/Favoris";
-import Reservations from "./pages/compte/Reservations";
 import "./styles/global.css";
 import "./styles/compte.css";
 import "./styles/submit-listing.css";
 import "./styles/footer-pages.css";
 import "./styles/contact-page.css";
-import "./styles/booking-modal.css";
 import "./styles/confirm-booking.css";
 
 function Layout({ children }) {
@@ -107,14 +105,7 @@ export default function App() {
                   </RequireAuth>
                 }
               />
-              <Route
-                path="/compte/reservations/"
-                element={
-                  <RequireAuth>
-                    <Reservations />
-                  </RequireAuth>
-                }
-              />
+              /* `Mes réservations` page removed — route intentionally deleted */
               <Route
                 path="/reservation/confirmer"
                 element={

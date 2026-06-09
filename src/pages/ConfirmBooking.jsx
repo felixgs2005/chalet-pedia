@@ -77,7 +77,7 @@ export default function ConfirmBooking() {
       } else if (chaletSlug) {
         navigate(`/chalet/${chaletSlug}`);
       } else {
-        navigate("/compte/reservations/");
+        navigate("/compte/reglages/");
       }
     } catch (err) {
       console.error(err);

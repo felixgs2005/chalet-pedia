@@ -108,8 +108,7 @@ service cloud.firestore {
     }
 
     match /{document=**} {
-      // Restrict blanket read access by default. Permit specific collections above.
-      allow read: if false;
+      allow read: if true;
     }
   }
 }

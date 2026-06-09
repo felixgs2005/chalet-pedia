@@ -6,7 +6,7 @@
 // ============================================================
 
 import { useState } from "react";
-import { useParams, Link, useNavigate, useLocation } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 import { useVenteBySlug } from "../hooks/useVenteBySlug";
 import { PinIcon, CameraIcon } from "../components/Icons";
 import { useSharePage } from "../hooks/useSharePage";
@@ -16,7 +16,7 @@ import ContactModal from "../components/ContactModal";
 import ReviewModal from "../components/ReviewModal";
 import ListingActionLinks from "../components/ListingActionLinks";
 import AvisList from "../components/AvisList";
-import { useAuth } from "../context/AuthContext";
+// booking removed for ventes: no auth needed here
 import { useAvis } from "../hooks/useAvis";
 import { buildVenteAvisCible } from "../services/avisFirestore";
 import { buildVenteFavoriCible } from "../services/favorisFirestore";
@@ -27,48 +27,11 @@ export default function VentePage() {
   const { vente, loading, error } = useVenteBySlug(slug);
   const { avis, loading: avisLoading, refresh: refreshAvis } = useAvis("vente", slug);
   const { share, feedback: shareFeedback } = useSharePage();
-  const { currentUser } = useAuth();
-  const navigate = useNavigate();
-  const location = useLocation();
   const [galleryOpen, setGalleryOpen] = useState(false);
   const [activeImg, setActiveImg] = useState(0);
   const [contactOpen, setContactOpen] = useState(false);
   const [reviewOpen, setReviewOpen] = useState(false);
-  const [bookingOpen, setBookingOpen] = useState(false);
-  const [bookingDate, setBookingDate] = useState('');
-  const [bookingInvites, setBookingInvites] = useState(1);
-  
-
-  const handleOrganizeClick = () => {
-    if (!currentUser) {
-      navigate('/auth', { state: { from: location } });
-    } else {
-      setBookingOpen(true);
-    }
-  };
-
-  const handleBookingSubmit = () => {
-    if (!bookingDate) {
-      alert('Veuillez sélectionner une date de visite.');
-      return;
-    }
-    if (bookingInvites < 1) {
-      alert('Le nombre d\'invités doit être d\'au moins 1.');
-      return;
-    }
-    navigate('/reservation/confirmer', {
-      state: {
-        chaletSlug: vente.slug || slug,
-        chaletId: vente.id,
-        typeEntite: 'vente',
-        returnPath: `/chalets/chalets-a-vendre/${vente.slug || slug}`,
-        dateVisite: bookingDate,
-        nbInvites: bookingInvites,
-      },
-    });
-    setBookingOpen(false);
-  };
-
+  // Booking flow removed for 'ventes'
   if (loading) {
     return (
       <div style={{ padding: "80px 32px", textAlign: "center" }}>
@@ -277,22 +240,18 @@ export default function VentePage() {
             <div className="price-amount">{vente.prix}</div>
             <div className="price-note">Vente directe par le propriétaire</div>
 
-            <div className="price-features">
-              {vente.priceFeatures.map((pf) => (
-                <div className="price-features-row" key={pf.label}>
-                  <span>{pf.label}</span>
-                  <strong>{pf.value}</strong>
-                </div>
-              ))}
-            </div>
+            {vente.priceFeatures && vente.priceFeatures.length > 0 && (
+              <div className="price-features">
+                {vente.priceFeatures.map((pf) => (
+                  <div className="price-features-row" key={pf.label}>
+                    <span>{pf.label}</span>
+                    <strong>{pf.value}</strong>
+                  </div>
+                ))}
+              </div>
+            )}
 
-            <button
-              type="button"
-              className="price-cta"
-              onClick={handleOrganizeClick}
-            >
-              Organiser une visite privée →
-            </button>
+            {/* Visite privée disabled for ventes */}
             <button
               type="button"
               className="price-secondary"
@@ -315,37 +274,7 @@ export default function VentePage() {
         </div>
       </div>
 
-      {/* MODAL DE RÉSERVATION */}
-      {bookingOpen && (
-        <div className="booking-modal">
-          <div className="booking-modal-content">
-            <h3>Organiser une visite privée</h3>
-            <label>
-              Date de visite :
-              <input
-                type="date"
-                value={bookingDate}
-                onChange={(e) => setBookingDate(e.target.value)}
-              />
-            </label>
-            <label>
-              Nombre d&apos;invités :
-              <input
-                type="number"
-                min="1"
-                value={bookingInvites}
-                onChange={(e) => setBookingInvites(parseInt(e.target.value) || 1)}
-              />
-            </label>
-            <button className="booking-modal-cta" onClick={handleBookingSubmit}>
-              Faire la réservation
-            </button>
-            <button className="booking-modal-cancel" onClick={() => setBookingOpen(false)}>
-              Annuler
-            </button>
-          </div>
-        </div>
-      )}
+      {/* Booking modal removed for ventes */}
     </div>
   );
 }
