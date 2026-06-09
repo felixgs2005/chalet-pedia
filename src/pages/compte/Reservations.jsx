@@ -192,8 +192,8 @@ export default function Reservations() {
           </ul>
         )}
 
-        <Link to="/compte/reglages/" className="compte-reglages__back">
-          ← Retour aux réglages
+        <Link to="/" className="compte-reglages__back">
+          ← Retour à l&apos;accueil
         </Link>
       </div>
     </div>
