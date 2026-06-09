@@ -5,55 +5,6 @@ import ReviewModal from "./ReviewModal";
 import { useAuth } from "../context/AuthContext";
 import { creerSignalement } from "../services/signalementsFirestore";
 
-const CLAIM_PRICE = "87.00";
-
-function ClaimModal({ open, onClose, claimPrice = CLAIM_PRICE }) {
-  const [details, setDetails] = useState("");
-
-  useEffect(() => {
-    if (!open) setDetails("");
-  }, [open]);
-
-  return (
-    <ActionModal
-      open={open}
-      onClose={onClose}
-      title="Réclamer l'annonce"
-      titleId="sd-modal-claim-title"
-      renderBody={({ requestClose }) => (
-      <>
-      <p className="sd-action-modal__intro">
-        Veuillez fournir des détails qui nous aiderons à vérifier que vous êtes le propriétaire de cette annonce.
-      </p>
-      <form
-        className="sd-action-modal__form"
-        onSubmit={(e) => {
-          e.preventDefault();
-          requestClose();
-        }}
-      >
-        <div className="sd-action-modal__field">
-          <label className="sd-action-modal__label" htmlFor="sd-claim-details">
-            Détails
-          </label>
-          <textarea
-            id="sd-claim-details"
-            className="sd-action-modal__textarea"
-            value={details}
-            onChange={(e) => setDetails(e.target.value)}
-            rows={6}
-          />
-        </div>
-        <button type="submit" className="sd-action-modal__submit">
-          Réclamer pour {claimPrice}$
-        </button>
-      </form>
-      </>
-      )}
-    />
-  );
-}
-
 export function ReportModal({ open, onClose, listing }) {
   const { currentUser } = useAuth();
   const [details, setDetails] = useState("");
@@ -149,11 +100,10 @@ export function ReportModal({ open, onClose, listing }) {
   );
 }
 
-/** Modales fiche service : contact, avis, réclamation, signalement. */
+/** Modales fiche service : contact, avis, signalement. */
 export default function ServiceListingModals({
   activeModal,
   onClose,
-  claimPrice,
   avisCible,
   messageCible,
   onAvisSubmitted,
@@ -168,7 +118,6 @@ export default function ServiceListingModals({
         cible={avisCible}
         onSubmitted={onAvisSubmitted}
       />
-      <ClaimModal open={activeModal === "claim"} onClose={onClose} claimPrice={claimPrice} />
       <ReportModal open={activeModal === "report"} onClose={onClose} listing={listing} />
     </>
   );

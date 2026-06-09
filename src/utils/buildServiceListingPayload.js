@@ -33,7 +33,6 @@ function parseImageList(main, extra) {
 
 /**
  * Convertit le formulaire annonceur → document Firestore annoncesService.
- * @see scripts/seedMappers.mjs mapServiceListingToFirestore
  */
 export function buildServiceListingPayload(form, { imageUrls = [] } = {}) {
   const images =

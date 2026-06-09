@@ -35,14 +35,36 @@ export default function ChaletPage() {
   const [galleryOpen, setGalleryOpen] = useState(false);
   const [reviewOpen, setReviewOpen] = useState(false);
   const [contactOpen, setContactOpen] = useState(false);
-  
+  const [bookingOpen, setBookingOpen] = useState(false);
+  const [bookingDate, setBookingDate] = useState("");
+  const [bookingInvites, setBookingInvites] = useState(1);
 
   const handleOrganizeClick = () => {
-    // Booking/visit functionality removed — no-op
+    if (!currentUser) {
+      navigate("/auth", { state: { from: location } });
+    } else {
+      setBookingOpen(true);
+    }
   };
 
   const handleBookingSubmit = () => {
-    // Booking/visit submission removed — no-op
+    if (!bookingDate) {
+      alert("Veuillez sélectionner une date de visite.");
+      return;
+    }
+    if (bookingInvites < 1) {
+      alert("Le nombre d'invités doit être au moins 1.");
+      return;
+    }
+    navigate("/reservation/confirmer", {
+      state: {
+        chaletSlug: chalet.slug,
+        chaletId: chalet.id,
+        dateVisite: bookingDate,
+        nbInvites: bookingInvites,
+      },
+    });
+    setBookingOpen(false);
   };
 
   const similaires = useMemo(
@@ -297,7 +319,32 @@ export default function ChaletPage() {
             <div className="booking-commission">✓ 0 % de commission — prix direct propriétaire</div>
 
 
-            {/* Booking/visit modal removed */}
+            {bookingOpen && (
+              <div className="booking-modal">
+                <div className="booking-modal-content">
+                  <h3>Organiser une visite privée</h3>
+                  <label>
+                    Date de visite:
+                    <input type="date" value={bookingDate} onChange={(e) => setBookingDate(e.target.value)} />
+                  </label>
+                  <label>
+                    Nombre d&apos;invités:
+                    <input
+                      type="number"
+                      min="1"
+                      value={bookingInvites}
+                      onChange={(e) => setBookingInvites(parseInt(e.target.value) || 1)}
+                    />
+                  </label>
+                  <button type="button" className="booking-modal-cta" onClick={handleBookingSubmit}>
+                    Faire la réservation
+                  </button>
+                  <button type="button" className="booking-modal-cancel" onClick={() => setBookingOpen(false)}>
+                    Annuler
+                  </button>
+                </div>
+              </div>
+            )}
 
             <button
               type="button"
@@ -306,14 +353,24 @@ export default function ChaletPage() {
             >
               Contacter le propriétaire
             </button>
-            {/* 'Organiser une visite privée' removed */}
             <button
               type="button"
               className="booking-secondary"
-              onClick={() => setReviewOpen(true)}
+              onClick={handleOrganizeClick}
             >
-              Rédiger un avis
+              Organiser une visite privée
             </button>
+
+            <div className="booking-divider" />
+
+            <ListingActionLinks
+              listing={{
+                slug: chalet.slug,
+                titre: chalet.nom,
+                categorieSlug: "chalet-a-louer",
+              }}
+              onWriteReview={() => setReviewOpen(true)}
+            />
 
             <div className="booking-divider" />
 

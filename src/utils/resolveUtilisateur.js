@@ -30,29 +30,3 @@ export async function resolveUtilisateur(firebaseUser) {
     nom: nom || null,
   };
 }
-
-export async function resolveUtilisateurByUid(uid) {
-  if (!uid) return { uid: "", displayName: "Utilisateur", email: null, prenom: null, nom: null };
-
-  const userSnap = await getDoc(doc(db, "users", uid));
-  if (!userSnap.exists()) {
-    return { uid, displayName: "Utilisateur", email: null, prenom: null, nom: null };
-  }
-
-  const profile = userSnap.data();
-  const prenom = profile.prenom || "";
-  const nom = profile.nom || "";
-  const displayName =
-    `${prenom} ${nom}`.trim() ||
-    profile.displayName ||
-    profile.email?.split("@")[0] ||
-    "Utilisateur";
-
-  return {
-    uid,
-    email: profile.email || profile.courriel || null,
-    displayName,
-    prenom: prenom || null,
-    nom: nom || null,
-  };
-}
