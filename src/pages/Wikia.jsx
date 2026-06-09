@@ -176,21 +176,6 @@ export default function Wikia() {
         </div>
       </RevealSection>
 
-      <RevealSection className="wk-contribute" delay={60}>
-        <div className="wk-contribute__inner">
-          <div>
-            <h2 className="wk-contribute__title">Vous avez de l&apos;expérience à partager ?</h2>
-            <p className="wk-contribute__desc">
-              Propriétaire, constructeur ou décorateur : proposez une question-réponse ou un
-              court article. On le relit avant publication.
-            </p>
-          </div>
-          <a href="mailto:info@chaletpedia.com" className="wk-btn wk-btn--primary">
-            Proposer un article
-          </a>
-        </div>
-      </RevealSection>
-
       <RevealSection className="wk-themes" delay={80}>
         <div className="wk-themes__inner">
           <h2 className="wk-section-title">Questions fréquentes et articles</h2>
