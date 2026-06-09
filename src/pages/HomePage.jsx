@@ -5,6 +5,17 @@ import ChaletCard from "../components/ChaletCard";
 import { useChalets } from "../hooks/useChalets";
 import { articles } from "../data/articles";
 import { countChaletsByRegion, getPageSlugFromRegionKey } from "../data/listingRegions";
+import { getPageSlugFromListing } from "../data/listingPageSlug";
+
+const HERO_CHIPS = [
+  { icon: "🏔", label: "Près du ski", type: "activity", key: "ski" },
+  { icon: "💦", label: "Bord de l'eau", type: "experience", key: "bordEau" },
+  { icon: "♨", label: "Avec spa", type: "experience", key: "spa" },
+  { icon: "🐕", label: "Animaux ok", type: "experience", key: "animaux" },
+  { icon: "🔥", label: "Avec foyer", type: "experience", key: "foyer" },
+  { icon: "🏠", label: "Style A-frame", type: "search", query: "A-frame" },
+  { icon: "✨", label: "Luxe", type: "tag", key: "luxe" },
+];
 
 const HOME_REGION_IMAGES = {
   laurentides:
@@ -126,6 +137,33 @@ export default function HomePage() {
     navigate("/chalets/chalet-a-louer/", { state });
   };
 
+  const handleChipClick = (chip) => {
+    if (chip.type === "experience") {
+      navigate(`/chalets/${getPageSlugFromListing("all", chip.key)}/`);
+      return;
+    }
+
+    if (chip.type === "activity") {
+      navigate("/chalets/chalet-a-louer/", {
+        state: { activities: { [chip.key]: true } },
+      });
+      return;
+    }
+
+    if (chip.type === "tag") {
+      navigate("/chalets/chalet-a-louer/", {
+        state: { tags: { [chip.key]: true } },
+      });
+      return;
+    }
+
+    if (chip.type === "search") {
+      navigate("/chalets/chalet-a-louer/", {
+        state: { searchQuery: chip.query },
+      });
+    }
+  };
+
   return (
     <div>
       {/* HERO VIDEO */}
@@ -173,18 +211,16 @@ export default function HomePage() {
 
         {/* CHIPS */}
         <div className="hero-chips">
-          {[
-            { icon: "🏔", label: "Près du ski" },
-            { icon: "💦", label: "Bord de l'eau" },
-            { icon: "♨", label: "Avec spa" },
-            { icon: "🐕", label: "Animaux ok" },
-            { icon: "🔥", label: "Avec foyer" },
-            { icon: "🏠", label: "Style A-frame" },
-            { icon: "✨", label: "Luxe" },
-          ].map((c) => (
-            <div className="chip" key={c.label}>
-              <span className="chip-icon">{c.icon}</span>{c.label}
-            </div>
+          {HERO_CHIPS.map((chip) => (
+            <button
+              type="button"
+              className="chip"
+              key={chip.label}
+              onClick={() => handleChipClick(chip)}
+            >
+              <span className="chip-icon" aria-hidden="true">{chip.icon}</span>
+              {chip.label}
+            </button>
           ))}
         </div>
 

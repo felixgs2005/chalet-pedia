@@ -154,9 +154,19 @@ export default function ALouer() {
   }, [pageSlug]);
 
   useEffect(() => {
-    const query = location.state?.searchQuery;
-    if (!query) return;
-    setSearchQuery(query);
+    const { searchQuery: homeSearch, activities: homeActivities, tags: homeTags } =
+      location.state || {};
+
+    if (!homeSearch && !homeActivities && !homeTags) return;
+
+    if (homeSearch) setSearchQuery(homeSearch);
+    if (homeActivities) {
+      setActivities((prev) => ({ ...prev, ...homeActivities }));
+    }
+    if (homeTags) {
+      setTags((prev) => ({ ...prev, ...homeTags }));
+    }
+
     navigate(location.pathname, { replace: true, state: null });
   }, [location.state, location.pathname, navigate]);
 

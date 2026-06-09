@@ -332,7 +332,12 @@ a {
   align-items: center;
   gap: 7px;
   cursor: pointer;
+  font-family: inherit;
   transition: background 0.15s, border-color 0.15s;
+}
+
+button.chip {
+  appearance: none;
 }
 
 .chip:hover {
