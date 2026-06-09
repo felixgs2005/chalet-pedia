@@ -1,9 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
-import { fetchBookingsForUser, deleteBooking } from "../../services/bookingsFirestore";
-import { getDoc, doc as firestoreDoc } from "firebase/firestore";
-import { db } from "../../firebase";
+import { fetchBookingsForUser } from "../../services/bookingsFirestore";
 
 // Canonical keys: 'pending', 'confirmed', 'cancelled'
 const STATUT_LABELS = {
@@ -182,56 +180,7 @@ export default function Reservations() {
                     <p className="compte-reservations-card__notes-text">{b.notes}</p>
                   </div>
                 )}
-                <div style={{ marginTop: 12, display: "flex", gap: 8 }}>
-                  {/* Cancel reservation button: only show when allowed (24h avant visite) */}
-                  {(() => {
-                    const visitTs = b.dateVisiteTs ? (b.dateVisiteTs.toDate ? b.dateVisiteTs.toDate() : new Date(b.dateVisiteTs)) : (b.dateVisite ? new Date(b.dateVisite + 'T00:00:00') : null);
-                    const key = normalizeStatut(b.statut);
-                    const canCancel = visitTs ? (Date.now() < (visitTs.getTime() - 24 * 60 * 60 * 1000) && key !== 'cancelled') : false;
-                    return canCancel ? (
-                      <button
-                        type="button"
-                        className="btn-plain"
-                        onClick={async () => {
-                          if (!window.confirm('Voulez-vous vraiment supprimer cette réservation ?')) return;
-                          try {
-                            await deleteBooking(b.id);
-                            setBookings((prev) => prev.filter((x) => x.id !== b.id));
-                          } catch (err) {
-                            console.error("deleteBooking error:", err);
-                            const msg = err?.message || String(err);
-                            const code = err?.code ? ` (${err.code})` : "";
-
-                            // If permission denied, attempt to fetch the booking doc to inspect stored fields
-                            if (err?.code === "permission-denied") {
-                              try {
-                                const snap = await getDoc(firestoreDoc(db, "bookings", b.id));
-                                if (snap.exists()) {
-                                  const data = snap.data();
-                                  const debug = [
-                                    `userUid: ${data.userUid}`,
-                                    `dateVisite: ${data.dateVisite}`,
-                                    `dateVisiteTs: ${data.dateVisiteTs ? (data.dateVisiteTs.toDate ? data.dateVisiteTs.toDate() : String(data.dateVisiteTs)) : "(missing)"}`,
-                                  ].join("\n");
-                                  alert(`Impossible de supprimer la réservation. Détails: ${msg}${code}\n\nDocument fields:\n${debug}`);
-                                } else {
-                                  alert(`Impossible de supprimer la réservation. Détails: ${msg}${code}\n\nDocument introuvable.`);
-                                }
-                              } catch (readErr) {
-                                console.error("fetch booking doc error:", readErr);
-                                alert(`Impossible de supprimer la réservation. Détails: ${msg}${code}\n(Échec lecture doc: ${readErr?.message || String(readErr)})`);
-                              }
-                            } else {
-                              alert(`Impossible de supprimer la réservation. Détails: ${msg}${code}`);
-                            }
-                          }
-                        }}
-                      >
-                        Supprimer la réservation
-                      </button>
-                    ) : null;
-                  })()}
-                </div>
+                {/* Suppression désactivée : les utilisateurs ne peuvent plus supprimer les réservations depuis l'interface */}
               </li>
             ))}
           </ul>

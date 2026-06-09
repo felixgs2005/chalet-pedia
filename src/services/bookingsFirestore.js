@@ -180,8 +180,4 @@ export async function fetchBookingsForUser(uid) {
  * Supprime une réservation (efface le document).
  * @param {string} bookingId
  */
-export async function deleteBooking(bookingId) {
-  if (!bookingId) throw new Error("bookingId requis");
-  const d = doc(db, "bookings", bookingId);
-  await deleteDoc(d);
-}
+// Deletion of bookings is disabled: removal must be handled server-side or via admin tools.
