@@ -75,14 +75,37 @@ export async function createBooking(bookingData) {
         }
       }
 
-      // Try to fetch chalet doc to obtain proprietor info to help routing the email
+      // Try to fetch the listing document (chalets or ventes) based on typeEntite
+      let listingDoc = null;
       if (chaletId) {
         try {
-          const chaletSnap = await getDoc(doc(db, "chalets", chaletId));
-          if (chaletSnap.exists()) {
-            const cdata = chaletSnap.data() || {};
+          if (typeEntite === "vente") {
+            const venteSnap = await getDoc(doc(db, "ventes", chaletId));
+            if (venteSnap.exists()) listingDoc = venteSnap;
+            else {
+              // try by slug
+              const q = query(collection(db, "ventes"), where("slug", "==", chaletId));
+              const r = await getDocs(q);
+              if (!r.empty) listingDoc = r.docs[0];
+            }
+          } else {
+            const chaletSnap = await getDoc(doc(db, "chalets", chaletId));
+            if (chaletSnap.exists()) listingDoc = chaletSnap;
+            else {
+              const q = query(collection(db, "chalets"), where("slug", "==", chaletId));
+              const r = await getDocs(q);
+              if (!r.empty) listingDoc = r.docs[0];
+            }
+          }
+
+          if (listingDoc && listingDoc.exists()) {
+            const cdata = listingDoc.data() || {};
             proprietaireId = cdata.proprietaireId || null;
             courrielContact = cdata.courrielContact || null;
+            // prefer readable title if available
+            if (cdata.titre || cdata.nom) {
+              // use vente.titre or chalet.nom
+            }
           }
         } catch (err) {
           // ignore
@@ -98,6 +121,21 @@ export async function createBooking(bookingData) {
         .filter(Boolean)
         .join("\n");
 
+      // Build canonical entity URL depending on typeEntite
+      let entiteUrl = "";
+      let entiteTitre = chaletSlug || "votre annonce";
+      if (typeEntite === "vente") {
+        entiteUrl = `/chalets/chalets-a-vendre/${chaletSlug}`;
+      } else {
+        // default to the single-chalet route which exists in App routes
+        entiteUrl = `/chalet/${chaletSlug}`;
+      }
+      // If we have a listingDoc, try to use a nicer title
+      if (listingDoc && listingDoc.exists()) {
+        const ld = listingDoc.data() || {};
+        entiteTitre = ld.titre || ld.nom || entiteTitre;
+      }
+
       const payload = {
         nom,
         email: userEmail || "",
@@ -106,8 +144,8 @@ export async function createBooking(bookingData) {
         consentement: true,
         typeEntite: typeEntite || "chalet",
         entiteId: chaletId || chaletSlug,
-        entiteTitre: chaletSlug,
-        entiteUrl: `/chalet/${chaletSlug}`,
+        entiteTitre,
+        entiteUrl,
         proprietaireId,
         destinataireEmail: courrielContact || null,
       };
