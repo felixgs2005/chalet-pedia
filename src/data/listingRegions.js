@@ -63,21 +63,6 @@ export const REGION_NAV_ITEMS = [
   { key: "saguenay", label: "Saguenay-Lac-Saint-Jean" },
 ];
 
-export function getRegionKeyFromSlug(slug) {
-  if (!slug) return "all";
-  const entry = Object.values(LISTING_REGIONS).find((r) => r.slug === slug);
-  return entry?.key ?? "all";
-}
-
-/** @deprecated Utiliser parseListingPageSlug depuis listingPageSlug.js */
-export function getRegionKeyFromPageSlug(pageSlug) {
-  if (!pageSlug || pageSlug === "chalet-a-louer") return "all";
-  if (!pageSlug.startsWith(REGIONAL_PREFIX)) return null;
-  const suffix = pageSlug.slice(REGIONAL_PREFIX.length).replace(/\/$/, "");
-  const entry = Object.values(LISTING_REGIONS).find((r) => r.slug === suffix);
-  return entry?.key ?? null;
-}
-
 export function getPageSlugFromRegionKey(key) {
   if (!key || key === "all") return "chalet-a-louer";
   const config = getRegionConfig(key);

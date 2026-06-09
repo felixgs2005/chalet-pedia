@@ -18,7 +18,6 @@ import {
 import { mapFirebaseError } from "../../utils/firebaseErrors";
 import { promiseWithTimeout } from "../../utils/promiseWithTimeout";
 import { syncUserCourriel } from "../../services/userProfileFirestore";
-import "../../styles/submit-listing.css";
 
 const CATEGORIES = [
   { value: "chalets-louer", label: "Chalets à louer", short: "À louer" },

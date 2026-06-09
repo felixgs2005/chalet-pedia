@@ -291,67 +291,6 @@
   color: rgba(255, 255, 255, 0.6);
 }
 
-/* Messages — liste */
-.compte-messages-list {
-  list-style: none;
-  margin: 0 0 24px;
-  padding: 0;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 8px;
-  overflow: hidden;
-}
-
-.compte-messages-row {
-  display: grid;
-  grid-template-columns: auto 1fr 1.4fr auto;
-  align-items: center;
-  gap: 12px 16px;
-  padding: 14px 18px;
-  text-decoration: none;
-  color: inherit;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-  transition: background 0.15s ease;
-}
-
-.compte-messages-list li:last-child .compte-messages-row {
-  border-bottom: none;
-}
-
-.compte-messages-row:hover {
-  background: rgba(255, 255, 255, 0.06);
-}
-
-.compte-messages-row__icon {
-  color: #8fb9a3;
-  font-size: 16px;
-}
-
-.compte-messages-row__name {
-  font-weight: 700;
-  color: #7fa890;
-  font-size: 15px;
-}
-
-.compte-messages-row__listing {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 14px;
-  color: rgba(255, 255, 255, 0.85);
-  min-width: 0;
-}
-
-.compte-messages-row__listing-icon {
-  flex-shrink: 0;
-  opacity: 0.7;
-}
-
-.compte-messages-row__date {
-  font-size: 13px;
-  color: rgba(255, 255, 255, 0.55);
-  white-space: nowrap;
-}
-
 /* Conversation */
 .compte-reglages__back--top {
   margin-top: 0;
@@ -539,20 +478,6 @@
 }
 
 @media (max-width: 768px) {
-  .compte-messages-row {
-    grid-template-columns: auto 1fr;
-    grid-template-rows: auto auto;
-  }
-
-  .compte-messages-row__listing {
-    grid-column: 1 / -1;
-  }
-
-  .compte-messages-row__date {
-    grid-column: 2;
-    justify-self: end;
-  }
-
   .compte-favoris-card {
     flex-direction: column;
   }
