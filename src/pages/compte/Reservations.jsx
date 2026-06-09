@@ -3,17 +3,33 @@ import { Link } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { fetchBookingsForUser, deleteBooking } from "../../services/bookingsFirestore";
 
+// Canonical keys: 'pending', 'confirmed', 'cancelled'
 const STATUT_LABELS = {
-  en_attente: "En attente",
-  confirmé: "Confirmée",
-  annulé: "Annulée",
+  pending: "En attente",
+  confirmed: "Confirmée",
+  cancelled: "Annulée",
 };
 
 const STATUT_CLASSES = {
-  en_attente: "compte-reservations-badge--pending",
-  confirmé: "compte-reservations-badge--confirmed",
-  annulé: "compte-reservations-badge--cancelled",
+  confirmed: "compte-reservations-badge--confirmed",
+  cancelled: "compte-reservations-badge--cancelled",
 };
+
+function normalizeStatut(raw) {
+  if (!raw) return null;
+  const s = String(raw).trim().toLowerCase();
+  // remove accents for comparison
+  const normalized = s
+    .normalize("NFD")
+    .replace(/\p{Diacritic}/gu, "")
+    .replace(/\s+/g, " ")
+    .replace(/ /g, "_");
+
+  if (/(en[_ ]?attente|en_attente|pending)/.test(normalized)) return "pending";
+  if (/(approuv|approuve|approuvé|confir|confirm|confirme|confirmé)/.test(normalized)) return "confirmed";
+  if (/(annul|annule|annulé|cancel)/.test(normalized)) return "cancelled";
+  return normalized;
+}
 
 function formatDate(dateStr) {
   if (!dateStr) return "—";
@@ -126,13 +142,15 @@ export default function Reservations() {
                   >
                     🏔️ {b.chaletSlug}
                   </Link>
-                  <span
-                    className={`compte-reservations-badge ${
-                      STATUT_CLASSES[b.statut] || "compte-reservations-badge--pending"
-                    }`}
-                  >
-                    {STATUT_LABELS[b.statut] || b.statut}
-                  </span>
+                  {(() => {
+                    const key = normalizeStatut(b.statut);
+                    if (!key || key === "pending") return null;
+                    const cls = STATUT_CLASSES[key] || "";
+                    const label = STATUT_LABELS[key] || b.statut;
+                    return (
+                      <span className={`compte-reservations-badge ${cls}`}>{label}</span>
+                    );
+                  })()}
                 </div>
 
                 <div className="compte-reservations-card__details">
@@ -166,7 +184,8 @@ export default function Reservations() {
                   {/* Cancel reservation button: only show when allowed (24h avant visite) */}
                   {(() => {
                     const visitTs = b.dateVisiteTs ? (b.dateVisiteTs.toDate ? b.dateVisiteTs.toDate() : new Date(b.dateVisiteTs)) : (b.dateVisite ? new Date(b.dateVisite + 'T00:00:00') : null);
-                    const canCancel = visitTs ? (Date.now() < (visitTs.getTime() - 24 * 60 * 60 * 1000) && b.statut !== 'annulé') : false;
+                    const key = normalizeStatut(b.statut);
+                    const canCancel = visitTs ? (Date.now() < (visitTs.getTime() - 24 * 60 * 60 * 1000) && key !== 'cancelled') : false;
                     return canCancel ? (
                       <button
                         type="button"

@@ -48,7 +48,6 @@ export async function createBooking(bookingData) {
     dateVisiteTs: new Date(dateVisite + "T00:00:00"),
     nbInvites,
     notes,
-    statut: "en_attente",
     createdAt: serverTimestamp(),
   });
   // After creating the booking, also create a listingContactMessages document
