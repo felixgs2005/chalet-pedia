@@ -61,7 +61,7 @@ export default function Astuces() {
       <section className="astuces-formations-cta">
         <p>
           Vous maîtrisez ces astuces à la perfection et souhaitez passer au niveau supérieur ?{" "}
-          <Link to="/academie/formations/">Découvrez nos formations.</Link>
+          <a href="/academie/formations/">Découvrez nos formations.</a>
         </p>
       </section>
 
