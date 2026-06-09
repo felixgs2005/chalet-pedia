@@ -21,6 +21,7 @@ import { useAvis } from "../hooks/useAvis";
 import { buildVenteAvisCible } from "../services/avisFirestore";
 import { buildVenteFavoriCible } from "../services/favorisFirestore";
 import { buildVenteMessageCible } from "../services/messagesFirestore";
+import { formatPrixCAD } from "../utils/formatPrix";
 
 export default function VentePage() {
   const { slug } = useParams();
@@ -273,7 +274,7 @@ export default function VentePage() {
         <div>
           <div className="price-card">
             <div className="price-label">Prix demandé</div>
-            <div className="price-amount">{vente.prix}</div>
+            <div className="price-amount">{formatPrixCAD(vente.prix) || vente.prix}</div>
             <div className="price-note">Vente directe par le propriétaire</div>
 
             <div className="price-features">

@@ -8,8 +8,9 @@ import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { useVentes } from "../hooks/useVentes";
 import { PinIcon, BedIcon, BathIcon, GarageIcon } from "../components/Icons";
+import { formatPrixCAD, parsePrixDigits } from "../utils/formatPrix";
 
-const prixToNumber = (prix) => Number(String(prix).replace(/[^\d]/g, "")) || 0;
+const prixToNumber = (prix) => Number(parsePrixDigits(prix)) || 0;
 
 export default function Vente() {
   const { ventes, loading, error } = useVentes();
@@ -273,7 +274,7 @@ export default function Vente() {
                       <div className="listing-footer">
                         <div>
                           <span className="listing-price-label">Prix demandé</span>
-                          <span className="listing-price">{v.prix}</span>
+                          <span className="listing-price">{formatPrixCAD(v.prix) || v.prix}</span>
                         </div>
                         <span className="listing-cta">Visiter →</span>
                       </div>

@@ -1,4 +1,6 @@
 /** Parse les tags saisis (virgules ou retours ligne). */
+import { parsePrixDigits } from "./formatPrix";
+
 export function parseTagsInput(value) {
   return String(value || "")
     .split(/[,;\n]+/)
@@ -73,8 +75,12 @@ export function validateSubmitListingForm(form, { photoCount = 0 } = {}) {
     if (!stripHtml(form.description)) {
       return { ok: false, message: "La description est obligatoire." };
     }
-    if (!form.prix?.trim()) {
+    const prixDigits = parsePrixDigits(form.prix);
+    if (!prixDigits) {
       return { ok: false, message: "Le prix demandé est obligatoire." };
+    }
+    if (Number(prixDigits) < 1) {
+      return { ok: false, message: "Le prix demandé doit être un montant valide." };
     }
     const caracteristiques = parseCaracteristiquesInput(form.caracteristiques);
     if (caracteristiques.length === 0) {

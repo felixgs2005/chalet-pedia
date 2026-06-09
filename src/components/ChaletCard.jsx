@@ -2,6 +2,7 @@
 import { Link } from "react-router-dom";
 import FavoriteButton from "./FavoriteButton";
 import { buildChaletFavoriCible } from "../services/favorisFirestore";
+import { formatPrixNuit } from "../utils/formatPrix";
 
 export default function ChaletCard({ chalet, variant = "default" }) {
   const favoriCible = buildChaletFavoriCible(chalet);
@@ -51,7 +52,7 @@ export default function ChaletCard({ chalet, variant = "default" }) {
               <>
                 <span className="from">À partir de</span>
                 <span>
-                  {chalet.prixNuit}$
+                  {formatPrixNuit(chalet.prixNuit)}
                   <small> / nuit</small>
                 </span>
               </>
