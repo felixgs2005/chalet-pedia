@@ -686,11 +686,7 @@
   text-transform: uppercase;
 }
 
-.compte-reservations-badge--pending {
-  background: rgba(255, 193, 7, 0.18);
-  color: #ffd54f;
-  border: 1px solid rgba(255, 193, 7, 0.3);
-}
+
 
 .compte-reservations-badge--confirmed {
   background: rgba(31, 77, 58, 0.35);
