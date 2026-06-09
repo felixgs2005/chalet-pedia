@@ -92,9 +92,7 @@ export default function UserMenu({ user, onLogout, onNavigate }) {
             </span>
           )}
         </Link>
-        <Link to="/compte/reservations/" className="nav-user-dropdown__item" role="menuitem" onClick={handleNav}>
-          Réservations
-        </Link>
+        {/* 'Mes réservations' removed from user menu */}
         <Link to="/compte/reglages/" className="nav-user-dropdown__item" role="menuitem" onClick={handleNav}>
           Réglages
         </Link>
