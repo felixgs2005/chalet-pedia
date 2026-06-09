@@ -53,7 +53,7 @@ export default function VentePage() {
       return;
     }
     if (bookingInvites < 1) {
-      alert('Le nombre d\'invités doit être au moins 1.');
+      alert('Le nombre d\'invités doit être d\'au moins 1.');
       return;
     }
     navigate('/reservation/confirmer', {
