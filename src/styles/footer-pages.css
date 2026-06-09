@@ -157,15 +157,6 @@
   background: #ffffff;
 }
 .faq-search-input::placeholder { color: #9a9a98; }
-.faq-search-btn {
-  padding: 0 22px;
-  background: #1f4d3a;
-  border: none;
-  cursor: pointer;
-  font-size: 17px;
-  transition: background 0.15s;
-}
-.faq-search-btn:hover { background: #2a6b50; }
 
 .faq-empty {
   text-align: center;

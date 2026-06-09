@@ -164,9 +164,6 @@ export default function FAQ() {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
-            <button type="submit" className="faq-search-btn" aria-label="Rechercher">
-              🔍
-            </button>
           </form>
 
           <div className="faq-sections">
