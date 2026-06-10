@@ -13,7 +13,6 @@ import Blogue from "./pages/Blogue";
 import Astuces from "./pages/Astuces";
 import ArticlePage from "./pages/ArticlePage";
 import AuthPage from "./pages/auth";
-import ConfirmBooking from "./pages/ConfirmBooking";
 import AccueilServices from "./pages/AccueilServices";
 import Construction from "./pages/Construction";
 import Decoration from "./pages/Decoration";
@@ -37,7 +36,6 @@ import "./styles/compte.css";
 import "./styles/submit-listing.css";
 import "./styles/footer-pages.css";
 import "./styles/contact-page.css";
-import "./styles/confirm-booking.css";
 
 function Layout({ children }) {
   return (
@@ -105,15 +103,7 @@ export default function App() {
                   </RequireAuth>
                 }
               />
-              /* `Mes réservations` page removed — route intentionally deleted */
-              <Route
-                path="/reservation/confirmer"
-                element={
-                  <RequireAuth>
-                    <ConfirmBooking />
-                  </RequireAuth>
-                }
-              />
+              {/* `Mes réservations` page removed — route intentionally deleted */}
               <Route
                 path="*"
                 element={
