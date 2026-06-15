@@ -2,6 +2,10 @@ import { useEffect, useState, useCallback } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import HomePage from "./HomePage";
 import { useAuth } from "../context/AuthContext";
+import {
+  requestPasswordResetCode,
+  resetPasswordWithCode,
+} from "../services/passwordReset";
 
 /** Page d’accueil visible derrière la modale (header reste au-dessus via z-index). */
 export function AuthPage() {
@@ -21,18 +25,34 @@ function Auth() {
 
   const [visible, setVisible] = useState(false);
   const [closing, setClosing] = useState(false);
-  const [isSignUp, setIsSignUp] = useState(false);
+  const [mode, setMode] = useState("login");
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [resetCode, setResetCode] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmNewPassword, setConfirmNewPassword] = useState("");
   const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(false);
+
+  const isSignUp = mode === "signup";
+  const isForgotRequest = mode === "forgot-request";
+  const isForgotReset = mode === "forgot-reset";
 
   useEffect(() => {
     const frame = requestAnimationFrame(() => setVisible(true));
     return () => cancelAnimationFrame(frame);
   }, []);
+
+  useEffect(() => {
+    if (location.hash === "#mot-de-passe") {
+      setMode("forgot-request");
+      setError("");
+      setSuccess("");
+    }
+  }, [location.hash]);
 
   const handleClose = useCallback(() => {
     if (closing) return;
@@ -41,9 +61,77 @@ function Auth() {
     window.setTimeout(() => navigate("/", { replace: true }), 280);
   }, [closing, navigate]);
 
+  const switchToLogin = () => {
+    setMode("login");
+    setError("");
+    setSuccess("");
+    setResetCode("");
+    setNewPassword("");
+    setConfirmNewPassword("");
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
+    setSuccess("");
+
+    if (isForgotRequest) {
+      if (!email) {
+        setError("Veuillez entrer votre adresse e-mail.");
+        return;
+      }
+      try {
+        setLoading(true);
+        await requestPasswordResetCode(email);
+        setSuccess(
+          "Si un compte existe avec cette adresse, un code de sécurité vous a été envoyé par courriel."
+        );
+        setMode("forgot-reset");
+      } catch (err) {
+        setError(err.message || "Impossible d'envoyer le code.");
+      } finally {
+        setLoading(false);
+      }
+      return;
+    }
+
+    if (isForgotReset) {
+      if (!email || !resetCode || !newPassword || !confirmNewPassword) {
+        setError("Veuillez remplir tous les champs.");
+        return;
+      }
+      if (!/^\d{6}$/.test(resetCode.trim())) {
+        setError("Le code doit contenir 6 chiffres.");
+        return;
+      }
+      if (newPassword !== confirmNewPassword) {
+        setError("Les mots de passe ne correspondent pas.");
+        return;
+      }
+      if (newPassword.length < 6) {
+        setError("Le mot de passe doit contenir au moins 6 caractères.");
+        return;
+      }
+      try {
+        setLoading(true);
+        await resetPasswordWithCode({
+          email,
+          code: resetCode.trim(),
+          newPassword,
+        });
+        setSuccess("Mot de passe réinitialisé. Vous pouvez vous connecter.");
+        setPassword("");
+        setResetCode("");
+        setNewPassword("");
+        setConfirmNewPassword("");
+        setMode("login");
+      } catch (err) {
+        setError(err.message || "Réinitialisation impossible.");
+      } finally {
+        setLoading(false);
+      }
+      return;
+    }
 
     if (!email || !password) {
       setError("Veuillez remplir tous les champs.");
@@ -100,6 +188,30 @@ function Auth() {
     }
   };
 
+  const title = isForgotRequest
+    ? "MOT DE PASSE OUBLIÉ."
+    : isForgotReset
+      ? "NOUVEAU MOT DE PASSE."
+      : isSignUp
+        ? "S'INSCRIRE."
+        : "SE CONNECTER.";
+
+  const subtitle = isForgotRequest
+    ? "Entrez votre adresse e-mail pour recevoir un code de sécurité."
+    : isForgotReset
+      ? "Entrez le code reçu par courriel et choisissez un nouveau mot de passe."
+      : isSignUp
+        ? "Créez votre compte pour commencer à publier et gérer vos annonces."
+        : "Accédez à votre espace pour gérer vos annonces, vos favoris et vos messages.";
+
+  const submitLabel = isForgotRequest
+    ? "Envoyer le code →"
+    : isForgotReset
+      ? "Réinitialiser →"
+      : isSignUp
+        ? "S'inscrire →"
+        : "Se connecter →";
+
   const pageClass = [
     "auth-page",
     visible && !closing ? "auth-page--visible" : "",
@@ -132,15 +244,12 @@ function Auth() {
         </Link>
 
         <h1 id="auth-title" className="auth-modal__title">
-          {isSignUp ? "S'INSCRIRE." : "SE CONNECTER."}
+          {title}
         </h1>
-        <p className="auth-modal__subtitle">
-          {isSignUp
-            ? "Créez votre compte pour commencer à publier et gérer vos annonces."
-            : "Accédez à votre espace pour gérer vos annonces, vos favoris et vos messages."}
-        </p>
+        <p className="auth-modal__subtitle">{subtitle}</p>
 
         {error && <div className="auth-form__error">{error}</div>}
+        {success && <div className="auth-form__success">{success}</div>}
 
         <form className="auth-form" onSubmit={handleSubmit}>
           <label className="auth-form__label" htmlFor="auth-identifier">
@@ -155,21 +264,75 @@ function Auth() {
             autoComplete="username"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
+            readOnly={isForgotReset}
           />
 
-          <label className="auth-form__label" htmlFor="auth-password">
-            Mot de passe
-          </label>
-          <input
-            id="auth-password"
-            type="password"
-            required
-            className="auth-form__input"
-            placeholder="••••••••"
-            autoComplete="current-password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
+          {isForgotReset && (
+            <>
+              <label className="auth-form__label" htmlFor="auth-reset-code">
+                Code de sécurité
+              </label>
+              <input
+                id="auth-reset-code"
+                type="text"
+                required
+                inputMode="numeric"
+                pattern="\d{6}"
+                maxLength={6}
+                className="auth-form__input auth-form__input--code"
+                placeholder="123456"
+                autoComplete="one-time-code"
+                value={resetCode}
+                onChange={(e) => setResetCode(e.target.value.replace(/\D/g, "").slice(0, 6))}
+              />
+
+              <label className="auth-form__label" htmlFor="auth-new-password">
+                Nouveau mot de passe
+              </label>
+              <input
+                id="auth-new-password"
+                type="password"
+                required
+                className="auth-form__input"
+                placeholder="••••••••"
+                autoComplete="new-password"
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+              />
+
+              <label className="auth-form__label" htmlFor="auth-confirm-new-password">
+                Confirmer le mot de passe
+              </label>
+              <input
+                id="auth-confirm-new-password"
+                type="password"
+                required
+                className="auth-form__input"
+                placeholder="••••••••"
+                autoComplete="new-password"
+                value={confirmNewPassword}
+                onChange={(e) => setConfirmNewPassword(e.target.value)}
+              />
+            </>
+          )}
+
+          {!isForgotRequest && !isForgotReset && (
+            <>
+              <label className="auth-form__label" htmlFor="auth-password">
+                Mot de passe
+              </label>
+              <input
+                id="auth-password"
+                type="password"
+                required
+                className="auth-form__input"
+                placeholder="••••••••"
+                autoComplete={isSignUp ? "new-password" : "current-password"}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+            </>
+          )}
 
           {isSignUp && (
             <>
@@ -189,52 +352,76 @@ function Auth() {
             </>
           )}
 
-          {!isSignUp && (
+          {mode === "login" && (
             <div className="auth-form__forgot">
-              <a href="#mot-de-passe">Mot de passe oublié ?</a>
+              <button
+                type="button"
+                className="auth-form__forgot-btn"
+                onClick={() => {
+                  setError("");
+                  setSuccess("");
+                  setMode("forgot-request");
+                }}
+              >
+                Mot de passe oublié ?
+              </button>
             </div>
           )}
 
           <button type="submit" className="auth-form__submit" disabled={loading}>
-            {loading ? "Chargement..." : isSignUp ? "S'inscrire →" : "Se connecter →"}
+            {loading ? "Chargement..." : submitLabel}
           </button>
         </form>
 
-        <div className="auth-modal__divider">
-          <span>ou</span>
-        </div>
+        {(isForgotRequest || isForgotReset) && (
+          <p className="auth-modal__signup">
+            <button type="button" className="auth-form__link-btn" onClick={switchToLogin}>
+              ← Retour à la connexion
+            </button>
+          </p>
+        )}
 
-        <p className="auth-modal__signup">
-          {isSignUp ? (
-            <>
-              Déjà un compte ?{" "}
-              <a
-                href="#connexion"
-                onClick={(e) => {
-                  e.preventDefault();
-                  setError("");
-                  setIsSignUp(false);
-                }}
-              >
-                Se connecter
-              </a>
-            </>
-          ) : (
-            <>
-              Vous n&apos;avez pas encore de compte ?{" "}
-              <a
-                href="#inscription"
-                onClick={(e) => {
-                  e.preventDefault();
-                  setError("");
-                  setIsSignUp(true);
-                }}
-              >
-                S&apos;inscrire
-              </a>
-            </>
-          )}
-        </p>
+        {!isForgotRequest && !isForgotReset && (
+          <>
+            <div className="auth-modal__divider">
+              <span>ou</span>
+            </div>
+
+            <p className="auth-modal__signup">
+              {isSignUp ? (
+                <>
+                  Déjà un compte ?{" "}
+                  <button
+                    type="button"
+                    className="auth-form__link-btn"
+                    onClick={() => {
+                      setError("");
+                      setSuccess("");
+                      setMode("login");
+                    }}
+                  >
+                    Se connecter
+                  </button>
+                </>
+              ) : (
+                <>
+                  Vous n&apos;avez pas encore de compte ?{" "}
+                  <button
+                    type="button"
+                    className="auth-form__link-btn"
+                    onClick={() => {
+                      setError("");
+                      setSuccess("");
+                      setMode("signup");
+                    }}
+                  >
+                    S&apos;inscrire
+                  </button>
+                </>
+              )}
+            </p>
+          </>
+        )}
       </div>
     </div>
   );

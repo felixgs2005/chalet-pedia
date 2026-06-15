@@ -8,7 +8,9 @@ $Services = @(
   "onlistingcontactcreated",
   "onchaletlistingcreated",
   "onventelistingcreated",
-  "onservicelistingcreated"
+  "onservicelistingcreated",
+  "requestpasswordresetcode",
+  "resetpasswordwithcode"
 )
 
 $gcloud = "$env:LOCALAPPDATA\Google\Cloud SDK\google-cloud-sdk\bin\gcloud.cmd"

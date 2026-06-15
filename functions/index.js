@@ -6,10 +6,17 @@ const {
   sendListingContactEmail,
   sendNewListingAdminEmail,
 } = require("./SendEmail");
+const { createPasswordResetHandlers } = require("./passwordReset");
 
 initializeApp();
 
 const region = process.env.FUNCTIONS_REGION || "northamerica-northeast1";
+
+const { requestPasswordResetCode, resetPasswordWithCode } =
+  createPasswordResetHandlers(region);
+
+exports.requestPasswordResetCode = requestPasswordResetCode;
+exports.resetPasswordWithCode = resetPasswordWithCode;
 
 /**
  * Déclenchée à la création d'un document dans contactMessages (formulaire Contact.jsx).

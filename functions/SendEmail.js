@@ -462,10 +462,51 @@ async function sendNewListingAdminEmail(listingData, meta) {
   return { messageId: info.messageId, to };
 }
 
+/**
+ * Envoie le code de réinitialisation du mot de passe.
+ */
+async function sendPasswordResetCodeEmail({ email, code }) {
+  const to = normalizeEmail(email);
+  if (!to) throw new Error("Courriel invalide.");
+
+  const fromAddress = process.env.SMTP_FROM || process.env.SMTP_USER;
+  const origin = process.env.APP_ORIGIN || "https://chalet-pedia.vercel.app";
+  const transporter = createTransporter();
+
+  const mailOptions = {
+    from: `"ChaletPedia" <${fromAddress}>`,
+    to,
+    subject: "[ChaletPedia] Code de réinitialisation du mot de passe",
+    text: [
+      "Bonjour,",
+      "",
+      "Vous avez demandé à réinitialiser votre mot de passe ChaletPedia.",
+      "",
+      `Votre code de sécurité : ${code}`,
+      "",
+      "Ce code expire dans 15 minutes.",
+      "Si vous n'êtes pas à l'origine de cette demande, ignorez ce courriel.",
+      "",
+      origin,
+    ].join("\n"),
+    html: [
+      "<p>Bonjour,</p>",
+      "<p>Vous avez demandé à réinitialiser votre mot de passe <strong>ChaletPedia</strong>.</p>",
+      `<p style="font-size:28px;font-weight:700;letter-spacing:6px;margin:24px 0">${escapeHtml(code)}</p>`,
+      "<p>Ce code expire dans <strong>15 minutes</strong>.</p>",
+      "<p style='color:#666;font-size:12px'>Si vous n'êtes pas à l'origine de cette demande, ignorez ce courriel.</p>",
+    ].join(""),
+  };
+
+  const info = await transporter.sendMail(mailOptions);
+  return { messageId: info.messageId, to };
+}
+
 module.exports = {
   sendContactEmail,
   sendListingContactEmail,
   sendNewListingAdminEmail,
+  sendPasswordResetCodeEmail,
   buildContactMessageDocument,
   RECIPIENTS_BY_SUBJECT,
 };
