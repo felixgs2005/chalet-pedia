@@ -50,7 +50,7 @@ if ($smtpPassPlain.Length -lt 16) {
 $smtpFrom = Read-Host "SMTP_FROM (Entree = meme que SMTP_USER)"
 if ([string]::IsNullOrWhiteSpace($smtpFrom)) { $smtpFrom = $smtpUser }
 
-$envVars = "SMTP_USER=$smtpUser,SMTP_PASS=$smtpPassPlain,SMTP_HOST=smtp.gmail.com,SMTP_PORT=465,SMTP_FROM=$smtpFrom,APP_ORIGIN=https://chalet-pedia.vercel.app,ADMIN_NOTIFICATION_EMAIL=wintechnologie830@gmail.com"
+$envVars = "SMTP_USER=$smtpUser,SMTP_PASS=$smtpPassPlain,SMTP_HOST=smtp.gmail.com,SMTP_PORT=465,SMTP_FROM=$smtpFrom,APP_ORIGIN=https://chalet-pedia.vercel.app"
 
 foreach ($service in $Services) {
   Write-Host "Mise a jour $service ..."

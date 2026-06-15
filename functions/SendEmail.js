@@ -162,6 +162,43 @@ async function fetchUserEmail(db, uid) {
   return normalizeEmail(data.email || data.courriel);
 }
 
+const ADMIN_ROLES = new Set(["admin", "administrateur"]);
+
+function isAdminFirestoreRole(role) {
+  if (!role) return false;
+  return ADMIN_ROLES.has(String(role).trim().toLowerCase());
+}
+
+/** Courriels des utilisateurs admin (users.role + users.courriel). */
+async function fetchAdminNotificationEmails(db) {
+  const usersSnap = await db.collection("users").get();
+  const emails = new Set();
+
+  for (const userDoc of usersSnap.docs) {
+    const data = userDoc.data();
+    if (!isAdminFirestoreRole(data.role)) continue;
+    const email = normalizeEmail(data.courriel || data.email);
+    if (email) emails.add(email);
+  }
+
+  return [...emails];
+}
+
+async function resolveAdminNotificationRecipients(db) {
+  const fromFirestore = await fetchAdminNotificationEmails(db);
+  if (fromFirestore.length > 0) {
+    return fromFirestore.join(", ");
+  }
+
+  const fallback = normalizeEmail(process.env.ADMIN_NOTIFICATION_EMAIL);
+  if (fallback) return fallback;
+
+  return (
+    RECIPIENTS_BY_SUBJECT.proprietaire ||
+    "annonces@chaletpedia.com"
+  );
+}
+
 async function fetchChaletDoc(db, entiteId) {
   const direct = await db.collection("chalets").doc(entiteId).get();
   if (direct.exists) return direct;
@@ -370,10 +407,7 @@ async function sendNewListingAdminEmail(listingData, meta) {
   const titre = getListingTitle(listingData, listingId);
   const origin = process.env.APP_ORIGIN || "https://chalet-pedia.vercel.app";
   const adminUrl = `${origin.replace(/\/$/, "")}/admin/dashboard`;
-  const to =
-    process.env.ADMIN_NOTIFICATION_EMAIL ||
-    RECIPIENTS_BY_SUBJECT.proprietaire ||
-    "annonces@chaletpedia.com";
+  const to = await resolveAdminNotificationRecipients(db);
   const fromAddress = process.env.SMTP_FROM || process.env.SMTP_USER;
 
   let submitterEmail = normalizeEmail(listingData.courrielContact);
