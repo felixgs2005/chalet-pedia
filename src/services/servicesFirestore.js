@@ -28,7 +28,26 @@ export function mapFirestoreServiceListing(docSnap) {
     slug: data.slug || docSnap.id,
     titre: data.titre || "",
     localisation: data.localisation || "",
-    date: data.datePublication || data.date || "",
+    // Normalize Firestore Timestamp -> readable string to avoid rendering raw objects in JSX
+    date: (() => {
+      const raw = data.datePublication || data.date || "";
+      if (!raw) return "";
+      try {
+        if (raw.toDate) {
+          return raw.toDate().toLocaleDateString("fr-CA", {
+            year: "numeric",
+            month: "short",
+            day: "numeric",
+          });
+        }
+        // already a string or Date
+        if (typeof raw === "string") return raw;
+        if (raw instanceof Date) return raw.toLocaleDateString("fr-CA", { year: "numeric", month: "short", day: "numeric" });
+        return String(raw);
+      } catch (e) {
+        return String(raw);
+      }
+    })(),
     numero: data.numero != null && data.numero !== "" ? String(data.numero) : "",
     image: images[0] || "",
     images,
