@@ -1,39 +1,54 @@
 /** Normalisation des statuts d'annonces (chalets, ventes, services). */
 
-export function normalizeListingStatut(statut) {
-  const raw = statut ?? "";
+function extractStatut(input) {
+  if (input != null && typeof input === "object") {
+    return input.statut ?? input.status ?? "";
+  }
+  return input ?? "";
+}
+
+function normalizeRawStatut(statut) {
+  return String(statut ?? "")
+    .trim()
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "");
+}
+
+export function normalizeListingStatut(input) {
+  const raw = extractStatut(input);
   if (raw === "" || raw == null) return "legacy";
 
-  const s = String(raw).trim().toLowerCase();
+  const s = normalizeRawStatut(raw);
 
-  if (s === "publié" || s === "publie" || s === "published" || s.startsWith("publi")) {
+  if (s === "publie" || s === "published" || s.startsWith("publi")) {
     return "published";
   }
-  if (/en[_ ]?attente/.test(s) || s === "pending") {
+  if (s === "en attente" || s === "en_attente" || s === "pending") {
     return "pending";
   }
-  if (s === "rejeté" || s === "rejete" || s === "rejected" || s.startsWith("rejet")) {
+  if (s === "rejete" || s === "rejected" || s.startsWith("rejet")) {
     return "rejected";
   }
 
   return s;
 }
 
-export function isListingPublished(statut) {
-  const key = normalizeListingStatut(statut);
+export function isListingPublished(input) {
+  const key = normalizeListingStatut(input);
   return key === "published" || key === "legacy";
 }
 
-export function isListingPending(statut) {
-  return normalizeListingStatut(statut) === "pending";
+export function isListingPending(input) {
+  return normalizeListingStatut(input) === "pending";
 }
 
-export function isListingRejected(statut) {
-  return normalizeListingStatut(statut) === "rejected";
+export function isListingRejected(input) {
+  return normalizeListingStatut(input) === "rejected";
 }
 
-export function listingStatutLabel(statut) {
-  const key = normalizeListingStatut(statut);
+export function listingStatutLabel(input) {
+  const key = normalizeListingStatut(input);
   switch (key) {
     case "published":
     case "legacy":
@@ -43,6 +58,6 @@ export function listingStatutLabel(statut) {
     case "rejected":
       return "Refusée";
     default:
-      return String(statut || "—");
+      return String(extractStatut(input) || "—");
   }
 }

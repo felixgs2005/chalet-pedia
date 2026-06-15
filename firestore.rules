@@ -67,7 +67,9 @@ service cloud.firestore {
       allow read: if true;
       match /annoncesService/{listingId} {
         allow read: if true;
-        allow create, update: if request.auth != null;
+        allow create: if request.auth != null;
+        allow update: if request.auth != null
+          && (isAdminListingUpdate() || request.auth != null);
       }
     }
 

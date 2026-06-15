@@ -64,7 +64,7 @@ export function mapFirestoreChalet(docSnap, proprietaireUser = null) {
 export async function fetchChaletsFromFirestore() {
   const snapshot = await getDocs(collection(db, "chalets"));
   return snapshot.docs
-    .filter((docSnap) => isListingPublished(docSnap.data().statut))
+    .filter((docSnap) => isListingPublished(docSnap.data()))
     .map((docSnap) => mapFirestoreChalet(docSnap));
 }
 
@@ -80,7 +80,7 @@ export async function fetchChaletBySlugFromFirestore(slug) {
   const byIdSnap = await getDoc(doc(db, "chalets", slug));
   if (byIdSnap.exists()) {
     const data = byIdSnap.data();
-    if (!isListingPublished(data.statut)) return null;
+    if (!isListingPublished(data)) return null;
     const owner = await fetchProprietaireUser(data.proprietaireId);
     return mapFirestoreChalet(byIdSnap, owner);
   }

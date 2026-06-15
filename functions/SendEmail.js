@@ -328,9 +328,110 @@ async function sendListingContactEmail(contactData) {
   return { messageId: info.messageId, to: toEmail };
 }
 
+const LISTING_TYPE_LABELS = {
+  chalet: "Chalet à louer",
+  vente: "Chalet à vendre",
+  service: "Service",
+};
+
+function isPendingListingStatut(statut) {
+  const s = String(statut || "")
+    .trim()
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "");
+  return s === "en attente" || s === "en_attente" || s === "pending";
+}
+
+function getListingTitle(data, fallbackId) {
+  return (
+    String(data.titre || data.nom || data.sousTitre || fallbackId || "").trim() ||
+    fallbackId
+  );
+}
+
+/**
+ * Notifie l'admin qu'une nouvelle annonce attend validation.
+ */
+async function sendNewListingAdminEmail(listingData, meta) {
+  const { getFirestore } = require("firebase-admin/firestore");
+  const db = getFirestore();
+
+  const type = String(meta.type || "").trim();
+  const listingId = String(meta.listingId || "").trim();
+  const categorySlug = String(meta.categorySlug || "").trim();
+  const statut = listingData.statut ?? listingData.status;
+
+  if (!isPendingListingStatut(statut)) {
+    return { skipped: true, reason: "not_pending" };
+  }
+
+  const typeLabel = LISTING_TYPE_LABELS[type] || type || "Annonce";
+  const titre = getListingTitle(listingData, listingId);
+  const origin = process.env.APP_ORIGIN || "https://chalet-pedia.vercel.app";
+  const adminUrl = `${origin.replace(/\/$/, "")}/admin/dashboard`;
+  const to =
+    process.env.ADMIN_NOTIFICATION_EMAIL ||
+    RECIPIENTS_BY_SUBJECT.proprietaire ||
+    "annonces@chaletpedia.com";
+  const fromAddress = process.env.SMTP_FROM || process.env.SMTP_USER;
+
+  let submitterEmail = normalizeEmail(listingData.courrielContact);
+  if (!submitterEmail && listingData.proprietaireId) {
+    submitterEmail = await fetchUserEmail(db, listingData.proprietaireId);
+  }
+  if (!submitterEmail) {
+    submitterEmail = extractEmailFromDescription(listingData.description);
+  }
+
+  const localisation =
+    listingData.localisation || listingData.adresse || listingData.region || "—";
+  const transporter = createTransporter();
+
+  const mailOptions = {
+    from: `"ChaletPedia" <${fromAddress}>`,
+    to,
+    subject: `[ChaletPedia] Nouvelle annonce en attente — ${titre}`,
+    text: [
+      "Une nouvelle annonce attend votre validation.",
+      "",
+      `Type : ${typeLabel}`,
+      `Titre : ${titre}`,
+      `Identifiant : ${listingId}`,
+      categorySlug ? `Catégorie : ${categorySlug}` : "",
+      `Localisation : ${localisation}`,
+      submitterEmail ? `Courriel soumissionnaire : ${submitterEmail}` : "",
+      `Statut : ${statut}`,
+      "",
+      `Gérer les annonces : ${adminUrl}`,
+    ]
+      .filter(Boolean)
+      .join("\n"),
+    html: [
+      "<h2>Nouvelle annonce en attente de validation</h2>",
+      `<p><strong>Type :</strong> ${escapeHtml(typeLabel)}</p>`,
+      `<p><strong>Titre :</strong> ${escapeHtml(titre)}</p>`,
+      `<p><strong>Identifiant :</strong> ${escapeHtml(listingId)}</p>`,
+      categorySlug
+        ? `<p><strong>Catégorie :</strong> ${escapeHtml(categorySlug)}</p>`
+        : "",
+      `<p><strong>Localisation :</strong> ${escapeHtml(localisation)}</p>`,
+      submitterEmail
+        ? `<p><strong>Courriel :</strong> <a href="mailto:${escapeHtml(submitterEmail)}">${escapeHtml(submitterEmail)}</a></p>`
+        : "",
+      `<p><strong>Statut :</strong> ${escapeHtml(String(statut))}</p>`,
+      `<p><a href="${escapeHtml(adminUrl)}">Ouvrir le dashboard admin</a></p>`,
+    ].join(""),
+  };
+
+  const info = await transporter.sendMail(mailOptions);
+  return { messageId: info.messageId, to };
+}
+
 module.exports = {
   sendContactEmail,
   sendListingContactEmail,
+  sendNewListingAdminEmail,
   buildContactMessageDocument,
   RECIPIENTS_BY_SUBJECT,
 };

@@ -6,12 +6,7 @@ import {
   normalizeDescriptionArray,
 } from "../utils/serviceDescription";
 import { resolveServiceImages } from "../utils/serviceImages";
-
-import { isListingPublished as isPublishedStatut } from "../utils/listingStatut";
-
-function isListingPublished(data) {
-  return isPublishedStatut(data.statut ?? data.status);
-}
+import { isListingPublished } from "../utils/listingStatut";
 
 /** Annonce (sous-collection annoncesService) → format UI. */
 export function mapFirestoreServiceListing(docSnap) {
