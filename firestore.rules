@@ -6,14 +6,20 @@ service cloud.firestore {
       return request.resource.data.diff(resource.data).affectedKeys().hasOnly(['note', 'nombreAvis']);
     }
 
+    function isAdminRoleValue(role) {
+      return role is string
+        && role.lower() in ['admin', 'administrateur'];
+    }
+
     function isAdmin() {
       return request.auth != null
         && (
           request.auth.token.admin == true
           || (
             exists(/databases/$(database)/documents/users/$(request.auth.uid))
-            && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.get('role', '')
-              in ['admin', 'Admin', 'administrateur', 'Administrateur']
+            && isAdminRoleValue(
+              get(/databases/$(database)/documents/users/$(request.auth.uid)).data.get('role', '')
+            )
           )
         );
     }

@@ -162,12 +162,7 @@ async function fetchUserEmail(db, uid) {
   return normalizeEmail(data.email || data.courriel);
 }
 
-const ADMIN_ROLES = new Set(["admin", "administrateur"]);
-
-function isAdminFirestoreRole(role) {
-  if (!role) return false;
-  return ADMIN_ROLES.has(String(role).trim().toLowerCase());
-}
+const { isAdminRole: isAdminFirestoreRole } = require("./adminRole");
 
 /** Courriels des utilisateurs admin (users.role + users.courriel). */
 async function fetchAdminNotificationEmails(db) {

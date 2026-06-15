@@ -2,13 +2,7 @@ import { doc, getDoc, serverTimestamp, setDoc } from "firebase/firestore";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { db, storage } from "../firebase";
 
-const ADMIN_ROLES = new Set(["admin", "administrateur"]);
-
-/** Vrai si le rôle Firestore correspond à un administrateur. */
-export function isAdminRole(role) {
-  if (!role) return false;
-  return ADMIN_ROLES.has(String(role).trim().toLowerCase());
-}
+export { isAdminRole } from "../utils/adminRole";
 
 export async function fetchUserProfile(uid) {
   if (!uid) return null;
