@@ -549,6 +549,36 @@
   color: #4a4a48;
 }
 
+.admin-detail__description--bold {
+  font-weight: 700;
+  color: #0f0f0f;
+}
+
+.admin-detail__blocks {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.admin-detail__desc-heading {
+  font-size: 15px;
+  font-weight: 700;
+  color: #0f0f0f;
+  margin: 4px 0 0;
+}
+
+.admin-detail__desc-list {
+  margin: 0;
+  padding-left: 20px;
+  color: #4a4a48;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.admin-detail__desc-list li + li {
+  margin-top: 4px;
+}
+
 .admin-detail__tags {
   display: flex;
   flex-wrap: wrap;
