@@ -30,13 +30,26 @@ export default function RequireAdmin({ children }) {
 
   if (!isAdmin) {
     return (
-      <div className="compte-page">
-        <div className="compte-reglages">
-          <h1 className="compte-reglages__title">Accès refusé</h1>
-          <p className="compte-reglages__subtitle">
-            Cette section est réservée aux administrateurs.
+      <div className="compte-page compte-access-denied">
+        <div className="compte-access-denied__card">
+          <div className="compte-access-denied__icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect x="5" y="11" width="14" height="10" rx="2" stroke="currentColor" strokeWidth="1.75" />
+              <path
+                d="M8 11V8a4 4 0 1 1 8 0v3"
+                stroke="currentColor"
+                strokeWidth="1.75"
+                strokeLinecap="round"
+              />
+            </svg>
+          </div>
+          <p className="compte-access-denied__kicker">Administration</p>
+          <h1 className="compte-access-denied__title">Accès refusé</h1>
+          <p className="compte-access-denied__text">
+            Cette section est réservée aux administrateurs. Connectez-vous avec un compte autorisé ou
+            retournez à l&apos;accueil.
           </p>
-          <Link to="/" className="compte-reglages__submit">
+          <Link to="/" className="compte-access-denied__cta">
             Retour à l&apos;accueil
           </Link>
         </div>
