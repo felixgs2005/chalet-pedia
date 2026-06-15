@@ -20,6 +20,7 @@ import Entretien from "./pages/Entretien";
 import Multimedia from "./pages/Multimedia";
 import ServiceDetail from "./pages/ServiceDetail";
 import Wikia from "./pages/Wikia";
+import Admin from "./pages/Admin";
 import FAQ from "./pages/footer/FAQ";
 import SubmitListingDetails from "./pages/submit-listing/SubmitListingDetails";
 import Promotions from "./pages/footer/Promotions";
@@ -100,6 +101,14 @@ export default function App() {
                 element={
                   <RequireAuth>
                     <Favoris />
+                  </RequireAuth>
+                }
+              />
+              <Route
+                path="/admin"
+                element={
+                  <RequireAuth>
+                    <Admin />
                   </RequireAuth>
                 }
               />
