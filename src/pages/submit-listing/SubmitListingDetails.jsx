@@ -81,6 +81,28 @@ function Req() {
 }
 
 export default function SubmitListingDetails() {
+  const MAINTENANCE_MODE = true;
+
+  if (MAINTENANCE_MODE) {
+    return (
+      <div className="submit-listing-page">
+        <div className="submit-listing-page__inner">
+          <h1 className="submit-listing-page__title">Bonjour à toutes et à tous ! 👋</h1>
+          <div className="submit-listing-maintenance" style={{ marginTop: 12 }}>
+            <p>
+              L'option de paiement est temporairement bloquée afin de vous offrir une
+              expérience entièrement repensée, plus rapide et plus intuitive.
+            </p>
+            <p>Elle sera de nouveau disponible dans les 48 prochaines heures.</p>
+            <p>Merci de votre patience et de votre confiance !</p>
+            <p style={{ marginTop: 12 }}>
+              <Link to="/" className="btn-annoncer">Retour à l'accueil</Link>
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
   const { currentUser } = useAuth();
   const fileInputRef = useRef(null);
   const [form, setForm] = useState(EMPTY_FORM);
