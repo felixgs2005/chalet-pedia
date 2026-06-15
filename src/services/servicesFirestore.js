@@ -6,13 +6,7 @@ import {
   normalizeDescriptionArray,
 } from "../utils/serviceDescription";
 import { resolveServiceImages } from "../utils/serviceImages";
-
-function isListingPublished(data) {
-  const statut = data.statut ?? data.status;
-  if (!statut) return true;
-  const s = String(statut).toLowerCase();
-  return s === "publié" || s === "publie" || s === "published";
-}
+import { isListingPublished } from "../utils/listingStatus";
 
 /** Annonce (sous-collection annoncesService) → format UI. */
 export function mapFirestoreServiceListing(docSnap) {

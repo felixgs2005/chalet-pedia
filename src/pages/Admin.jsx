@@ -7,7 +7,9 @@ function listingLabel(item) {
 }
 
 function collectionLabel(collection) {
-  return collection === "ventes" ? "À vendre" : "À louer";
+  if (collection === "ventes") return "À vendre";
+  if (collection === "services") return "Service";
+  return "À louer";
 }
 
 export default function Admin() {
@@ -51,7 +53,7 @@ export default function Admin() {
     setActionId(key);
     setError(null);
     try {
-      await approveListing(item._collection, item.slug || item.id);
+      await approveListing(item._collection, item.slug || item.id, item.categorySlug);
       setListings((prev) =>
         prev.map((p) => (p.id === item.id && p._collection === item._collection ? { ...p, statut: "publié" } : p))
       );
@@ -68,7 +70,7 @@ export default function Admin() {
     setActionId(key);
     setError(null);
     try {
-      await rejectListing(item._collection, item.slug || item.id);
+      await rejectListing(item._collection, item.slug || item.id, item.categorySlug);
       setListings((prev) =>
         prev.map((p) => (p.id === item.id && p._collection === item._collection ? { ...p, statut: "rejeté" } : p))
       );
@@ -158,8 +160,13 @@ export default function Admin() {
                         <span className="admin-badge admin-badge--pending">En attente</span>
                       </div>
                       <h3 className="admin-card__title">{listingLabel(item)}</h3>
-                      {(item.region || item.regionLabel) ? (
-                        <p className="admin-card__region">{item.region || item.regionLabel}</p>
+                      {(item.region || item.regionLabel || item.localisation) ? (
+                        <p className="admin-card__region">
+                          {item.region || item.regionLabel || item.localisation}
+                          {item.categorySlug ? ` · ${item.categorySlug}` : ""}
+                        </p>
+                      ) : item.categorySlug ? (
+                        <p className="admin-card__region">{item.categorySlug}</p>
                       ) : null}
                       <p className="admin-card__slug">{item.slug || item.id}</p>
                     </div>
@@ -213,8 +220,13 @@ export default function Admin() {
                       <span className="admin-badge admin-badge--published">Publié</span>
                     </div>
                     <h3 className="admin-card__title">{listingLabel(item)}</h3>
-                    {(item.region || item.regionLabel) ? (
-                      <p className="admin-card__region">{item.region || item.regionLabel}</p>
+                    {(item.region || item.regionLabel || item.localisation) ? (
+                      <p className="admin-card__region">
+                        {item.region || item.regionLabel || item.localisation}
+                        {item.categorySlug ? ` · ${item.categorySlug}` : ""}
+                      </p>
+                    ) : item.categorySlug ? (
+                      <p className="admin-card__region">{item.categorySlug}</p>
                     ) : null}
                     <p className="admin-card__slug">{item.slug || item.id}</p>
                   </div>
