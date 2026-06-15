@@ -40,9 +40,6 @@ export async function fetchAllListingsForAdmin() {
   return [...chalets, ...ventes, ...services];
 }
 
-/** @deprecated Utiliser fetchAllListingsForAdmin */
-export const fetchAllChalets = fetchAllListingsForAdmin;
-
 export function filterPublishedListings(listings) {
   return listings.filter((item) => isListingPublished(item));
 }
