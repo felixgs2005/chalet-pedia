@@ -7,11 +7,10 @@ import {
 } from "../utils/serviceDescription";
 import { resolveServiceImages } from "../utils/serviceImages";
 
+import { isListingPublished as isPublishedStatut } from "../utils/listingStatut";
+
 function isListingPublished(data) {
-  const statut = data.statut ?? data.status;
-  if (!statut) return true;
-  const s = String(statut).toLowerCase();
-  return s === "publié" || s === "publie" || s === "published";
+  return isPublishedStatut(data.statut ?? data.status);
 }
 
 /** Annonce (sous-collection annoncesService) → format UI. */

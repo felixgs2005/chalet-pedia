@@ -1,5 +1,6 @@
 import { collection, doc, getDoc, getDocs } from "firebase/firestore";
 import { db } from "../firebase";
+import { isListingPublished } from "../utils/listingStatut";
 
 const ACTIVITY_TAGS = new Set(["peche", "ski"]);
 
@@ -62,7 +63,9 @@ export function mapFirestoreChalet(docSnap, proprietaireUser = null) {
 
 export async function fetchChaletsFromFirestore() {
   const snapshot = await getDocs(collection(db, "chalets"));
-  return snapshot.docs.map((docSnap) => mapFirestoreChalet(docSnap));
+  return snapshot.docs
+    .filter((docSnap) => isListingPublished(docSnap.data().statut))
+    .map((docSnap) => mapFirestoreChalet(docSnap));
 }
 
 async function fetchProprietaireUser(proprietaireId) {
@@ -77,6 +80,7 @@ export async function fetchChaletBySlugFromFirestore(slug) {
   const byIdSnap = await getDoc(doc(db, "chalets", slug));
   if (byIdSnap.exists()) {
     const data = byIdSnap.data();
+    if (!isListingPublished(data.statut)) return null;
     const owner = await fetchProprietaireUser(data.proprietaireId);
     return mapFirestoreChalet(byIdSnap, owner);
   }

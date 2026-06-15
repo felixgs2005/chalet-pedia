@@ -1,5 +1,6 @@
 import { collection, doc, getDoc, getDocs } from "firebase/firestore";
 import { db } from "../firebase";
+import { isListingPublished } from "../utils/listingStatut";
 /** Convertit un document Firestore (plan Word) vers le format utilisé par l'UI. */
 export function mapFirestoreVente(docSnap) {
   const data = docSnap.data();
@@ -40,7 +41,9 @@ export function mapFirestoreVente(docSnap) {
 
 export async function fetchVentesFromFirestore() {
   const snapshot = await getDocs(collection(db, "ventes"));
-  return snapshot.docs.map(mapFirestoreVente);
+  return snapshot.docs
+    .filter((docSnap) => isListingPublished(docSnap.data().statut))
+    .map(mapFirestoreVente);
 }
 
 export async function fetchVenteBySlugFromFirestore(slug) {
@@ -49,6 +52,7 @@ export async function fetchVenteBySlugFromFirestore(slug) {
   const docRef = doc(db, "ventes", slug);
   const snapshot = await getDoc(docRef);
   if (snapshot.exists()) {
+    if (!isListingPublished(snapshot.data().statut)) return null;
     return mapFirestoreVente(snapshot);
   }
 
