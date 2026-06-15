@@ -1,12 +1,14 @@
 import { useEffect, useState } from "react";
 import ActionModal from "../ActionModal";
+import DescriptionBlocksContent from "../DescriptionBlocksContent";
 import { fetchUserProfile } from "../../services/userProfileFirestore";
 import { formatDisplayValue } from "../../utils/formatDisplayValue";
 import { resolveListingImages } from "../../utils/serviceImages";
 import { listingStatutLabel } from "../../utils/listingStatut";
 import {
+  getPlainListingDescription,
   getServiceDescriptionBlocks,
-  normalizeDescriptionArray,
+  hasBlockListingDescription,
 } from "../../utils/serviceDescription";
 
 function collectionLabel(collection) {
@@ -17,29 +19,6 @@ function collectionLabel(collection) {
 
 function listingLabel(item) {
   return item.nom || item.titre || item.slug || item.id;
-}
-
-function stripHtml(html) {
-  return String(html || "")
-    .replace(/<[^>]*>/g, " ")
-    .replace(/&nbsp;/gi, " ")
-    .replace(/\s+/g, " ")
-    .trim();
-}
-
-function hasBlockDescription(item) {
-  return normalizeDescriptionArray(item.description).some(
-    (block) => block?.type || block?.contenu != null || block?.content != null || block?.p || block?.h || block?.ul
-  );
-}
-
-function getPlainDescription(item) {
-  if (typeof item.description === "string" && item.description.trim()) {
-    return stripHtml(item.description);
-  }
-  if (item.descriptionHtml) return stripHtml(item.descriptionHtml);
-  if (item.descriptionTitre) return stripHtml(item.descriptionTitre);
-  return null;
 }
 
 function formatOwnerLabel(profile) {
@@ -62,47 +41,18 @@ function DetailRow({ label, value, mono = false }) {
 }
 
 function AdminDescriptionContent({ item }) {
-  if (hasBlockDescription(item)) {
+  if (hasBlockListingDescription(item)) {
     const blocks = getServiceDescriptionBlocks(item);
-    if (blocks.length === 0) {
-      return <p className="admin-detail__description">—</p>;
-    }
     return (
-      <div className="admin-detail__blocks">
-        {blocks.map((block, i) => {
-          if (block.h) {
-            return (
-              <h4 className="admin-detail__desc-heading" key={i}>
-                {formatDisplayValue(block.h)}
-              </h4>
-            );
-          }
-          if (block.ul?.length > 0) {
-            return (
-              <ul className="admin-detail__desc-list" key={i}>
-                {block.ul.map((entry, j) => (
-                  <li key={j}>{formatDisplayValue(entry)}</li>
-                ))}
-              </ul>
-            );
-          }
-          if (block.p) {
-            return (
-              <p
-                className={`admin-detail__description${block.bold ? " admin-detail__description--bold" : ""}`}
-                key={i}
-              >
-                {formatDisplayValue(block.p)}
-              </p>
-            );
-          }
-          return null;
-        })}
-      </div>
+      <DescriptionBlocksContent
+        blocks={blocks}
+        variant="admin"
+        emptyFallback={<p className="admin-detail__description">—</p>}
+      />
     );
   }
 
-  const plain = getPlainDescription(item);
+  const plain = getPlainListingDescription(item);
   return <p className="admin-detail__description">{formatDisplayValue(plain) || "—"}</p>;
 }
 

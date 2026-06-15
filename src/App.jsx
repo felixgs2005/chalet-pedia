@@ -114,7 +114,6 @@ export default function App() {
                 }
               />
               <Route path="/admin" element={<Navigate to="/admin/dashboard" replace />} />
-              {/* `Mes réservations` page removed — route intentionally deleted */}
               <Route
                 path="*"
                 element={

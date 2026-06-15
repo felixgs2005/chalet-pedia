@@ -1,5 +1,4 @@
-import { doc, getDoc } from "firebase/firestore";
-import { db } from "../firebase";
+import { fetchUserProfile } from "../services/userProfileFirestore";
 
 /** Profil affichable pour favoris / messages / avis. */
 export async function resolveUtilisateur(firebaseUser) {
@@ -7,14 +6,9 @@ export async function resolveUtilisateur(firebaseUser) {
     throw new Error("Connectez-vous pour continuer.");
   }
 
-  let prenom = "";
-  let nom = "";
-  const userSnap = await getDoc(doc(db, "users", firebaseUser.uid));
-  if (userSnap.exists()) {
-    const profile = userSnap.data();
-    prenom = profile.prenom || "";
-    nom = profile.nom || "";
-  }
+  const profile = await fetchUserProfile(firebaseUser.uid);
+  const prenom = profile?.prenom || "";
+  const nom = profile?.nom || "";
 
   const displayName =
     `${prenom} ${nom}`.trim() ||

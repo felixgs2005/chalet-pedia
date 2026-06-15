@@ -48,7 +48,6 @@ export function mapFirestoreServiceListing(docSnap) {
 export function mapFirestoreServiceCategory(docSnap, listings = []) {
   const data = docSnap.data();
   const slug = data.slug || docSnap.id;
-  const published = listings.filter((l) => l);
 
   return {
     slug,
@@ -57,8 +56,8 @@ export function mapFirestoreServiceCategory(docSnap, listings = []) {
     tagline: data.tagline || "",
     image: data.imageHero || data.image_hero || data.image || "",
     href: `/chalets/${slug}/`,
-    annonceCount: published.length || data.annonceCount || 0,
-    listings: published,
+    annonceCount: listings.length || data.annonceCount || 0,
+    listings,
   };
 }
 

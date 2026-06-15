@@ -84,6 +84,37 @@ export function extractLegacyFieldsFromDescription(rawBlocks) {
   return result;
 }
 
+function stripHtml(html) {
+  return String(html || "")
+    .replace(/<[^>]*>/g, " ")
+    .replace(/&nbsp;/gi, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+/** Vrai si la description contient des blocs structurés (Firestore ou UI). */
+export function hasBlockListingDescription(item) {
+  return normalizeDescriptionArray(item?.description).some(
+    (block) =>
+      block?.type ||
+      block?.contenu != null ||
+      block?.content != null ||
+      block?.p ||
+      block?.h ||
+      block?.ul
+  );
+}
+
+/** Description texte simple (chalets, ventes, legacy HTML). */
+export function getPlainListingDescription(item) {
+  if (typeof item?.description === "string" && item.description.trim()) {
+    return stripHtml(item.description);
+  }
+  if (item?.descriptionHtml) return stripHtml(item.descriptionHtml);
+  if (item?.descriptionTitre) return stripHtml(item.descriptionTitre);
+  return null;
+}
+
 /** Blocs à afficher : Firestore description ou champs legacy (accroche, intro, services). */
 export function getServiceDescriptionBlocks(listing) {
   const fromFirestore = mapDescriptionBlocksFromFirestore(listing.description);
