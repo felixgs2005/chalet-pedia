@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import ActionModal from "../ActionModal";
 import { fetchUserProfile } from "../../services/userProfileFirestore";
+import { formatDisplayValue } from "../../utils/formatDisplayValue";
 import { resolveListingImages } from "../../utils/serviceImages";
 import { listingStatutLabel } from "../../utils/listingStatut";
 import {
@@ -50,11 +51,12 @@ function formatOwnerLabel(profile) {
 }
 
 function DetailRow({ label, value, mono = false }) {
-  if (value == null || value === "") return null;
+  const display = formatDisplayValue(value);
+  if (!display) return null;
   return (
     <div className="admin-detail__row">
       <dt>{label}</dt>
-      <dd className={mono ? "admin-detail__mono" : undefined}>{value}</dd>
+      <dd className={mono ? "admin-detail__mono" : undefined}>{display}</dd>
     </div>
   );
 }
@@ -71,7 +73,7 @@ function AdminDescriptionContent({ item }) {
           if (block.h) {
             return (
               <h4 className="admin-detail__desc-heading" key={i}>
-                {block.h}
+                {formatDisplayValue(block.h)}
               </h4>
             );
           }
@@ -79,7 +81,7 @@ function AdminDescriptionContent({ item }) {
             return (
               <ul className="admin-detail__desc-list" key={i}>
                 {block.ul.map((entry, j) => (
-                  <li key={j}>{entry}</li>
+                  <li key={j}>{formatDisplayValue(entry)}</li>
                 ))}
               </ul>
             );
@@ -90,7 +92,7 @@ function AdminDescriptionContent({ item }) {
                 className={`admin-detail__description${block.bold ? " admin-detail__description--bold" : ""}`}
                 key={i}
               >
-                {block.p}
+                {formatDisplayValue(block.p)}
               </p>
             );
           }
@@ -101,7 +103,7 @@ function AdminDescriptionContent({ item }) {
   }
 
   const plain = getPlainDescription(item);
-  return <p className="admin-detail__description">{plain || "—"}</p>;
+  return <p className="admin-detail__description">{formatDisplayValue(plain) || "—"}</p>;
 }
 
 export default function AdminListingDetailModal({ item, open, onClose }) {
@@ -131,17 +133,19 @@ export default function AdminListingDetailModal({ item, open, onClose }) {
 
   const title = listingLabel(item);
   const prix =
-    item.prix ||
-    (item.prixParNuit != null ? `${item.prixParNuit} $/nuit` : null) ||
-    item.tarification ||
+    (item.prixParNuit != null && item.prixParNuit !== ""
+      ? `${formatDisplayValue(item.prixParNuit)} $/nuit`
+      : null) ||
+    formatDisplayValue(item.prix) ||
+    formatDisplayValue(item.tarification) ||
     "—";
   const images = resolveListingImages(item);
   const isService = item._collection === "services";
   const isVente = item._collection === "ventes";
   const region =
-    item.region ||
-    item.regionLabel ||
-    (isService ? item.localisation : null) ||
+    formatDisplayValue(item.region) ||
+    formatDisplayValue(item.regionLabel) ||
+    (isService ? formatDisplayValue(item.localisation) : "") ||
     "—";
 
   return (

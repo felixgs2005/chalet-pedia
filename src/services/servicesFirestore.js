@@ -6,6 +6,7 @@ import {
   normalizeDescriptionArray,
 } from "../utils/serviceDescription";
 import { resolveServiceImages } from "../utils/serviceImages";
+import { formatFirestoreDate } from "../utils/formatDisplayValue";
 import { isListingPublished } from "../utils/listingStatut";
 
 /** Annonce (sous-collection annoncesService) → format UI. */
@@ -22,7 +23,7 @@ export function mapFirestoreServiceListing(docSnap) {
     slug: data.slug || docSnap.id,
     titre: data.titre || "",
     localisation: data.localisation || "",
-    date: data.datePublication || data.date || "",
+    date: formatFirestoreDate(data.datePublication || data.date),
     numero: data.numero != null && data.numero !== "" ? String(data.numero) : "",
     image: images[0] || "",
     images,

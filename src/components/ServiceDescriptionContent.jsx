@@ -1,4 +1,5 @@
 import { getServiceDescriptionBlocks } from "../utils/serviceDescription";
+import { formatDisplayValue } from "../utils/formatDisplayValue";
 
 /**
  * Affiche la description d'une annonce service (blocs Firestore ou champs legacy).
@@ -20,7 +21,7 @@ export default function ServiceDescriptionContent({ listing }) {
         if (block.h) {
           return (
             <h3 className="sd-desc-h" key={i}>
-              {block.h}
+              {formatDisplayValue(block.h)}
             </h3>
           );
         }
@@ -35,7 +36,7 @@ export default function ServiceDescriptionContent({ listing }) {
                 {block.ul.map((item, j) => (
                   <div className="sd-service" key={j} style={{ "--i": j }}>
                     <span className="sd-service__num">{j + 1}</span>
-                    <span className="sd-service__text">{item}</span>
+                    <span className="sd-service__text">{formatDisplayValue(item)}</span>
                   </div>
                 ))}
               </div>
@@ -48,7 +49,7 @@ export default function ServiceDescriptionContent({ listing }) {
             <ul className="sd-desc-list" key={i}>
               {block.ul.map((item, j) => (
                 <li key={j} style={{ "--j": j }}>
-                  {item}
+                  {formatDisplayValue(item)}
                 </li>
               ))}
             </ul>
@@ -62,7 +63,7 @@ export default function ServiceDescriptionContent({ listing }) {
               key={i}
               style={block.bold ? { fontWeight: 700, color: "#0F0F0F" } : undefined}
             >
-              {block.p}
+              {formatDisplayValue(block.p)}
             </p>
           );
         }
