@@ -1,5 +1,5 @@
 // src/App.jsx
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
 import { FavorisCountProvider } from "./context/FavorisCountContext";
 import Header from "./components/Header";
@@ -21,7 +21,6 @@ import Multimedia from "./pages/Multimedia";
 import ServiceDetail from "./pages/ServiceDetail";
 import Wikia from "./pages/Wikia";
 import Admin from "./pages/Admin";
-import DevCreateAdmin from "./pages/DevCreateAdmin";
 import FAQ from "./pages/footer/FAQ";
 import SubmitListingDetails from "./pages/submit-listing/SubmitListingDetails";
 import Promotions from "./pages/footer/Promotions";
@@ -31,6 +30,7 @@ import ConditionsUtilisation from "./pages/footer/ConditionsUtilisation";
 import APropos from "./pages/footer/APropos";
 import Contact from "./pages/footer/Contact";
 import RequireAuth from "./components/RequireAuth";
+import RequireAdmin from "./components/RequireAdmin";
 import Reglages from "./pages/compte/Reglages";
 import Favoris from "./pages/compte/Favoris";
 import "./styles/global.css";
@@ -106,15 +106,14 @@ export default function App() {
                 }
               />
               <Route
-                path="/admin"
+                path="/admin/dashboard"
                 element={
-                  <RequireAuth>
+                  <RequireAdmin>
                     <Admin />
-                  </RequireAuth>
+                  </RequireAdmin>
                 }
               />
-              {/* Development helper to create a substitute admin account. Remove in production. */}
-              <Route path="/dev-create-admin" element={<DevCreateAdmin />} />
+              <Route path="/admin" element={<Navigate to="/admin/dashboard" replace />} />
               {/* `Mes réservations` page removed — route intentionally deleted */}
               <Route
                 path="*"

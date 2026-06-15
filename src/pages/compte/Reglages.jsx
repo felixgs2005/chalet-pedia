@@ -132,7 +132,6 @@ export default function Reglages() {
         infosProfil: infosProfil.trim(),
         photoProfil: photoURL,
         courriel: currentUser.email || "",
-        role: "Utilisateur",
       });
 
       if (wantsPasswordChange) {
