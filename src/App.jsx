@@ -21,6 +21,7 @@ import Multimedia from "./pages/Multimedia";
 import ServiceDetail from "./pages/ServiceDetail";
 import Wikia from "./pages/Wikia";
 import Admin from "./pages/Admin";
+import DevCreateAdmin from "./pages/DevCreateAdmin";
 import FAQ from "./pages/footer/FAQ";
 import SubmitListingDetails from "./pages/submit-listing/SubmitListingDetails";
 import Promotions from "./pages/footer/Promotions";
@@ -112,6 +113,8 @@ export default function App() {
                   </RequireAuth>
                 }
               />
+              {/* Development helper to create a substitute admin account. Remove in production. */}
+              <Route path="/dev-create-admin" element={<DevCreateAdmin />} />
               {/* `Mes réservations` page removed — route intentionally deleted */}
               <Route
                 path="*"
