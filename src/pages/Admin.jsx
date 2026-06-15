@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { fetchAllChalets, approveListing, rejectListing } from "../services/adminFirestore";
+import "../styles/admin.css";
 
 export default function Admin() {
   const [listings, setListings] = useState([]);
@@ -53,28 +54,28 @@ export default function Admin() {
     }
   }
 
-  if (loading) return <div style={{ padding: 40 }}>Chargement des annonces…</div>;
-  if (error) return <div style={{ padding: 40, color: "red" }}>Erreur: {error}</div>;
+  if (loading) return <div className="admin-page__loading">Chargement des annonces…</div>;
+  if (error) return <div className="admin-page__error">Erreur: {error}</div>;
 
   return (
-    <div style={{ padding: 24 }}>
+    <div className="admin-page">
       <h1>Administration — Annonces</h1>
 
-      <section style={{ marginTop: 24 }}>
+      <section className="admin-section admin-section--pending">
         <h2>Annonces en attente</h2>
-        {pending.length === 0 && <div>Aucune annonce en attente.</div>}
-        <ul style={{ listStyle: "none", padding: 0 }}>
+        {pending.length === 0 && <div className="admin-empty">Aucune annonce en attente.</div>}
+        <ul className="admin-list">
           {pending.map((p) => (
-            <li key={p.id} style={{ padding: 12, borderBottom: "1px solid #eee" }}>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <li key={p.id} className="admin-list__item">
+              <div className="admin-list__meta">
                 <div>
-                  <strong>{p.nom || p.titre || p.slug || p.id}</strong>
-                  <div style={{ fontSize: 13, color: "#666" }}>{p.region || p.regionLabel}</div>
-                  <div style={{ fontSize: 12, color: "#444" }}>{p.slug || p.id}</div>
+                  <strong className="admin-list__title">{p.nom || p.titre || p.slug || p.id}</strong>
+                  <div className="admin-list__region">{p.region || p.regionLabel}</div>
+                  <div className="admin-list__slug">{p.slug || p.id}</div>
                 </div>
-                <div>
-                  <button onClick={() => handleApprove(p)} style={{ marginRight: 8 }}>Accepter</button>
-                  <button onClick={() => handleReject(p)} style={{ color: "#900" }}>Refuser</button>
+                <div className="admin-actions">
+                  <button className="btn btn-accept" onClick={() => handleApprove(p)}>Accepter</button>
+                  <button className="btn btn-reject" onClick={() => handleReject(p)}>Refuser</button>
                 </div>
               </div>
             </li>
@@ -82,20 +83,20 @@ export default function Admin() {
         </ul>
       </section>
 
-      <section style={{ marginTop: 32 }}>
+      <section className="admin-section admin-section--active">
         <h2>Annonces actives</h2>
-        {active.length === 0 && <div>Aucune annonce active.</div>}
-        <ul style={{ listStyle: "none", padding: 0 }}>
+        {active.length === 0 && <div className="admin-empty">Aucune annonce active.</div>}
+        <ul className="admin-list">
           {active.map((p) => (
-            <li key={p.id} style={{ padding: 12, borderBottom: "1px solid #eee" }}>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <li key={p.id} className="admin-list__item">
+              <div className="admin-list__meta">
                 <div>
-                  <strong>{p.nom || p.titre || p.slug || p.id}</strong>
-                  <div style={{ fontSize: 13, color: "#666" }}>{p.region || p.regionLabel}</div>
-                  <div style={{ fontSize: 12, color: "#444" }}>{p.slug || p.id}</div>
+                  <strong className="admin-list__title">{p.nom || p.titre || p.slug || p.id}</strong>
+                  <div className="admin-list__region">{p.region || p.regionLabel}</div>
+                  <div className="admin-list__slug">{p.slug || p.id}</div>
                 </div>
                 <div>
-                  <span style={{ fontSize: 13, color: "#0a0" }}>Publié</span>
+                  <span className="admin-status">Publié</span>
                 </div>
               </div>
             </li>
