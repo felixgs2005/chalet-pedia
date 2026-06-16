@@ -162,13 +162,13 @@ async function fetchUserEmail(db, uid) {
   return normalizeEmail(data.email || data.courriel);
 }
 
-const ADMIN_NOTIFICATION_EMAIL = "wintechnologie830@gmail.com";
+const { ADMIN_EMAIL } = require("./adminEmail");
 
 async function resolveAdminNotificationRecipients() {
   const fromEnv = normalizeEmail(process.env.ADMIN_NOTIFICATION_EMAIL);
   if (fromEnv) return fromEnv;
 
-  return ADMIN_NOTIFICATION_EMAIL;
+  return ADMIN_EMAIL;
 }
 
 async function fetchChaletDoc(db, entiteId) {

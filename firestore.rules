@@ -6,9 +6,14 @@ service cloud.firestore {
       return request.resource.data.diff(resource.data).affectedKeys().hasOnly(['note', 'nombreAvis']);
     }
 
+    // Courriel admin : synchroniser avec src/config/adminEmail.json
+    function adminEmail() {
+      return 'wintechnologie830@gmail.com';
+    }
+
     function isAdmin() {
       return request.auth != null
-        && request.auth.token.email.lower() == 'wintechnologie830@gmail.com';
+        && request.auth.token.email.lower() == adminEmail();
     }
 
     function isAdminListingUpdate() {
