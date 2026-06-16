@@ -1,18 +1,18 @@
 import { useEffect, useState } from "react";
-import { resolveListingImages } from "../../utils/serviceImages";
+import { getAdminListingImages } from "../../utils/adminListingImages";
 
-/** Galerie modale admin — masque les URLs invalides ou introuvables (Storage 404). */
+/** Galerie modale admin — vérifie le chargement (Storage 404) sans re-résoudre les URLs. */
 export default function AdminListingGallery({ item }) {
   const [visible, setVisible] = useState([]);
   const [checked, setChecked] = useState(false);
-  const candidates = resolveListingImages(item);
+  const candidates = getAdminListingImages(item);
 
   useEffect(() => {
     setVisible([]);
     setChecked(false);
     if (!item) return undefined;
 
-    const urls = resolveListingImages(item);
+    const urls = getAdminListingImages(item);
     if (!urls.length) {
       setChecked(true);
       return undefined;

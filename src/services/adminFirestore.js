@@ -22,7 +22,8 @@ function mapChaletOrVenteForAdmin(d, collectionName) {
   const images = resolveListingImages(item);
   return {
     ...item,
-    ...(images.length ? { images, image: images[0] } : {}),
+    images,
+    image: images[0] || "",
   };
 }
 

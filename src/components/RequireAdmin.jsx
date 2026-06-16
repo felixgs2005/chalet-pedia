@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useAdminAuth } from "../context/AdminAuthContext";
+import "../styles/admin.css";
 
 /** Redirige vers /admin/login si la session admin n'est pas active. */
 export default function RequireAdmin({ children }) {
@@ -19,7 +20,8 @@ export default function RequireAdmin({ children }) {
 
   if (loading || !isAdminAuthenticated) {
     return (
-      <div className="compte-page compte-page--loading">
+      <div className="admin-dashboard admin-dashboard--loading">
+        <div className="admin-dashboard__loader" aria-hidden="true" />
         <p>Chargement…</p>
       </div>
     );
