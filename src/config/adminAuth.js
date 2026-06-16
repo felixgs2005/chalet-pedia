@@ -1,5 +1,6 @@
-/** Identifiants admin (vérification locale — hash SHA-256, jamais le mot de passe en clair). */
-export const ADMIN_EMAIL = "wintechnologie830@gmail.com";
+import { ADMIN_EMAIL, normalizeAdminEmail } from "./adminEmail";
+
+export { ADMIN_EMAIL, normalizeAdminEmail };
 
 /** SHA-256 hex du mot de passe admin. Regénérer via : node -e "..." (voir README ou commit précédent). */
 export const ADMIN_PASSWORD_HASH =
@@ -9,10 +10,6 @@ export const ADMIN_SESSION_KEY = "chaletpedia_admin_session";
 
 export function clearAdminSession() {
   sessionStorage.removeItem(ADMIN_SESSION_KEY);
-}
-
-export function normalizeAdminEmail(email) {
-  return String(email || "").trim().toLowerCase();
 }
 
 export function isAdminFirebaseUser(user) {

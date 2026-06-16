@@ -162,13 +162,10 @@ async function fetchUserEmail(db, uid) {
   return normalizeEmail(data.email || data.courriel);
 }
 
-const ADMIN_NOTIFICATION_EMAIL = "wintechnologie830@gmail.com";
+const { ADMIN_EMAIL } = require("./adminEmail");
 
-async function resolveAdminNotificationRecipients() {
-  const fromEnv = normalizeEmail(process.env.ADMIN_NOTIFICATION_EMAIL);
-  if (fromEnv) return fromEnv;
-
-  return ADMIN_NOTIFICATION_EMAIL;
+function resolveAdminNotificationRecipient() {
+  return ADMIN_EMAIL;
 }
 
 async function fetchChaletDoc(db, entiteId) {
@@ -379,7 +376,7 @@ async function sendNewListingAdminEmail(listingData, meta) {
   const titre = getListingTitle(listingData, listingId);
   const origin = process.env.APP_ORIGIN || "https://chalet-pedia.vercel.app";
   const adminUrl = `${origin.replace(/\/$/, "")}/admin/dashboard`;
-  const to = await resolveAdminNotificationRecipients();
+  const to = resolveAdminNotificationRecipient();
   const fromAddress = process.env.SMTP_FROM || process.env.SMTP_USER;
 
   let submitterEmail = normalizeEmail(listingData.courrielContact);

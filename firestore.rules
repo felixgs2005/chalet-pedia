@@ -6,9 +6,14 @@ service cloud.firestore {
       return request.resource.data.diff(resource.data).affectedKeys().hasOnly(['note', 'nombreAvis']);
     }
 
+    // Courriel admin : synchroniser avec functions/adminEmail.json et src/config/adminEmail.json
+    function adminEmail() {
+      return 'wintechnologie830@gmail.com';
+    }
+
     function isAdmin() {
       return request.auth != null
-        && request.auth.token.email.lower() == 'wintechnologie830@gmail.com';
+        && request.auth.token.email.lower() == adminEmail();
     }
 
     function isAdminListingUpdate() {
@@ -63,7 +68,13 @@ service cloud.firestore {
 
     match /users/{userId} {
       allow read: if true;
-      allow create, update: if request.auth != null && request.auth.uid == userId;
+      // Pas de champ role : l'admin est fixé par courriel (adminEmail.json / firestore.rules).
+      allow create: if request.auth != null
+        && request.auth.uid == userId
+        && !('role' in request.resource.data);
+      allow update: if request.auth != null
+        && request.auth.uid == userId
+        && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['role']);
     }
 
     match /categorieServices/{categoryId} {
