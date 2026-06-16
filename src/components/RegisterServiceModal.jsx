@@ -3,7 +3,6 @@ import { Link } from "react-router-dom";
 import ActionModal from "./ActionModal";
 import ServicePhotoPicker from "./ServicePhotoPicker";
 import { useAuth } from "../context/AuthContext";
-import SubscriptionPrompt from "./SubscriptionPrompt";
 import { buildServiceListingPayload, slugifyServiceTitle } from "../utils/buildServiceListingPayload";
 import { submitServiceListing } from "../services/submitServiceListing";
 import { uploadServiceListingImages } from "../services/uploadServiceListingImages";
@@ -54,7 +53,7 @@ function FieldLabel({ htmlFor, required, children }) {
 
 /** Formulaire d'inscription annonce service → Firestore annoncesService. */
 export default function RegisterServiceModal({ open, onClose }) {
-  const { currentUser, hasServicesSubscription, profileLoading } = useAuth();
+  const { currentUser, hasServicesSubscription } = useAuth();
   const [form, setForm] = useState(EMPTY_FORM);
   const [slugTouched, setSlugTouched] = useState(false);
   const [sent, setSent] = useState(false);
@@ -178,10 +177,6 @@ export default function RegisterServiceModal({ open, onClose }) {
       titleId="sd-modal-register-title"
       className="sd-action-modal--wide sd-action-modal--form"
       renderBody={({ requestClose }) => {
-        if (profileLoading) {
-          return <p className="sd-action-modal__intro">Chargement…</p>;
-        }
-
         if (!currentUser) {
           return (
             <div className="sd-action-modal__intro">
@@ -197,10 +192,6 @@ export default function RegisterServiceModal({ open, onClose }) {
               </Link>
             </div>
           );
-        }
-
-        if (!hasServicesSubscription) {
-          return <SubscriptionPrompt plan="services" />;
         }
 
         return (

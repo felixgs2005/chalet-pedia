@@ -10,6 +10,7 @@ import {
 import { useServiceCategories } from "../hooks/useServiceCategories";
 import { useAuth } from "../context/AuthContext";
 import RegisterServiceModal from "../components/RegisterServiceModal";
+import ServiceSubscriptionModal from "../components/ServiceSubscriptionModal";
 
 function useReveal() {
   const ref = useRef(null);
@@ -51,21 +52,29 @@ function useReveal() {
 
 export default function AccueilServices() {
   const navigate = useNavigate();
-  const { currentUser } = useAuth();
+  const { currentUser, hasServicesSubscription, profileLoading } = useAuth();
   const [searchParams, setSearchParams] = useSearchParams();
   const { categories: serviceCategories, loading, error } = useServiceCategories();
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [ctaRef, ctaVisible] = useReveal();
   const [registerOpen, setRegisterOpen] = useState(false);
+  const [subscriptionModalOpen, setSubscriptionModalOpen] = useState(false);
 
   const openRegisterFromUrl = searchParams.get("inscrire") === "1";
 
-  const openRegisterModal = () => {
+  const openRegisterFlow = () => {
     if (!currentUser) {
       navigate("/auth", { state: { from: "/chalets/services/?inscrire=1" } });
       return;
     }
+    if (profileLoading) return;
+
+    if (!hasServicesSubscription) {
+      setSubscriptionModalOpen(true);
+      return;
+    }
+
     setRegisterOpen(true);
   };
 
@@ -77,11 +86,28 @@ export default function AccueilServices() {
       return;
     }
 
-    setRegisterOpen(true);
+    if (profileLoading) return;
+
+    if (!hasServicesSubscription) {
+      setSubscriptionModalOpen(true);
+    } else {
+      setRegisterOpen(true);
+    }
+
     const next = new URLSearchParams(searchParams);
     next.delete("inscrire");
     setSearchParams(next, { replace: true });
-  }, [openRegisterFromUrl, loading, error, searchParams, setSearchParams, currentUser, navigate]);
+  }, [
+    openRegisterFromUrl,
+    loading,
+    error,
+    searchParams,
+    setSearchParams,
+    currentUser,
+    navigate,
+    profileLoading,
+    hasServicesSubscription,
+  ]);
 
   const serviceCategorySlugs = useMemo(
     () => new Set(serviceCategories.map((c) => c.slug)),
@@ -150,6 +176,10 @@ export default function AccueilServices() {
   return (
     <div className="services-page">
       <RegisterServiceModal open={registerOpen} onClose={() => setRegisterOpen(false)} />
+      <ServiceSubscriptionModal
+        open={subscriptionModalOpen}
+        onClose={() => setSubscriptionModalOpen(false)}
+      />
       <section className="header-hero listing-hero services-hero">
         <span className="services-hero__glow" aria-hidden="true" />
         <div className="header-hero__content">
@@ -296,8 +326,8 @@ export default function AccueilServices() {
             </p>
             <button
               type="button"
-              className={`services-cta__btn${registerOpen ? " is-pressed" : ""}`}
-              onClick={openRegisterModal}
+              className={`services-cta__btn${registerOpen || subscriptionModalOpen ? " is-pressed" : ""}`}
+              onClick={openRegisterFlow}
             >
               Inscrivez vos services →
             </button>

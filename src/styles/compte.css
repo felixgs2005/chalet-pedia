@@ -642,3 +642,40 @@
   opacity: 0.55;
   cursor: not-allowed;
 }
+
+/* Carte abonnement dans la modale services */
+.sd-action-modal--subscription {
+  background: #2b2f2c;
+  max-width: 560px;
+}
+
+.sd-action-modal--subscription .sd-action-modal__close {
+  color: rgba(255, 255, 255, 0.75);
+}
+
+.sd-action-modal--subscription .sd-action-modal__close:hover {
+  color: #fff;
+}
+.sd-action-modal--subscription .sd-action-modal__title {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.sd-action-modal--subscription .subscription-prompt--card {
+  margin: 0;
+}
+
+.sd-action-modal--subscription .subscription-prompt__card.subscription-card {
+  margin: 0;
+}
+
+.sd-action-modal--subscription .subscription-prompt__actions {
+  margin-top: 4px;
+}
