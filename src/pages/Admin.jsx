@@ -11,7 +11,8 @@ import {
   getListingPublicPath,
   rejectListing,
 } from "../services/adminFirestore";
-import { getListingPrimaryImage } from "../utils/serviceImages";
+import { getAdminListingPrimaryImage } from "../utils/adminListingImages";
+import { collectionLabel, listingLabel } from "../utils/adminListingLabels";
 import { mapFirebaseError } from "../utils/firebaseErrors";
 import "../styles/admin.css";
 
@@ -25,16 +26,6 @@ const TABS = [
   { id: "manage", label: "Gérer annonces" },
   { id: "rejected", label: "Refusées" },
 ];
-
-function listingLabel(item) {
-  return item.nom || item.titre || item.slug || item.id;
-}
-
-function collectionLabel(collection) {
-  if (collection === "ventes") return "À vendre";
-  if (collection === "services") return "Service";
-  return "À louer";
-}
 
 function matchesSearch(item, query) {
   if (!query) return true;
@@ -54,7 +45,7 @@ function matchesSearch(item, query) {
 }
 
 function AdminListingThumb({ item }) {
-  const src = getListingPrimaryImage(item);
+  const src = getAdminListingPrimaryImage(item);
   if (!src) return null;
 
   return (

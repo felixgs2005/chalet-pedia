@@ -97,11 +97,6 @@ export function getServicePrimaryImage(listing) {
   return resolveServiceImages(listing)[0] || "";
 }
 
-/** Vignette admin / cartes — chalets, ventes ou services. */
-export function getListingPrimaryImage(item) {
-  return resolveListingImages(item)[0] || "";
-}
-
 /** Galerie admin / détail — chalets, ventes ou services. */
 export function resolveListingImages(item) {
   if (!item) return [];

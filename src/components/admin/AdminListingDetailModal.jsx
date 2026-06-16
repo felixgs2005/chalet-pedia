@@ -4,22 +4,13 @@ import DescriptionBlocksContent from "../DescriptionBlocksContent";
 import { fetchUserProfile } from "../../services/userProfileFirestore";
 import { formatDisplayValue } from "../../utils/formatDisplayValue";
 import AdminListingGallery from "./AdminListingGallery";
+import { collectionLabel, listingLabel } from "../../utils/adminListingLabels";
 import { listingStatutLabel } from "../../utils/listingStatut";
 import {
   getPlainListingDescription,
   getServiceDescriptionBlocks,
   hasBlockListingDescription,
 } from "../../utils/serviceDescription";
-
-function collectionLabel(collection) {
-  if (collection === "ventes") return "À vendre";
-  if (collection === "services") return "Service";
-  return "À louer";
-}
-
-function listingLabel(item) {
-  return item.nom || item.titre || item.slug || item.id;
-}
 
 function formatOwnerLabel(profile) {
   if (!profile) return null;
