@@ -5,7 +5,7 @@ export function mapFirebaseError(err) {
 
   switch (code) {
     case "permission-denied":
-      return "Accès refusé par Firebase. Déployez les règles Firestore (firebase deploy --only firestore:rules) puis reconnectez-vous en admin.";
+      return "Accès refusé. Vérifiez que vous êtes connecté et que les règles Firestore sont à jour, puis réessayez.";
     case "not-found":
       return "Annonce introuvable dans Firestore. Rechargez la page et réessayez.";
     case "unauthenticated":

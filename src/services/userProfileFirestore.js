@@ -17,7 +17,6 @@ export async function saveUserProfile(uid, data) {
     doc(db, "users", uid),
     {
       ...profileData,
-      role: deleteField(),
       updatedAt: serverTimestamp(),
     },
     { merge: true }

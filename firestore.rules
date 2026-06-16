@@ -66,6 +66,11 @@ service cloud.firestore {
       allow delete: if isAdmin();
     }
 
+    function userRoleFieldSafe() {
+      return !request.resource.data.diff(resource.data).affectedKeys().hasAny(['role'])
+        || !('role' in request.resource.data);
+    }
+
     match /users/{userId} {
       allow read: if true;
       // Pas de champ role : l'admin est fixé par courriel (adminEmail.json / firestore.rules).
@@ -74,7 +79,7 @@ service cloud.firestore {
         && !('role' in request.resource.data);
       allow update: if request.auth != null
         && request.auth.uid == userId
-        && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['role']);
+        && userRoleFieldSafe();
     }
 
     match /categorieServices/{categoryId} {
