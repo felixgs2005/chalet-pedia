@@ -3,7 +3,7 @@ import ActionModal from "../ActionModal";
 import DescriptionBlocksContent from "../DescriptionBlocksContent";
 import { fetchUserProfile } from "../../services/userProfileFirestore";
 import { formatDisplayValue } from "../../utils/formatDisplayValue";
-import { resolveListingImages } from "../../utils/serviceImages";
+import AdminListingGallery from "./AdminListingGallery";
 import { listingStatutLabel } from "../../utils/listingStatut";
 import {
   getPlainListingDescription,
@@ -89,7 +89,6 @@ export default function AdminListingDetailModal({ item, open, onClose }) {
     formatDisplayValue(item.prix) ||
     formatDisplayValue(item.tarification) ||
     "—";
-  const images = resolveListingImages(item);
   const isService = item._collection === "services";
   const isVente = item._collection === "ventes";
   const region =
@@ -107,13 +106,7 @@ export default function AdminListingDetailModal({ item, open, onClose }) {
       className="admin-detail-modal"
       renderBody={() => (
         <div className="admin-detail">
-          {images.length > 0 ? (
-            <div className="admin-detail__gallery">
-              {images.slice(0, 4).map((src, index) => (
-                <img key={`${src}-${index}`} src={src} alt="" className="admin-detail__thumb" />
-              ))}
-            </div>
-          ) : null}
+          <AdminListingGallery item={item} />
 
           <dl className="admin-detail__grid">
             <DetailRow label="Type" value={collectionLabel(item._collection)} />

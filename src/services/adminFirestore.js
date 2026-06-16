@@ -1,6 +1,7 @@
 import {
   collection,
   collectionGroup,
+  deleteDoc,
   doc,
   getDocs,
   serverTimestamp,
@@ -12,6 +13,31 @@ import {
   isListingPublished,
   isListingRejected,
 } from "../utils/listingStatut";
+import { resolveListingImages } from "../utils/serviceImages";
+import { mapFirestoreServiceListing } from "./servicesFirestore";
+
+function mapChaletOrVenteForAdmin(d, collectionName) {
+  const data = d.data();
+  const item = { ...data, _collection: collectionName, id: d.id };
+  const images = resolveListingImages(item);
+  return {
+    ...item,
+    ...(images.length ? { images, image: images[0] } : {}),
+  };
+}
+
+function mapServiceForAdmin(d) {
+  const categorySlug = d.ref.parent.parent?.id || "";
+  const mapped = mapFirestoreServiceListing(d);
+
+  return {
+    ...d.data(),
+    ...mapped,
+    _collection: "services",
+    categorySlug,
+    id: d.id,
+  };
+}
 
 export async function fetchAllListingsForAdmin() {
   const [chaletsSnap, ventesSnap, servicesSnap] = await Promise.all([
@@ -20,22 +46,9 @@ export async function fetchAllListingsForAdmin() {
     getDocs(collectionGroup(db, "annoncesService")),
   ]);
 
-  const chalets = chaletsSnap.docs.map((d) => ({
-    id: d.id,
-    ...d.data(),
-    _collection: "chalets",
-  }));
-  const ventes = ventesSnap.docs.map((d) => ({
-    id: d.id,
-    ...d.data(),
-    _collection: "ventes",
-  }));
-  const services = servicesSnap.docs.map((d) => ({
-    id: d.id,
-    ...d.data(),
-    _collection: "services",
-    categorySlug: d.ref.parent.parent?.id || "",
-  }));
+  const chalets = chaletsSnap.docs.map((d) => mapChaletOrVenteForAdmin(d, "chalets"));
+  const ventes = ventesSnap.docs.map((d) => mapChaletOrVenteForAdmin(d, "ventes"));
+  const services = servicesSnap.docs.map((d) => mapServiceForAdmin(d));
 
   return [...chalets, ...ventes, ...services];
 }
@@ -63,20 +76,29 @@ export function getListingPublicPath(item) {
   return `/chalet/${slug}`;
 }
 
-function listingDocRef(collectionName, slug, categorySlug) {
-  if (collectionName === "services") {
-    if (!categorySlug) throw new Error("Catégorie service manquante.");
-    return doc(db, "categorieServices", categorySlug, "annoncesService", slug);
+function listingDocRef(item) {
+  const docId = item?.id;
+  if (!docId) throw new Error("Identifiant Firestore manquant.");
+
+  if (item._collection === "services") {
+    if (!item.categorySlug) throw new Error("Catégorie service manquante.");
+    return doc(db, "categorieServices", item.categorySlug, "annoncesService", docId);
   }
-  return doc(db, collectionName, slug);
+
+  return doc(db, item._collection, docId);
 }
 
-export async function approveListing(collectionName, slug, categorySlug) {
-  const ref = listingDocRef(collectionName, slug, categorySlug);
+export async function approveListing(item) {
+  const ref = listingDocRef(item);
   await updateDoc(ref, { statut: "publié", datePublication: serverTimestamp() });
 }
 
-export async function rejectListing(collectionName, slug, categorySlug) {
-  const ref = listingDocRef(collectionName, slug, categorySlug);
+export async function rejectListing(item) {
+  const ref = listingDocRef(item);
   await updateDoc(ref, { statut: "rejeté", dateRefus: serverTimestamp() });
+}
+
+export async function deleteListing(item) {
+  const ref = listingDocRef(item);
+  await deleteDoc(ref);
 }

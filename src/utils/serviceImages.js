@@ -6,11 +6,28 @@ const PRIMARY_IMAGE_BY_SLUG = {
   "rustik-decorations-en-bois-pour-chalets": "/images/services/Rustik.webp",
 };
 
+function coerceImageString(value) {
+  if (typeof value !== "string") return value;
+  return value.trim().replace(/^["']|["']$/g, "");
+}
+
 function isValidImageUrl(url) {
+  if (!url || url.length < 8) return false;
   return (
     url.startsWith("http://") ||
     url.startsWith("https://") ||
     url.startsWith("/")
+  );
+}
+
+/** Champ image principal — aligné sur mapFirestoreServiceListing. */
+export function listingPrimaryImageField(listing) {
+  return (
+    listing?.image ||
+    listing?.imageHero ||
+    listing?.image_hero ||
+    listing?.cardImage ||
+    ""
   );
 }
 
@@ -19,24 +36,43 @@ export function toImageUrl(entry) {
   if (!entry) return "";
 
   if (typeof entry === "string") {
-    const value = entry.trim();
+    const value = coerceImageString(entry);
     return isValidImageUrl(value) ? value : "";
   }
 
   if (typeof entry === "object") {
-    const candidate =
-      entry.url || entry.src || entry.downloadURL || entry.href || "";
-    return typeof candidate === "string" && isValidImageUrl(candidate.trim())
-      ? candidate.trim()
-      : "";
+    const candidate = coerceImageString(
+      entry.url ||
+        entry.src ||
+        entry.downloadURL ||
+        entry.downloadUrl ||
+        entry.href ||
+        entry.value ||
+        ""
+    );
+    return isValidImageUrl(candidate) ? candidate : "";
   }
 
   return "";
 }
 
-/** Normalise images (tableau ou map Firestore indexée). */
+/** Normalise images (tableau, map Firestore ou chaîne multiligne). */
 export function normalizeImageList(images) {
   if (!images) return [];
+
+  if (typeof images === "string") {
+    const value = coerceImageString(images);
+    if (!value) return [];
+    if (value.includes("\n") || value.includes(",")) {
+      return value
+        .split(/[\n,]+/)
+        .map((part) => toImageUrl(part))
+        .filter(Boolean);
+    }
+    const single = toImageUrl(value);
+    return single ? [single] : [];
+  }
+
   const list = Array.isArray(images) ? images : Object.values(images);
   return list.map(toImageUrl).filter(Boolean);
 }
@@ -44,7 +80,7 @@ export function normalizeImageList(images) {
 /** Vignette + galerie : la photo principale (image) est toujours en premier. */
 export function resolveServiceImages(listing) {
   const thumb =
-    toImageUrl(listing?.image) ||
+    toImageUrl(listingPrimaryImageField(listing)) ||
     (listing?.slug && PRIMARY_IMAGE_BY_SLUG[listing.slug]) ||
     "";
   const gallery = normalizeImageList(listing?.images);
@@ -61,6 +97,11 @@ export function getServicePrimaryImage(listing) {
   return resolveServiceImages(listing)[0] || "";
 }
 
+/** Vignette admin / cartes — chalets, ventes ou services. */
+export function getListingPrimaryImage(item) {
+  return resolveListingImages(item)[0] || "";
+}
+
 /** Galerie admin / détail — chalets, ventes ou services. */
 export function resolveListingImages(item) {
   if (!item) return [];
@@ -72,6 +113,6 @@ export function resolveListingImages(item) {
   const gallery = normalizeImageList(item.images);
   if (gallery.length) return gallery;
 
-  const single = toImageUrl(item.image) || toImageUrl(item.cardImage);
+  const single = toImageUrl(listingPrimaryImageField(item));
   return single ? [single] : [];
 }

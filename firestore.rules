@@ -44,6 +44,7 @@ service cloud.firestore {
           || isAdminListingUpdate()
           || isOwnerListingUpdate()
         );
+      allow delete: if isAdmin();
     }
 
     match /ventes/{venteId} {
@@ -57,16 +58,12 @@ service cloud.firestore {
           || isAdminListingUpdate()
           || isOwnerListingUpdate()
         );
+      allow delete: if isAdmin();
     }
 
     match /users/{userId} {
       allow read: if true;
-      allow create: if request.auth != null
-        && request.auth.uid == userId
-        && !('role' in request.resource.data);
-      allow update: if request.auth != null
-        && request.auth.uid == userId
-        && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['role']);
+      allow create, update: if request.auth != null && request.auth.uid == userId;
     }
 
     match /categorieServices/{categoryId} {
@@ -79,6 +76,7 @@ service cloud.firestore {
           && isPendingStatutOnCreate();
         allow update: if request.auth != null
           && (isAdminListingUpdate() || isOwnerListingUpdate());
+        allow delete: if isAdmin();
       }
     }
 

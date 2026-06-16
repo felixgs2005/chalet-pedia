@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import AdminListingDetailModal from "../components/admin/AdminListingDetailModal";
 import {
   approveListing,
+  deleteListing,
   fetchAllListingsForAdmin,
   filterPendingListings,
   filterPublishedListings,
@@ -10,11 +11,19 @@ import {
   getListingPublicPath,
   rejectListing,
 } from "../services/adminFirestore";
+import { getListingPrimaryImage } from "../utils/serviceImages";
+import { mapFirebaseError } from "../utils/firebaseErrors";
 import "../styles/admin.css";
+
+const MODERATION_ACTIONS = {
+  approve: { update: approveListing, statut: "publié" },
+  reject: { update: rejectListing, statut: "rejeté" },
+};
 
 const TABS = [
   { id: "list", label: "Liste d'annonces" },
   { id: "manage", label: "Gérer annonces" },
+  { id: "rejected", label: "Refusées" },
 ];
 
 function listingLabel(item) {
@@ -42,6 +51,24 @@ function matchesSearch(item, query) {
     .join(" ")
     .toLowerCase();
   return haystack.includes(query.toLowerCase());
+}
+
+function AdminListingThumb({ item }) {
+  const src = getListingPrimaryImage(item);
+  if (!src) return null;
+
+  return (
+    <div className="admin-card__media">
+      <img
+        src={src}
+        alt=""
+        className="admin-card__thumb"
+        onError={(e) => {
+          e.currentTarget.parentElement.hidden = true;
+        }}
+      />
+    </div>
+  );
 }
 
 export default function Admin() {
@@ -81,41 +108,50 @@ export default function Admin() {
     [published, searchQuery]
   );
 
-  async function handleApprove(item) {
+  async function handleModeration(item, action) {
+    const { update, statut } = MODERATION_ACTIONS[action];
     const key = `${item._collection}-${item.id}`;
     setActionId(key);
     setError(null);
     try {
-      await approveListing(item._collection, item.slug || item.id, item.categorySlug);
+      await update(item);
       setListings((prev) =>
         prev.map((p) =>
-          p.id === item.id && p._collection === item._collection ? { ...p, statut: "publié" } : p
+          p.id === item.id && p._collection === item._collection ? { ...p, statut } : p
         )
       );
       setDetailItem(null);
     } catch (e) {
       console.error(e);
-      setError(e.message || String(e));
+      setError(mapFirebaseError(e));
     } finally {
       setActionId(null);
     }
   }
 
-  async function handleReject(item) {
+  async function handleDelete(item) {
+    const label = listingLabel(item);
+    if (
+      !window.confirm(
+        `Supprimer définitivement « ${label} » ? Cette action est irréversible.`
+      )
+    ) {
+      return;
+    }
+
     const key = `${item._collection}-${item.id}`;
     setActionId(key);
     setError(null);
     try {
-      await rejectListing(item._collection, item.slug || item.id, item.categorySlug);
+      await deleteListing(item);
       setListings((prev) =>
-        prev.map((p) =>
-          p.id === item.id && p._collection === item._collection ? { ...p, statut: "rejeté" } : p
-        )
+        prev.filter((p) => !(p.id === item.id && p._collection === item._collection))
       );
       setDetailItem(null);
     } catch (e) {
       console.error(e);
-      setError(e.message || String(e));
+      setError(mapFirebaseError(e));
+      window.scrollTo({ top: 0, behavior: "smooth" });
     } finally {
       setActionId(null);
     }
@@ -158,12 +194,10 @@ export default function Admin() {
             <span className="admin-stat__value">{pending.length}</span>
             <span className="admin-stat__label">En attente</span>
           </article>
-          {rejected.length > 0 ? (
-            <article className="admin-stat admin-stat--rejected">
-              <span className="admin-stat__value">{rejected.length}</span>
-              <span className="admin-stat__label">Refusées</span>
-            </article>
-          ) : null}
+          <article className="admin-stat admin-stat--rejected">
+            <span className="admin-stat__value">{rejected.length}</span>
+            <span className="admin-stat__label">Refusées</span>
+          </article>
           <article className="admin-stat admin-stat--total">
             <span className="admin-stat__value">{listings.length}</span>
             <span className="admin-stat__label">Total</span>
@@ -255,7 +289,7 @@ export default function Admin() {
               </ul>
             )}
           </section>
-        ) : (
+        ) : activeTab === "manage" ? (
           <section className="admin-panel" role="tabpanel">
             <div className="admin-panel__head">
               <div>
@@ -279,6 +313,7 @@ export default function Admin() {
                   const busy = actionId === key;
                   return (
                     <li key={key} className="admin-card admin-card--pending">
+                      <AdminListingThumb item={item} />
                       <div className="admin-card__main">
                         <div className="admin-card__badges">
                           <span className="admin-badge admin-badge--type">
@@ -310,7 +345,7 @@ export default function Admin() {
                           type="button"
                           className="admin-btn admin-btn--accept"
                           disabled={busy}
-                          onClick={() => handleApprove(item)}
+                          onClick={() => handleModeration(item, "approve")}
                         >
                           {busy ? "…" : "Accepter"}
                         </button>
@@ -318,9 +353,83 @@ export default function Admin() {
                           type="button"
                           className="admin-btn admin-btn--reject"
                           disabled={busy}
-                          onClick={() => handleReject(item)}
+                          onClick={() => handleModeration(item, "reject")}
                         >
                           Refuser
+                        </button>
+                      </div>
+                    </li>
+                  );
+                })}
+              </ul>
+            )}
+          </section>
+        ) : (
+          <section className="admin-panel" role="tabpanel">
+            <div className="admin-panel__head">
+              <div>
+                <h2 className="admin-panel__title">Annonces refusées</h2>
+                <p className="admin-panel__desc">
+                  Annonces rejetées — consultez les détails, republiez ou supprimez définitivement.
+                </p>
+              </div>
+              <span className="admin-panel__count admin-panel__count--rejected">{rejected.length}</span>
+            </div>
+
+            {rejected.length === 0 ? (
+              <div className="admin-empty">
+                <p>Aucune annonce refusée pour le moment.</p>
+              </div>
+            ) : (
+              <ul className="admin-cards">
+                {rejected.map((item) => {
+                  const key = `${item._collection}-${item.id}`;
+                  const busy = actionId === key;
+                  return (
+                    <li key={key} className="admin-card admin-card--rejected">
+                      <AdminListingThumb item={item} />
+                      <div className="admin-card__main">
+                        <div className="admin-card__badges">
+                          <span className="admin-badge admin-badge--type">
+                            {collectionLabel(item._collection)}
+                          </span>
+                          <span className="admin-badge admin-badge--rejected">Refusée</span>
+                        </div>
+                        <h3 className="admin-card__title">{listingLabel(item)}</h3>
+                        {(item.region || item.regionLabel || item.localisation) ? (
+                          <p className="admin-card__region">
+                            {item.region || item.regionLabel || item.localisation}
+                            {item.categorySlug ? ` · ${item.categorySlug}` : ""}
+                          </p>
+                        ) : item.categorySlug ? (
+                          <p className="admin-card__region">{item.categorySlug}</p>
+                        ) : null}
+                        <p className="admin-card__slug">{item.slug || item.id}</p>
+                      </div>
+                      <div className="admin-card__actions admin-card__actions--manage">
+                        <button
+                          type="button"
+                          className="admin-btn admin-btn--ghost"
+                          disabled={busy}
+                          onClick={() => setDetailItem(item)}
+                        >
+                          Voir détails
+                        </button>
+                        <button
+                          type="button"
+                          className="admin-btn admin-btn--accept"
+                          disabled={busy}
+                          onClick={() => handleModeration(item, "approve")}
+                        >
+                          {busy ? "…" : "Republier"}
+                        </button>
+                        <button
+                          type="button"
+                          className="admin-btn admin-btn--delete"
+                          disabled={busy}
+                          onClick={() => handleDelete(item)}
+                        >
+                          {busy ? "…" : "Supprimer"}
                         </button>
                       </div>
                     </li>

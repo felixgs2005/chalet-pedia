@@ -1,7 +1,7 @@
 /** Identifiants admin (vérification locale — hash SHA-256, jamais le mot de passe en clair). */
 export const ADMIN_EMAIL = "wintechnologie830@gmail.com";
 
-/** SHA-256 hex du mot de passe admin. Regénérer avec hashAdminPassword() si changement. */
+/** SHA-256 hex du mot de passe admin. Regénérer via : node -e "..." (voir README ou commit précédent). */
 export const ADMIN_PASSWORD_HASH =
   "98c0fd71493c2bb35676ad55809477a6714c65d874dd585bad47314928409294";
 
@@ -13,6 +13,10 @@ export function clearAdminSession() {
 
 export function normalizeAdminEmail(email) {
   return String(email || "").trim().toLowerCase();
+}
+
+export function isAdminFirebaseUser(user) {
+  return Boolean(user?.uid) && normalizeAdminEmail(user.email) === normalizeAdminEmail(ADMIN_EMAIL);
 }
 
 export function readAdminSession() {
@@ -40,7 +44,7 @@ export function writeAdminSession() {
   );
 }
 
-export async function hashAdminPassword(plain) {
+async function hashAdminPassword(plain) {
   const data = new TextEncoder().encode(String(plain));
   const hashBuffer = await crypto.subtle.digest("SHA-256", data);
   return Array.from(new Uint8Array(hashBuffer))
