@@ -6,7 +6,7 @@ service cloud.firestore {
       return request.resource.data.diff(resource.data).affectedKeys().hasOnly(['note', 'nombreAvis']);
     }
 
-    // Courriel admin : synchroniser avec src/config/adminEmail.json
+    // Courriel admin : synchroniser avec functions/adminEmail.json et src/config/adminEmail.json
     function adminEmail() {
       return 'wintechnologie830@gmail.com';
     }
@@ -66,6 +66,7 @@ service cloud.firestore {
 
     match /users/{userId} {
       allow read: if true;
+      // Pas de champ role : l'admin est fixé par courriel (adminEmail.json / firestore.rules).
       allow create: if request.auth != null
         && request.auth.uid == userId
         && !('role' in request.resource.data);

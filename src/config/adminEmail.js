@@ -1,6 +1,6 @@
 import adminEmailConfig from "./adminEmail.json";
 
-/** Courriel admin — source unique : src/config/adminEmail.json */
+/** Courriel admin — synchroniser avec functions/adminEmail.json */
 export const ADMIN_EMAIL = adminEmailConfig.email;
 
 export function normalizeAdminEmail(email) {
