@@ -7,6 +7,7 @@ const {
   sendNewListingAdminEmail,
 } = require("./SendEmail");
 const { createPasswordResetHandlers } = require("./passwordReset");
+const { createStripeHandlers } = require("./stripe");
 
 initializeApp();
 
@@ -15,8 +16,17 @@ const region = process.env.FUNCTIONS_REGION || "northamerica-northeast1";
 const { requestPasswordResetCode, resetPasswordWithCode } =
   createPasswordResetHandlers(region);
 
+const {
+  createCheckoutSession,
+  createBillingPortalSession,
+  stripeWebhook,
+} = createStripeHandlers(region);
+
 exports.requestPasswordResetCode = requestPasswordResetCode;
 exports.resetPasswordWithCode = resetPasswordWithCode;
+exports.createCheckoutSession = createCheckoutSession;
+exports.createBillingPortalSession = createBillingPortalSession;
+exports.stripeWebhook = stripeWebhook;
 
 /**
  * Déclenchée à la création d'un document dans contactMessages (formulaire Contact.jsx).

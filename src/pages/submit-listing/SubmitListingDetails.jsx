@@ -19,6 +19,7 @@ import { mapFirebaseError } from "../../utils/firebaseErrors";
 import { promiseWithTimeout } from "../../utils/promiseWithTimeout";
 import { syncUserCourriel } from "../../services/userProfileFirestore";
 import { parsePrixDigits } from "../../utils/formatPrix";
+import SubscriptionPrompt from "../../components/SubscriptionPrompt";
 
 const CATEGORIES = [
   { value: "chalets-louer", label: "Chalets à louer", short: "À louer" },
@@ -81,7 +82,7 @@ function Req() {
 }
 
 export default function SubmitListingDetails() {
-  const { currentUser } = useAuth();
+  const { currentUser, hasChaletsSubscription, profileLoading } = useAuth();
   const fileInputRef = useRef(null);
   const [form, setForm] = useState(EMPTY_FORM);
   const [slugTouched, setSlugTouched] = useState(false);
@@ -274,6 +275,24 @@ export default function SubmitListingDetails() {
     });
     setPhotos([]);
   };
+
+  if (profileLoading) {
+    return (
+      <div className="submit-listing-page">
+        <div className="submit-listing-page__inner">
+          <p className="submit-listing-page__intro">Chargement…</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!hasChaletsSubscription) {
+    return (
+      <div className="submit-listing-page">
+        <SubscriptionPrompt plan="chalets" />
+      </div>
+    );
+  }
 
   return (
     <div className="submit-listing-page">

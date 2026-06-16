@@ -38,11 +38,19 @@ service cloud.firestore {
         || request.resource.data.statut in ['En attente', 'en attente', 'en_attente', 'pending'];
     }
 
+    function hasActiveSubscription(plan) {
+      let userData = get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
+      return 'subscriptions' in userData
+        && plan in userData.subscriptions
+        && userData.subscriptions[plan].status in ['active', 'trialing'];
+    }
+
     match /chalets/{chaletId} {
       allow read: if true;
       allow create: if request.auth != null
         && request.resource.data.proprietaireId == request.auth.uid
-        && isPendingStatutOnCreate();
+        && isPendingStatutOnCreate()
+        && hasActiveSubscription('chalets');
       allow update: if request.auth != null
         && (
           isAvisStatsUpdate()
@@ -56,7 +64,8 @@ service cloud.firestore {
       allow read: if true;
       allow create: if request.auth != null
         && request.resource.data.proprietaireId == request.auth.uid
-        && isPendingStatutOnCreate();
+        && isPendingStatutOnCreate()
+        && hasActiveSubscription('chalets');
       allow update: if request.auth != null
         && (
           isAvisStatsUpdate()
@@ -71,15 +80,23 @@ service cloud.firestore {
         || !('role' in request.resource.data);
     }
 
+    function userServerFieldsSafe() {
+      return userRoleFieldSafe()
+        && !request.resource.data.diff(resource.data).affectedKeys()
+          .hasAny(['subscriptions', 'stripeCustomerId']);
+    }
+
     match /users/{userId} {
       allow read: if true;
       // Pas de champ role : l'admin est fixé par courriel (adminEmail.json / firestore.rules).
       allow create: if request.auth != null
         && request.auth.uid == userId
-        && !('role' in request.resource.data);
+        && !('role' in request.resource.data)
+        && !('subscriptions' in request.resource.data)
+        && !('stripeCustomerId' in request.resource.data);
       allow update: if request.auth != null
         && request.auth.uid == userId
-        && userRoleFieldSafe();
+        && userServerFieldsSafe();
     }
 
     match /categorieServices/{categoryId} {
@@ -87,9 +104,9 @@ service cloud.firestore {
       match /annoncesService/{listingId} {
         allow read: if true;
         allow create: if request.auth != null
-          && (!('proprietaireId' in request.resource.data)
-              || request.resource.data.proprietaireId == request.auth.uid)
-          && isPendingStatutOnCreate();
+          && request.resource.data.proprietaireId == request.auth.uid
+          && isPendingStatutOnCreate()
+          && hasActiveSubscription('services');
         allow update: if request.auth != null
           && (isAdminListingUpdate() || isOwnerListingUpdate());
         allow delete: if isAdmin();

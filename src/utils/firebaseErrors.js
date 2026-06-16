@@ -5,7 +5,7 @@ export function mapFirebaseError(err) {
 
   switch (code) {
     case "permission-denied":
-      return "Accès refusé. Vérifiez que vous êtes connecté et que les règles Firestore sont à jour, puis réessayez.";
+      return "Accès refusé. Un abonnement actif peut être requis — consultez Compte → Abonnements.";
     case "not-found":
       return "Annonce introuvable dans Firestore. Rechargez la page et réessayez.";
     case "unauthenticated":

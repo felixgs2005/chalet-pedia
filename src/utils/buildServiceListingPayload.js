@@ -34,7 +34,7 @@ function parseImageList(main, extra) {
 /**
  * Convertit le formulaire annonceur → document Firestore annoncesService.
  */
-export function buildServiceListingPayload(form, { imageUrls = [] } = {}) {
+export function buildServiceListingPayload(form, { imageUrls = [], proprietaireId } = {}) {
   const images =
     imageUrls.length > 0
       ? imageUrls
@@ -69,6 +69,7 @@ export function buildServiceListingPayload(form, { imageUrls = [] } = {}) {
     numero: form.numero?.trim() ? String(form.numero).trim() : "",
     datePublication: form.datePublication?.trim() || formatPublicationDateFr(),
     statut: "En attente",
+    proprietaireId: proprietaireId || "",
     image: images[0] || "",
     images,
     description,

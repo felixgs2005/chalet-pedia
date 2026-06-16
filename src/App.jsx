@@ -35,6 +35,7 @@ import RequireAuth from "./components/RequireAuth";
 import RequireAdmin from "./components/RequireAdmin";
 import Reglages from "./pages/compte/Reglages";
 import Favoris from "./pages/compte/Favoris";
+import Abonnement from "./pages/compte/Abonnement";
 import "./styles/global.css";
 import "./styles/compte.css";
 import "./styles/submit-listing.css";
@@ -97,6 +98,14 @@ export default function App() {
                       <Route path="/politique-de-confidentialite/" element={<PolitiqueConfidentialite />} />
                       <Route path="/conditions-utilisation/" element={<ConditionsUtilisation />} />
                       <Route path="/a-propos/" element={<APropos />} />
+                      <Route
+                        path="/compte/abonnement/"
+                        element={
+                          <RequireAuth>
+                            <Abonnement />
+                          </RequireAuth>
+                        }
+                      />
                       <Route
                         path="/compte/reglages/"
                         element={

@@ -1,13 +1,14 @@
 // src/pages/AccueilServices.jsx
 // Données chargées depuis Firestore (categorieServices + annoncesService).
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Link, useSearchParams } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import {
   categorySelectGroups,
   getTotalAnnonces,
   pluralizeAnnonce,
 } from "../data/services";
 import { useServiceCategories } from "../hooks/useServiceCategories";
+import { useAuth } from "../context/AuthContext";
 import RegisterServiceModal from "../components/RegisterServiceModal";
 
 function useReveal() {
@@ -49,6 +50,8 @@ function useReveal() {
 }
 
 export default function AccueilServices() {
+  const navigate = useNavigate();
+  const { currentUser } = useAuth();
   const [searchParams, setSearchParams] = useSearchParams();
   const { categories: serviceCategories, loading, error } = useServiceCategories();
   const [selectedCategory, setSelectedCategory] = useState("all");
@@ -58,14 +61,27 @@ export default function AccueilServices() {
 
   const openRegisterFromUrl = searchParams.get("inscrire") === "1";
 
+  const openRegisterModal = () => {
+    if (!currentUser) {
+      navigate("/auth", { state: { from: "/chalets/services/?inscrire=1" } });
+      return;
+    }
+    setRegisterOpen(true);
+  };
+
   useEffect(() => {
     if (!openRegisterFromUrl || loading || error) return;
+
+    if (!currentUser) {
+      navigate("/auth", { state: { from: "/chalets/services/?inscrire=1" } });
+      return;
+    }
 
     setRegisterOpen(true);
     const next = new URLSearchParams(searchParams);
     next.delete("inscrire");
     setSearchParams(next, { replace: true });
-  }, [openRegisterFromUrl, loading, error, searchParams, setSearchParams]);
+  }, [openRegisterFromUrl, loading, error, searchParams, setSearchParams, currentUser, navigate]);
 
   const serviceCategorySlugs = useMemo(
     () => new Set(serviceCategories.map((c) => c.slug)),
@@ -281,7 +297,7 @@ export default function AccueilServices() {
             <button
               type="button"
               className={`services-cta__btn${registerOpen ? " is-pressed" : ""}`}
-              onClick={() => setRegisterOpen(true)}
+              onClick={openRegisterModal}
             >
               Inscrivez vos services →
             </button>

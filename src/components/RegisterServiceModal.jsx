@@ -1,6 +1,9 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import ActionModal from "./ActionModal";
 import ServicePhotoPicker from "./ServicePhotoPicker";
+import { useAuth } from "../context/AuthContext";
+import SubscriptionPrompt from "./SubscriptionPrompt";
 import { buildServiceListingPayload, slugifyServiceTitle } from "../utils/buildServiceListingPayload";
 import { submitServiceListing } from "../services/submitServiceListing";
 import { uploadServiceListingImages } from "../services/uploadServiceListingImages";
@@ -51,6 +54,7 @@ function FieldLabel({ htmlFor, required, children }) {
 
 /** Formulaire d'inscription annonce service → Firestore annoncesService. */
 export default function RegisterServiceModal({ open, onClose }) {
+  const { currentUser, hasServicesSubscription, profileLoading } = useAuth();
   const [form, setForm] = useState(EMPTY_FORM);
   const [slugTouched, setSlugTouched] = useState(false);
   const [sent, setSent] = useState(false);
@@ -116,6 +120,15 @@ export default function RegisterServiceModal({ open, onClose }) {
       return;
     }
 
+    if (!currentUser?.uid) {
+      setError("Vous devez être connecté pour publier une annonce.");
+      return;
+    }
+    if (!hasServicesSubscription) {
+      setError("Un abonnement services actif est requis pour publier.");
+      return;
+    }
+
     const services = form.services.map((s) => s.trim()).filter(Boolean);
 
     if (!form.categorie || !form.titre.trim() || !form.slug.trim()) {
@@ -141,7 +154,7 @@ export default function RegisterServiceModal({ open, onClose }) {
 
       const payload = buildServiceListingPayload(
         { ...form, services },
-        { imageUrls }
+        { imageUrls, proprietaireId: currentUser.uid }
       );
       await submitServiceListing(form.categorie, payload);
       setSent(true);
@@ -164,7 +177,33 @@ export default function RegisterServiceModal({ open, onClose }) {
       title="Inscription au répertoire"
       titleId="sd-modal-register-title"
       className="sd-action-modal--wide sd-action-modal--form"
-      renderBody={({ requestClose }) => (
+      renderBody={({ requestClose }) => {
+        if (profileLoading) {
+          return <p className="sd-action-modal__intro">Chargement…</p>;
+        }
+
+        if (!currentUser) {
+          return (
+            <div className="sd-action-modal__intro">
+              <p>Connectez-vous pour inscrire votre service.</p>
+              <Link
+                to="/auth"
+                state={{ from: "/chalets/services/?inscrire=1" }}
+                className="btn btn-primary"
+                style={{ marginTop: 16, display: "inline-block" }}
+                onClick={() => requestClose()}
+              >
+                Se connecter
+              </Link>
+            </div>
+          );
+        }
+
+        if (!hasServicesSubscription) {
+          return <SubscriptionPrompt plan="services" />;
+        }
+
+        return (
         <form
           className="sd-action-modal__form sd-register-form"
           onSubmit={(e) => handleSubmit(e, requestClose)}
@@ -452,7 +491,8 @@ export default function RegisterServiceModal({ open, onClose }) {
               : "Soumettre l'inscription"}
           </button>
         </form>
-      )}
+        );
+      }}
     />
   );
 }
