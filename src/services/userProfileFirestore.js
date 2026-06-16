@@ -2,8 +2,6 @@ import { doc, getDoc, serverTimestamp, setDoc } from "firebase/firestore";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { db, storage } from "../firebase";
 
-export { isAdminRole } from "../utils/adminRole";
-
 export async function fetchUserProfile(uid) {
   if (!uid) return null;
   const snap = await getDoc(doc(db, "users", uid));

@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import { useAdminAuth } from "../context/AdminAuthContext";
 import UserMenu from "./UserMenu";
 import { LISTING_EXPERIENCES } from "../data/listingExperiences";
 import { LISTING_PREFIX } from "../data/listingPageSlug";
@@ -10,7 +11,8 @@ const HEADER_EXPERIENCE_KEYS = ["animaux", "bordEau", "spa", "boise"];
 
 export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
-  const { currentUser, logout } = useAuth();
+  const { currentUser } = useAuth();
+  const { logout } = useAdminAuth();
 
   return (
     <header className="header">

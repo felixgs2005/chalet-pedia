@@ -2,16 +2,11 @@ import React, { createContext, useContext, useEffect, useState } from "react";
 import { auth } from "../firebase";
 import {
   signInWithEmailAndPassword,
-  signOut,
   createUserWithEmailAndPassword,
   onAuthStateChanged,
   sendPasswordResetEmail,
 } from "firebase/auth";
-import {
-  fetchUserProfile,
-  isAdminRole,
-  syncUserCourriel,
-} from "../services/userProfileFirestore";
+import { syncUserCourriel } from "../services/userProfileFirestore";
 
 const AuthContext = createContext();
 
@@ -21,9 +16,7 @@ export function useAuth() {
 
 export function AuthProvider({ children }) {
   const [currentUser, setCurrentUser] = useState(null);
-  const [userProfile, setUserProfile] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [profileLoading, setProfileLoading] = useState(false);
 
   function signup(email, password) {
     return createUserWithEmailAndPassword(auth, email, password);
@@ -31,10 +24,6 @@ export function AuthProvider({ children }) {
 
   function login(email, password) {
     return signInWithEmailAndPassword(auth, email, password);
-  }
-
-  function logout() {
-    return signOut(auth);
   }
 
   function resetPassword(email) {
@@ -46,27 +35,17 @@ export function AuthProvider({ children }) {
       setCurrentUser(user);
 
       if (!user?.uid) {
-        setUserProfile(null);
-        setProfileLoading(false);
         setLoading(false);
         return;
       }
 
-      setProfileLoading(true);
       try {
-        const profile = await fetchUserProfile(user.uid);
-        setUserProfile(profile);
-
         if (user.email) {
-          syncUserCourriel(user.uid, user.email).catch((err) => {
-            console.error("syncUserCourriel:", err);
-          });
+          await syncUserCourriel(user.uid, user.email);
         }
       } catch (err) {
-        console.error("fetchUserProfile:", err);
-        setUserProfile(null);
+        console.error("syncUserCourriel:", err);
       } finally {
-        setProfileLoading(false);
         setLoading(false);
       }
     });
@@ -74,19 +53,11 @@ export function AuthProvider({ children }) {
     return unsubscribe;
   }, []);
 
-  const role = userProfile?.role ?? null;
-  const isAdmin = isAdminRole(role);
-
   const value = {
     currentUser,
-    userProfile,
-    role,
-    isAdmin,
     loading,
-    profileLoading,
     login,
     signup,
-    logout,
     resetPassword,
   };
 

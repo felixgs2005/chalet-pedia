@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
 import { useFavorisCount } from "../context/FavorisCountContext";
 
 const IconUser = () => (
@@ -28,7 +27,6 @@ function displayNameFromUser(user) {
 }
 
 export default function UserMenu({ user, onLogout, onNavigate }) {
-  const { isAdmin } = useAuth();
   const { count: favorisCount } = useFavorisCount();
   const [open, setOpen] = useState(false);
   const rootRef = useRef(null);
@@ -98,11 +96,6 @@ export default function UserMenu({ user, onLogout, onNavigate }) {
         <Link to="/compte/reglages/" className="nav-user-dropdown__item" role="menuitem" onClick={handleNav}>
           Réglages
         </Link>
-        {isAdmin ? (
-          <Link to="/admin/dashboard" className="nav-user-dropdown__item" role="menuitem" onClick={handleNav}>
-            Administration
-          </Link>
-        ) : null}
         <button type="button" className="nav-user-dropdown__item" role="menuitem" onClick={handleLogout}>
           Se déconnecter
         </button>
