@@ -34,7 +34,34 @@ Stripe → **Produits** → **Ajouter un produit**
 - Fréquence : **Annuel**
 - Copier l’ID : `price_...` → variable `STRIPE_PRICE_SERVICES`
 
-> **Important :** choisir **Recurring / Yearly**, pas un paiement unique.
+> **Important :** choisir **Recurring / Yearly**, pas un paiement unique.  
+> Les prix sont **hors taxes** : la TPS et la TVQ s'ajoutent au paiement (voir section 2b).
+
+---
+
+## 2b. Activer Stripe Tax (TPS + TVQ)
+
+Les taxes québécoises sont calculées automatiquement au checkout et à chaque renouvellement.
+
+1. Stripe → **Settings** → **Tax** → activer **Stripe Tax**
+2. Indiquer l'adresse de votre entreprise (Québec)
+3. Ajouter les enregistrements fiscaux :
+   - **TPS** (fédéral, 5 %)
+   - **TVQ** (Québec, 9,975 %)
+4. Vérifier que les prix produits sont en **tax exclusive** (hors taxes) — c'est le comportement par défaut
+
+Au checkout Stripe, le client saisit son **adresse de facturation** ; le total affiché inclut alors TPS + TVQ. Exemples au Québec :
+
+| Plan | Hors taxes | Total estimé (Québec) |
+|------|------------|------------------------|
+| Chalets | 90,00 $ | ~103,93 $ |
+| Services | 45,00 $ | ~51,96 $ |
+
+Après activation de Stripe Tax, redéployer `createCheckoutSession` :
+
+```bash
+firebase deploy --only functions:createCheckoutSession
+```
 
 ---
 

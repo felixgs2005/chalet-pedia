@@ -271,6 +271,13 @@ function createStripeHandlers(region) {
       mode: "subscription",
       customer: customerId,
       line_items: [{ price: priceId, quantity: 1 }],
+      // TPS + TVQ (Québec) : calcul automatique via Stripe Tax selon l'adresse de facturation.
+      automatic_tax: { enabled: true },
+      billing_address_collection: "required",
+      customer_update: {
+        address: "auto",
+        name: "auto",
+      },
       // Abonnement récurrent annuel — prélèvement automatique à chaque échéance.
       success_url: `${origin}/compte/abonnement/?success=1&plan=${plan}`,
       cancel_url: `${origin}/compte/abonnement/?canceled=1&plan=${plan}`,
