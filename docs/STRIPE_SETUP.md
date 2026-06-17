@@ -176,16 +176,127 @@ Cartes de test : [https://docs.stripe.com/testing](https://docs.stripe.com/testi
 
 ---
 
-## 9. Passer en production
+## 9. Passer en production — recevoir de l'argent réel
 
-1. Stripe → **Live mode**
-2. Recréer les 2 prix en live (IDs `price_...` différents)
-3. Remplacer sur Firebase :
-   - `STRIPE_SECRET_KEY` → `sk_live_...`
-   - `STRIPE_PRICE_CHALETS` / `STRIPE_PRICE_SERVICES` → IDs live
-4. Créer un **nouveau webhook live** (même URL function, nouveau `whsec_...`)
-5. Redéployer les functions Stripe
-6. Finaliser l’activation du compte Stripe (identité, compte bancaire)
+En **mode Test** (`sk_test_...`, carte `4242 4242 4242 4242`), **aucun vrai argent** n'est encaissé. Pour que le propriétaire du site reçoive l'argent sur son compte bancaire, il faut activer le **mode Live** et lier un compte bancaire à Stripe.
+
+> Le code ChaletPedia (checkout, webhook, abonnements, courriels) est déjà prêt. Cette section décrit uniquement la configuration Stripe et Firebase — **aucune modification de code n'est requise**.
+
+### 9.1 Compléter le compte Stripe (obligatoire)
+
+Stripe Dashboard → **Settings** → **Business** / **Compte**
+
+Renseigner :
+
+- nom de l'entreprise (ou nom légal)
+- adresse au Québec
+- numéros de taxes si demandés (TPS / TVQ)
+- **compte bancaire canadien** où Stripe versera les fonds
+- pièce d'identité du représentant (vérification KYC)
+
+Sans cette étape, Stripe ne peut pas virer l'argent sur le compte bancaire.
+
+### 9.2 Passer en mode Live
+
+Interrupteur **Test / Live** en haut à droite du Dashboard → passer en **Live**.
+
+Tout ce qui est configuré ensuite (produits, clés API, webhooks, Stripe Tax) concerne les **vrais** paiements.
+
+### 9.3 Recréer les produits et prix en Live
+
+Les IDs `price_...` du mode Test **ne fonctionnent pas** en Live. Recréer les deux produits (section 2) :
+
+| Produit | Prix hors taxes | Fréquence |
+|---------|-----------------|-----------|
+| Annonces chalets | 90,00 $ CAD | Annuel |
+| Annonces services | 45,00 $ CAD | Annuel |
+
+Copier les **nouveaux** IDs `price_...` (mode Live).
+
+### 9.4 Activer Stripe Tax en Live
+
+Stripe → **Settings** → **Tax** → activer **Stripe Tax** aussi en **mode Live** :
+
+- adresse de l'entreprise
+- enregistrements **TPS** (5 %) et **TVQ** (9,975 %)
+
+Sans cela, les taxes ne seront pas calculées correctement au checkout en production.
+
+### 9.5 Mettre à jour les variables Firebase (Cloud Functions)
+
+Remplacer les valeurs **test** par les valeurs **live** sur les services Cloud Run :
+
+- `createCheckoutSession`
+- `createBillingPortalSession`
+- `stripeWebhook`
+
+| Variable | Valeur Live |
+|----------|-------------|
+| `STRIPE_SECRET_KEY` | `sk_live_...` |
+| `STRIPE_PRICE_CHALETS` | `price_...` (live) |
+| `STRIPE_PRICE_SERVICES` | `price_...` (live) |
+| `STRIPE_WEBHOOK_SECRET` | `whsec_...` (webhook live) |
+| `APP_ORIGIN` | URL de production du site |
+
+**Script PowerShell :**
+
+```powershell
+cd scripts
+.\set-stripe-env.ps1
+```
+
+Entrer les clés et IDs **live** lorsque le script le demande. Le script conserve les variables SMTP si elles existent déjà.
+
+### 9.6 Créer un webhook Live
+
+Stripe → **Developers** → **Webhooks** → **Add endpoint** (en mode **Live**) :
+
+- **URL** : celle de `stripeWebhook` (déjà déployée — voir section 6)
+- **Événements** :
+  - `checkout.session.completed`
+  - `invoice.payment_succeeded`
+  - `customer.subscription.updated`
+  - `customer.subscription.deleted`
+
+Copier le nouveau **Signing secret** `whsec_...` (live) et l'ajouter dans `STRIPE_WEBHOOK_SECRET`.
+
+### 9.7 Activer le portail client en Live
+
+Stripe → **Settings** → **Billing** → **Customer portal** (mode Live)
+
+- Activer le portail
+- Autoriser : voir factures, mettre à jour la carte, annuler l'abonnement
+
+Utilisé par **Gérer la facturation** sur `/compte/abonnement/`.
+
+### 9.8 Comment l'argent arrive sur le compte bancaire
+
+1. Un utilisateur paie sur `/compte/abonnement/` avec une **carte réelle**
+2. Stripe encaisse le montant (ex. ~103,93 $ pour chalets au Québec, taxes incluses)
+3. Stripe prélève ses **frais de transaction** (environ 2,9 % + 0,30 $ par transaction au Canada — vérifier sur votre compte Stripe)
+4. Le **solde net** est versé sur le compte bancaire lié selon le **calendrier de paiements** Stripe (souvent tous les 2 à 7 jours ouvrables selon l'historique du compte)
+
+Suivi dans Stripe Dashboard → **Balance** / **Payouts** (Virements).
+
+### 9.9 Checklist avant d'ouvrir aux vrais clients
+
+- [ ] Compte Stripe vérifié + compte bancaire canadien lié
+- [ ] Mode **Live** activé
+- [ ] 2 prix live créés (90 $ et 45 $ hors taxes)
+- [ ] Stripe Tax live activé (TPS + TVQ)
+- [ ] Variables `sk_live_`, `price_...`, `whsec_...` sur Firebase / Cloud Run
+- [ ] Webhook live configuré et testé (événements en vert)
+- [ ] Portail client live activé
+- [ ] Variables SMTP sur `stripewebhook` (courriels de confirmation)
+- [ ] Site en production sur l'URL réelle (`APP_ORIGIN`)
+- [ ] Test avec **votre propre carte** (petit montant réel ; remboursement possible depuis le Dashboard si besoin)
+
+### 9.10 Notes légales et fiscales
+
+- Vous devez être enregistré pour collecter la **TPS** et la **TVQ** si vous dépassez les seuils d'inscription
+- Les factures Stripe (PDF) servent de preuve pour la comptabilité
+- Conserver les accès au Dashboard Stripe et les exports pour les déclarations fiscales
+- Les montants affichés sur le site (`90+taxes`, `45+taxes`) sont **hors taxes** ; le total exact est calculé par Stripe au checkout selon l'adresse du client
 
 ---
 
@@ -198,8 +309,9 @@ Cartes de test : [https://docs.stripe.com/testing](https://docs.stripe.com/testi
 | Blocage publication sans abonnement | Variables Firebase |
 | Règles Firestore | Déploiement functions + rules |
 | Modale abonnement services | Webhook Stripe |
-| | Portail client Stripe |
-| | Tests puis passage live |
+| Courriel confirmation + facture | Portail client Stripe |
+| Taxes TPS/TVQ (Stripe Tax) | Activation compte + compte bancaire |
+| | Passage mode Live (section 9) |
 
 ---
 
