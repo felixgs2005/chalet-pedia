@@ -1,6 +1,7 @@
 const Stripe = require("stripe");
 const { getFirestore, FieldValue, Timestamp } = require("firebase-admin/firestore");
 const { onCall, onRequest, HttpsError } = require("firebase-functions/v2/https");
+const { sendSubscriptionConfirmationEmail } = require("./SendEmail");
 
 const PLAN_KEYS = new Set(["chalets", "services"]);
 const ACTIVE_STATUSES = new Set(["active", "trialing"]);
@@ -49,6 +50,25 @@ async function getOrCreateStripeCustomer(db, uid, email) {
   return customer.id;
 }
 
+function getSubscriptionPeriodEnd(subscription) {
+  if (!subscription) return null;
+
+  const legacy = Number(subscription.current_period_end);
+  if (Number.isFinite(legacy) && legacy > 0) {
+    return legacy;
+  }
+
+  const items = subscription.items?.data || [];
+  let latestEnd = null;
+  for (const item of items) {
+    const end = Number(item.current_period_end);
+    if (Number.isFinite(end) && end > 0 && (latestEnd === null || end > latestEnd)) {
+      latestEnd = end;
+    }
+  }
+  return latestEnd;
+}
+
 async function syncSubscriptionToFirestore(subscription) {
   const db = getFirestore();
   const uid =
@@ -64,16 +84,18 @@ async function syncSubscriptionToFirestore(subscription) {
     return;
   }
 
+  const periodEndUnix = getSubscriptionPeriodEnd(subscription);
   const subData = {
     status: subscription.status,
     stripeSubscriptionId: subscription.id,
     stripePriceId: priceId || "",
-    currentPeriodEnd: Timestamp.fromMillis(
-      subscription.current_period_end * 1000
-    ),
     cancelAtPeriodEnd: Boolean(subscription.cancel_at_period_end),
     updatedAt: FieldValue.serverTimestamp(),
   };
+
+  if (periodEndUnix) {
+    subData.currentPeriodEnd = Timestamp.fromMillis(periodEndUnix * 1000);
+  }
 
   await db.collection("users").doc(uid).set(
     {
@@ -83,6 +105,130 @@ async function syncSubscriptionToFirestore(subscription) {
     },
     { merge: true }
   );
+}
+
+function formatInvoiceAmount(cents, currency) {
+  const amount = (Number(cents || 0) / 100).toFixed(2);
+  if (String(currency || "").toLowerCase() === "cad") {
+    return `${amount} $ CA`;
+  }
+  return `${amount} ${String(currency || "").toUpperCase()}`;
+}
+
+async function resolveInvoiceCustomerEmail(stripe, invoice) {
+  if (invoice.customer_email) {
+    return invoice.customer_email;
+  }
+  if (!invoice.customer) {
+    return null;
+  }
+  const customer =
+    typeof invoice.customer === "string"
+      ? await stripe.customers.retrieve(invoice.customer)
+      : invoice.customer;
+  return customer.email || null;
+}
+
+async function resolvePlanFromInvoice(stripe, invoice) {
+  const subRef = invoice.subscription;
+  if (!subRef) return null;
+
+  const subscription =
+    typeof subRef === "string"
+      ? await stripe.subscriptions.retrieve(subRef)
+      : subRef;
+
+  const priceId = subscription.items?.data?.[0]?.price?.id || null;
+  return subscription.metadata?.plan || planFromPriceId(priceId) || null;
+}
+
+/**
+ * Envoie une seule fois l'email de confirmation (premier paiement ou renouvellement).
+ */
+async function maybeSendSubscriptionInvoiceEmail(stripe, invoiceRef) {
+  const invoiceId =
+    typeof invoiceRef === "string" ? invoiceRef : invoiceRef?.id || null;
+  if (!invoiceId) return;
+
+  const db = getFirestore();
+  const sentRef = db.collection("subscriptionInvoiceEmails").doc(invoiceId);
+
+  try {
+    await sentRef.create({
+      createdAt: FieldValue.serverTimestamp(),
+    });
+  } catch (err) {
+    if (err.code === 6 || /already exists/i.test(String(err.message))) {
+      return;
+    }
+    throw err;
+  }
+
+  try {
+    const invoice =
+      typeof invoiceRef === "string"
+        ? await stripe.invoices.retrieve(invoiceRef, { expand: ["subscription"] })
+        : invoiceRef;
+
+    if (invoice.status !== "paid") {
+      await sentRef.delete();
+      return;
+    }
+
+    const billingReason = invoice.billing_reason || "";
+    if (
+      billingReason !== "subscription_create" &&
+      billingReason !== "subscription_cycle"
+    ) {
+      await sentRef.delete();
+      return;
+    }
+
+    const plan = await resolvePlanFromInvoice(stripe, invoice);
+    if (!plan || !PLAN_KEYS.has(plan)) {
+      await sentRef.delete();
+      return;
+    }
+
+    const email = await resolveInvoiceCustomerEmail(stripe, invoice);
+    if (!email) {
+      await sentRef.delete();
+      return;
+    }
+
+    const subscription =
+      typeof invoice.subscription === "string"
+        ? await stripe.subscriptions.retrieve(invoice.subscription)
+        : invoice.subscription;
+
+    const periodEndUnix = getSubscriptionPeriodEnd(subscription);
+
+    await sendSubscriptionConfirmationEmail({
+      email,
+      plan,
+      amountFormatted: formatInvoiceAmount(invoice.amount_paid, invoice.currency),
+      invoiceUrl: invoice.hosted_invoice_url || "",
+      invoicePdfUrl: invoice.invoice_pdf || "",
+      periodEnd: periodEndUnix ? new Date(periodEndUnix * 1000) : null,
+      isRenewal: billingReason === "subscription_cycle",
+    });
+
+    await sentRef.set(
+      {
+        email,
+        plan,
+        sentAt: FieldValue.serverTimestamp(),
+      },
+      { merge: true }
+    );
+  } catch (err) {
+    console.error("maybeSendSubscriptionInvoiceEmail:", invoiceId, err);
+    try {
+      await sentRef.delete();
+    } catch (deleteErr) {
+      console.error("maybeSendSubscriptionInvoiceEmail cleanup:", deleteErr);
+    }
+  }
 }
 
 function createStripeHandlers(region) {
@@ -198,15 +344,40 @@ function createStripeHandlers(region) {
           const session = event.data.object;
           if (session.mode === "subscription" && session.subscription) {
             const subscription = await stripe.subscriptions.retrieve(
-              session.subscription
+              session.subscription,
+              { expand: ["latest_invoice"] }
             );
-            await syncSubscriptionToFirestore(subscription);
+            try {
+              await syncSubscriptionToFirestore(subscription);
+            } catch (syncErr) {
+              console.error("syncSubscriptionToFirestore:", syncErr);
+            }
+
+            const latestInvoice = subscription.latest_invoice;
+            if (latestInvoice) {
+              const invoiceId =
+                typeof latestInvoice === "string"
+                  ? latestInvoice
+                  : latestInvoice.id;
+              await maybeSendSubscriptionInvoiceEmail(stripe, invoiceId);
+            } else if (session.invoice) {
+              await maybeSendSubscriptionInvoiceEmail(stripe, session.invoice);
+            }
           }
+          break;
+        }
+        case "invoice.payment_succeeded": {
+          const invoice = event.data.object;
+          await maybeSendSubscriptionInvoiceEmail(stripe, invoice);
           break;
         }
         case "customer.subscription.updated":
         case "customer.subscription.deleted":
-          await syncSubscriptionToFirestore(event.data.object);
+          try {
+            await syncSubscriptionToFirestore(event.data.object);
+          } catch (syncErr) {
+            console.error("syncSubscriptionToFirestore:", syncErr);
+          }
           break;
         default:
           break;

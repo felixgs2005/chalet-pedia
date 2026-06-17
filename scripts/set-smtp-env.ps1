@@ -10,7 +10,8 @@ $Services = @(
   "onventelistingcreated",
   "onservicelistingcreated",
   "requestpasswordresetcode",
-  "resetpasswordwithcode"
+  "resetpasswordwithcode",
+  "stripewebhook"
 )
 
 $gcloud = "$env:LOCALAPPDATA\Google\Cloud SDK\google-cloud-sdk\bin\gcloud.cmd"
