@@ -79,7 +79,9 @@ export default function Abonnement() {
         <h1 className="compte-reglages__title">Abonnements</h1>
         <p className="subscription-page__intro">
             Pour publier sur ChaletPedia, choisissez l'abonnement correspondant à
-            vos annonces. Chaque abonnement se renouvelle automatiquement chaque
+            vos annonces. Les tarifs affichés sont <strong>hors taxes</strong> : la
+            TPS et la TVQ s'ajoutent au moment du paiement selon votre adresse de
+            facturation. Chaque abonnement se renouvelle automatiquement chaque
             année par prélèvement sur la carte enregistrée chez Stripe. Vous pouvez
             annuler ou modifier la facturation à tout moment depuis cette page.
         </p>
@@ -109,7 +111,10 @@ export default function Abonnement() {
                 <div className="subscription-card__head">
                   <h2 className="subscription-card__title">{plan.name}</h2>
                   <p className="subscription-card__price">
-                    <span>{plan.priceLabel}</span>
+                    <span>
+                      {plan.priceAmount}
+                      <span className="subscription-card__price-taxes">+taxes</span>
+                    </span>
                     <small>{plan.periodLabel}</small>
                   </p>
                 </div>

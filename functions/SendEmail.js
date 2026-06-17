@@ -471,11 +471,118 @@ async function sendPasswordResetCodeEmail({ email, code }) {
   return { messageId: info.messageId, to };
 }
 
+const SUBSCRIPTION_PLAN_LABELS = {
+  chalets: "Annonces chalets",
+  services: "Annonces services",
+};
+
+function formatFrenchDate(date) {
+  if (!date || Number.isNaN(date.getTime())) return "";
+  return date.toLocaleDateString("fr-CA", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+    timeZone: "America/Toronto",
+  });
+}
+
+/**
+ * Confirmation d'abonnement avec liens vers la facture Stripe.
+ */
+async function sendSubscriptionConfirmationEmail({
+  email,
+  plan,
+  amountFormatted,
+  invoiceUrl,
+  invoicePdfUrl,
+  periodEnd,
+  isRenewal = false,
+}) {
+  const to = normalizeEmail(email);
+  if (!to) throw new Error("Courriel client invalide.");
+
+  const planLabel = SUBSCRIPTION_PLAN_LABELS[plan] || plan || "Abonnement";
+  const fromAddress = process.env.SMTP_FROM || process.env.SMTP_USER;
+  const origin = (process.env.APP_ORIGIN || "https://chalet-pedia.vercel.app").replace(
+    /\/$/,
+    ""
+  );
+  const accountUrl = `${origin}/compte/abonnement/`;
+  const periodEndLabel = formatFrenchDate(periodEnd);
+  const transporter = createTransporter();
+
+  const intro = isRenewal
+    ? `Votre abonnement <strong>${escapeHtml(planLabel)}</strong> a été renouvelé avec succès.`
+    : `Merci pour votre abonnement <strong>${escapeHtml(planLabel)}</strong> sur ChaletPedia.`;
+
+  const subject = isRenewal
+    ? `[ChaletPedia] Renouvellement — ${planLabel}`
+    : `[ChaletPedia] Confirmation d'abonnement — ${planLabel}`;
+
+  const textLines = [
+    "Bonjour,",
+    "",
+    isRenewal
+      ? `Votre abonnement ${planLabel} a été renouvelé avec succès.`
+      : `Merci pour votre abonnement ${planLabel} sur ChaletPedia.`,
+    "",
+    `Montant payé : ${amountFormatted}`,
+    periodEndLabel ? `Valide jusqu'au : ${periodEndLabel}` : "",
+    "",
+    invoiceUrl ? `Voir la facture : ${invoiceUrl}` : "",
+    invoicePdfUrl ? `Télécharger le PDF : ${invoicePdfUrl}` : "",
+    "",
+    `Gérer votre abonnement : ${accountUrl}`,
+    "",
+    "L'équipe ChaletPedia",
+  ].filter(Boolean);
+
+  const htmlParts = [
+    "<p>Bonjour,</p>",
+    `<p>${intro}</p>`,
+    `<p><strong>Montant payé :</strong> ${escapeHtml(amountFormatted)}</p>`,
+  ];
+
+  if (periodEndLabel) {
+    htmlParts.push(
+      `<p><strong>Valide jusqu'au :</strong> ${escapeHtml(periodEndLabel)}</p>`
+    );
+  }
+
+  if (invoiceUrl) {
+    htmlParts.push(
+      `<p><a href="${escapeHtml(invoiceUrl)}">Consulter votre facture en ligne</a></p>`
+    );
+  }
+  if (invoicePdfUrl) {
+    htmlParts.push(
+      `<p><a href="${escapeHtml(invoicePdfUrl)}">Télécharger la facture (PDF)</a></p>`
+    );
+  }
+
+  htmlParts.push(
+    `<p><a href="${escapeHtml(accountUrl)}">Gérer mon abonnement</a></p>`,
+    "<p>L'équipe ChaletPedia</p>"
+  );
+
+  const mailOptions = {
+    from: `"ChaletPedia" <${fromAddress}>`,
+    to,
+    subject,
+    text: textLines.join("\n"),
+    html: htmlParts.join(""),
+  };
+
+  const info = await transporter.sendMail(mailOptions);
+  return { messageId: info.messageId, to, plan };
+}
+
 module.exports = {
   sendContactEmail,
   sendListingContactEmail,
   sendNewListingAdminEmail,
   sendPasswordResetCodeEmail,
+  sendSubscriptionConfirmationEmail,
   buildContactMessageDocument,
   RECIPIENTS_BY_SUBJECT,
 };

@@ -41,7 +41,10 @@ export default function SubscriptionPrompt({
           <div className="subscription-card__head">
             <h2 className="subscription-card__title">{config.name}</h2>
             <p className="subscription-card__price">
-              <span>{config.priceLabel}</span>
+              <span>
+                {config.priceAmount}
+                <span className="subscription-card__price-taxes">+taxes</span>
+              </span>
               <small>{config.periodLabel}</small>
             </p>
           </div>
@@ -70,7 +73,11 @@ export default function SubscriptionPrompt({
         <h1 className="subscription-prompt__title">{config.headline}</h1>
         <p className="subscription-prompt__text">{config.description}</p>
         <p className="subscription-prompt__price">
-          <strong>{config.priceLabel}</strong> {config.periodLabel}
+          <strong>
+            {config.priceAmount}
+            <span className="subscription-card__price-taxes">+taxes</span>
+          </strong>{" "}
+          {config.periodLabel}
         </p>
         <p className="subscription-prompt__billing">{config.billingNote}</p>
         <ul className="subscription-prompt__features">

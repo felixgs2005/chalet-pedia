@@ -34,7 +34,34 @@ Stripe → **Produits** → **Ajouter un produit**
 - Fréquence : **Annuel**
 - Copier l’ID : `price_...` → variable `STRIPE_PRICE_SERVICES`
 
-> **Important :** choisir **Recurring / Yearly**, pas un paiement unique.
+> **Important :** choisir **Recurring / Yearly**, pas un paiement unique.  
+> Les prix sont **hors taxes** : la TPS et la TVQ s'ajoutent au paiement (voir section 2b).
+
+---
+
+## 2b. Activer Stripe Tax (TPS + TVQ)
+
+Les taxes québécoises sont calculées automatiquement au checkout et à chaque renouvellement.
+
+1. Stripe → **Settings** → **Tax** → activer **Stripe Tax**
+2. Indiquer l'adresse de votre entreprise (Québec)
+3. Ajouter les enregistrements fiscaux :
+   - **TPS** (fédéral, 5 %)
+   - **TVQ** (Québec, 9,975 %)
+4. Vérifier que les prix produits sont en **tax exclusive** (hors taxes) — c'est le comportement par défaut
+
+Au checkout Stripe, le client saisit son **adresse de facturation** ; le total affiché inclut alors TPS + TVQ. Exemples au Québec :
+
+| Plan | Hors taxes | Total estimé (Québec) |
+|------|------------|------------------------|
+| Chalets | 90,00 $ | ~103,93 $ |
+| Services | 45,00 $ | ~51,96 $ |
+
+Après activation de Stripe Tax, redéployer `createCheckoutSession` :
+
+```bash
+firebase deploy --only functions:createCheckoutSession
+```
 
 ---
 
@@ -86,6 +113,7 @@ Sans ce déploiement, le bouton **S'abonner** sur `/compte/abonnement/` ne redir
    - URL : celle de `stripeWebhook`
    - Événements :
      - `checkout.session.completed`
+     - `invoice.payment_succeeded` (confirmation par courriel + renouvellements annuels)
      - `customer.subscription.updated`
      - `customer.subscription.deleted`
 4. Copier le **Signing secret** : `whsec_...`
@@ -105,6 +133,30 @@ Utilisé par **Gérer la facturation** sur `/compte/abonnement/`.
 
 ---
 
+## 7b. Courriel de confirmation avec facture
+
+Après chaque paiement d'abonnement (premier achat ou renouvellement annuel), `stripeWebhook` envoie un courriel au client avec :
+
+- le montant payé et la date de fin de période ;
+- un lien vers la facture Stripe en ligne ;
+- un lien pour télécharger le PDF de la facture.
+
+**Prérequis :**
+
+1. Variables SMTP sur `stripewebhook` (même config que les autres functions) :
+   ```powershell
+   cd scripts
+   .\set-smtp-env.ps1
+   ```
+   Le script inclut désormais `stripewebhook`.
+2. Événement webhook **`invoice.payment_succeeded`** ajouté dans Stripe (section 6).
+3. Redéployer `stripeWebhook` après modification du code :
+   ```bash
+   firebase deploy --only functions:stripeWebhook
+   ```
+
+---
+
 ## 8. Tester en mode Test
 
 1. Se connecter sur le site avec un compte utilisateur
@@ -114,6 +166,7 @@ Utilisé par **Gérer la facturation** sur `/compte/abonnement/`.
 5. Vérifier après paiement :
    - Retour sur `/compte/abonnement/?success=1`
    - Firestore → `users/{uid}` → `subscriptions.chalets` ou `subscriptions.services` avec `status: "active"`
+   - Courriel de confirmation reçu (liens facture en ligne + PDF)
 6. Tester la publication :
    - **Chalets** : `/submit-listing/details/` (abonnement chalets requis)
    - **Services** : **Inscrivez vos services** (abonnement services requis)
