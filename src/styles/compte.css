@@ -500,12 +500,17 @@
 }
 
 /* Abonnements Stripe — /compte/abonnement/ */
+.subscription-page .compte-reglages__title {
+  text-align: center;
+}
+
 .subscription-page__intro {
   font-size: 15px;
   line-height: 1.55;
   color: rgba(255, 255, 255, 0.78);
-  margin: -12px 0 28px;
+  margin: -12px auto 28px;
   max-width: 52ch;
+  text-align: center;
 }
 
 .subscription-grid {
@@ -579,6 +584,10 @@
   width: 100%;
 }
 
+.subscription-page__links {
+  text-align: center;
+}
+
 .subscription-page__links-title {
   font-size: 13px;
   font-weight: 800;
@@ -594,6 +603,7 @@
   margin: 0 0 24px;
   display: flex;
   flex-direction: column;
+  align-items: center;
   gap: 8px;
 }
 
@@ -610,6 +620,11 @@
 .subscription-page__account {
   font-size: 13px;
   color: rgba(255, 255, 255, 0.45);
+  text-align: center;
+}
+
+.subscription-page .compte-reglages__alert {
+  text-align: center;
 }
 
 .subscription-card__btn,
